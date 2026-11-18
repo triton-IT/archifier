@@ -1,0 +1,255 @@
+/* Archifier — jetons visuels (C-07).
+   Source unique des couleurs, tailles, ombres, durées et épaisseurs.
+   Aucune règle de composant ici : uniquement des variables.
+   Les valeurs sont les valeurs initiales de C-07 ; un ajout = révision mineure,
+   un renommage est interdit. */
+
+/* ------------------------------------------------------------------ base */
+
+:root {
+  --bg: #f5f6f8;
+  --surface: #ffffff;
+  --surface-2: #fbfbfd;
+  --ink: #1b2430;
+  --ink-soft: #48566a;
+  --muted: #6b7787;
+  --line: #dde2ea;
+  --line-strong: #c6cedb;
+
+  --accent: #2f6feb;
+  --accent-soft: #e8f0fe;
+  --ok: #17724b;
+  --ok-soft: #e6f4ec;
+  --warn: #9a5b00;
+  --warn-soft: #fdf1dc;
+  --danger: #b42318;
+  --danger-soft: #fdecea;
+  --archive: #5b6472;
+  --archive-soft: #eceff3;
+
+  --radius: 10px;
+  --radius-sm: 6px;
+  --shadow: 0 1px 2px rgba(20, 30, 45, 0.06), 0 4px 12px rgba(20, 30, 45, 0.04);
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: "SF Mono", "Cascadia Mono", Consolas, "Liberation Mono", monospace;
+  --step: 4px;
+}
+
+/* --------------------------------------------------------- bandes de couches */
+
+:root {
+  --layer-band-gap: 16px;
+  --layer-band-radius: 8px;
+  --layer-label-size: 12px;
+  --layer-label-weight: 600;
+  --layer-label-tracking: 0.04em;
+  --layer-collapsed-h: 32px;
+  --layer-label-pad: 12px;
+
+  --layer-business-bg: #eef2fb;
+  --layer-business-fg: #28374f;
+  --layer-business-accent: #5b6ea8;
+  --layer-application-bg: #e9f5ef;
+  --layer-application-fg: #1e4433;
+  --layer-application-accent: #2f7d5a;
+  --layer-technology-bg: #fdf0e6;
+  --layer-technology-fg: #5c3612;
+  --layer-technology-accent: #a9622a;
+  --layer-physical-bg: #f3ecfa;
+  --layer-physical-fg: #402659;
+  --layer-physical-accent: #7a4fa3;
+  --layer-motivation-bg: #fff5e3;
+  --layer-motivation-fg: #5d3f00;
+  --layer-motivation-accent: #a97a12;
+  --layer-implementation-bg: #eef1f4;
+  --layer-implementation-fg: #333d49;
+  --layer-implementation-accent: #62748a;
+  --layer-process-bg: #eaf1fb;
+  --layer-process-fg: #233a5c;
+  --layer-process-accent: #3c6aa6;
+  --layer-flow-bg: #f2f7fd;
+  --layer-flow-fg: #2b4a70;
+  --layer-flow-accent: #5b86b8;
+  --layer-data-bg: #eef6f2;
+  --layer-data-fg: #1f4a38;
+  --layer-data-accent: #3d8a63;
+  --layer-annotation-bg: #f6f5ef;
+  --layer-annotation-fg: #4a4736;
+  --layer-annotation-accent: #8a8360;
+  --layer-structure-bg: #eef3f7;
+  --layer-structure-fg: #26404f;
+  --layer-structure-accent: #4f7488;
+  --layer-deployment-bg: #fdf0e6;
+  --layer-deployment-fg: #5c3612;
+  --layer-deployment-accent: #a9622a;
+  --layer-behavior-bg: #f4eefb;
+  --layer-behavior-fg: #43265c;
+  --layer-behavior-accent: #7d54a5;
+}
+
+/* --------------------------------------------------------- zones de domaine */
+
+:root {
+  --zone-domain-bg: #f7f9fd;
+  --zone-domain-border: #9fb2cc;
+  --zone-domain-border-width: 2px;
+  --zone-domain-radius: 8px;
+  --zone-domain-label-size: 13px;
+  --zone-domain-label-weight: 600;
+  --zone-domain-selected: #2f6feb;
+  --zone-domain-selected-width: 2.5px;
+  --zone-group-bg: #fbfbfd;
+  --zone-group-border: #c6cedb;
+  --zone-group-dash: 6 4;
+  --zone-palette-1: #e8f0fe;
+  --zone-palette-2: #e6f4ec;
+  --zone-palette-3: #fdf1dc;
+  --zone-palette-4: #f3ecfa;
+  --zone-palette-5: #fdecec;
+  --zone-palette-6: #e7f3f7;
+  --zone-palette-ink: #1b2430;
+}
+
+/* ------------------------------------------------------- frontières et ports */
+
+:root {
+  --boundary-stroke: #6b7787;
+  --boundary-width: 1.5px;
+  --boundary-dash: 8 5;
+  --boundary-active-stroke: #2f6feb;
+  --port-size: 16px;
+  --port-fill: #ffffff;
+  --port-stroke: #2f6feb;
+  --port-stroke-width: 2px;
+  --port-active-fill: #e6f4ec;
+  --port-selected-fill: #e8f0fe;
+  --port-hit-pad: 8px;
+  --port-version-size: 10px;
+  --port-consumer-stroke: #17724b;
+  --port-consumer-dash: 4 3;
+}
+
+/* --------------------------------------- encodage temporel (motif + texte) */
+
+:root {
+  --temporal-active-stroke: #1f6f4a;
+  --temporal-active-fill: #ffffff;
+  --temporal-active-pattern: none;
+  --temporal-scheduled-stroke: #2f6feb;
+  --temporal-scheduled-fill: #f5f9ff;
+  --temporal-scheduled-pattern: dash 6 4;
+  --temporal-expired-stroke: #6b7787;
+  --temporal-expired-fill: #f4f5f7;
+  --temporal-expired-pattern: dash 2 4;
+  --temporal-expired-opacity: 0.55;
+  --temporal-expired-strike-width: 1.5px;
+  --temporal-overlap-fill: repeating-linear-gradient(45deg, #fdf1dc 0 6px, #fbe6c6 6px 12px);
+  --temporal-badge-active-bg: #e6f4ec;
+  --temporal-badge-active-fg: #0f5132;
+  --temporal-badge-scheduled-bg: #e8f0fe;
+  --temporal-badge-scheduled-fg: #1d4ed8;
+  --temporal-badge-expired-bg: #eceff3;
+  --temporal-badge-expired-fg: #3c4654;
+  --temporal-legend-size: 11px;
+}
+
+/* ------------------------------- croquis, brouillon, validé, publié, retiré */
+
+:root {
+  --draft-fill: #fbfbfd;
+  --draft-stroke: #6b7787;
+  --draft-dash: 4 3;
+  --draft-label-style: italic;
+  --draft-badge-bg: #eceff3;
+  --draft-badge-fg: #3c4654;
+  --status-formalized-bg: #fdf1dc;
+  --status-formalized-fg: #7a4600;
+  --status-valid-bg: #e6f4ec;
+  --status-valid-fg: #0f5132;
+  --status-published-bg: #e8f0fe;
+  --status-published-fg: #1d4ed8;
+  --status-withdrawn-bg: #eceff3;
+  --status-withdrawn-fg: #3c4654;
+  --status-missing-fg: #b42318;
+  --status-missing-bg: #fdecea;
+}
+
+/* ------------------------------- densité, zoom sémantique, géométrie, chrome */
+
+:root {
+  --zoom-aggregate-max: 0.55;
+  --zoom-detail-min: 1.15;
+  --zoom-min: 0.25;
+  --zoom-max: 4;
+  --node-min-w: 120px;
+  --node-min-h: 56px;
+  --node-radius: 8px;
+  --node-radius-pill: 999px;
+  --node-title-size: 13px;
+  --node-title-weight: 600;
+  --node-type-size: 11px;
+  --node-domain-size: 10px;
+  --node-status-size: 10px;
+  --node-icon-size: 16px;
+  --cull-margin: 200px;
+  --minimap-size: 168px;
+  --inspector-width: 320px;
+  --palette-width: 232px;
+  --toolbar-height: 48px;
+  --statusbar-height: 28px;
+}
+
+/* ------------------------------- typographie, espacement, élévation, mouvement */
+
+:root {
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-md: 13px;
+  --text-lg: 15px;
+  --text-xl: 18px;
+  --leading-tight: 1.25;
+  --leading-normal: 1.5;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-strong: 600;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  --shadow-canvas: 0 1px 2px rgba(20, 30, 45, 0.06), 0 4px 12px rgba(20, 30, 45, 0.04);
+  --shadow-inspector: -2px 0 12px rgba(20, 30, 45, 0.08);
+  --shadow-popover: 0 12px 32px rgba(20, 30, 45, 0.18);
+  --motion-fast: 120ms;
+  --motion-base: 160ms;
+  --motion-slow: 220ms;
+  --ease-standard: cubic-bezier(0.2, 0.6, 0.2, 1);
+  --ease-emphasis: cubic-bezier(0.3, 0, 0.1, 1);
+}
+
+/* -------------------------------------------------- focus, contraste, cibles */
+
+:root {
+  --focus-ring: #2f6feb;
+  --focus-width: 2px;
+  --focus-offset: 2px;
+  --tap-target: 44px;
+  --hit-pad: 6px;
+  --contrast-min-text: 4.5;
+  --contrast-min-ui: 3.0;
+}
+
+/* ------------------------------------------------------- mouvement réduit */
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-fast: 0ms;
+    --motion-base: 0ms;
+    --motion-slow: 0ms;
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "template_version": "1.0.0",
+  "id": "application-landscape",
+  "intent": "APPLICATION_LANDSCAPE",
+  "title_key": "template.application_landscape.title",
+  "summary_key": "template.application_landscape.summary",
+  "notation": "ARCHIMATE",
+  "scope": { "kind": "DOMAIN" },
+  "grid": { "size": 8, "snap": true },
+  "layers": [
+    { "id": "business", "label_key": "layer.business", "y": 0, "h": 200, "tone": "business" },
+    { "id": "application", "label_key": "layer.application", "y": 216, "h": 340, "tone": "application" },
+    { "id": "technology", "label_key": "layer.technology", "y": 572, "h": 200, "tone": "technology" }
+  ],
+  "zones": [
+    {
+      "id": "z1",
+      "kind": "DOMAIN",
+      "label_key": "template.zone.supplier_domain",
+      "x": 48,
+      "y": 232,
+      "w": 520,
+      "h": 312,
+      "layer_id": "application",
+      "boundary": true,
+      "tone": "domain-1"
+    }
+  ],
+  "framing": { "zoom": 0.9, "x": 0, "y": 0, "focus": [], "dim_others": false },
+  "drafts": [
+    {
+      "id": "d1",
+      "label_key": "template.application_landscape.draft.service",
+      "shape": "RECT",
+      "x": 96,
+      "y": 288,
+      "w": 176,
+      "h": 72,
+      "suggested_metaclass": "ApplicationService",
+      "status": "SKETCH",
+      "layer_id": "application",
+      "zone_id": "z1"
+    },
+    {
+      "id": "d2",
+      "label_key": "template.application_landscape.draft.component",
+      "shape": "RECT",
+      "x": 320,
+      "y": 288,
+      "w": 176,
+      "h": 72,
+      "suggested_metaclass": "ApplicationComponent",
+      "status": "SKETCH",
+      "layer_id": "application",
+      "zone_id": "z1"
+    }
+  ],
+  "example": { "steps": ["place", "rename", "connect", "formalize"] }
+}

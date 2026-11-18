@@ -1,0 +1,236 @@
+{
+  "fixture_version": 1,
+  "name": "migration-payment-api-v1-v2",
+  "domain": {
+    "id": "01J00000000000000000000001",
+    "name": "Paiements"
+  },
+  "diagram": {
+    "id": "01J00000000000000000000002",
+    "title": "Migration v1 → v2 de Payment API",
+    "notation": "ARCHIMATE"
+  },
+  "layout": {
+    "schema": 2,
+    "intent": "MIGRATION",
+    "scope": {
+      "kind": "DOMAIN",
+      "domain_id": "01J00000000000000000000001"
+    },
+    "notation": "ARCHIMATE",
+    "temporal_cursor": "2027-08-01T00:00:00Z",
+    "viewport": {
+      "x": 0,
+      "y": 0,
+      "zoom": 0.8
+    },
+    "grid": {
+      "size": 8,
+      "snap": true
+    },
+    "layers": [
+      {
+        "id": "business",
+        "label": "Métier",
+        "y": 0,
+        "h": 180,
+        "collapsed": false,
+        "tone": "business"
+      },
+      {
+        "id": "application",
+        "label": "Applicatif",
+        "y": 196,
+        "h": 260,
+        "collapsed": false,
+        "tone": "application"
+      },
+      {
+        "id": "technology",
+        "label": "Technologique",
+        "y": 472,
+        "h": 200,
+        "collapsed": false,
+        "tone": "technology"
+      },
+      {
+        "id": "implementation",
+        "label": "Mise en œuvre",
+        "y": 688,
+        "h": 220,
+        "collapsed": false,
+        "tone": "implementation"
+      }
+    ],
+    "zones": [
+      {
+        "id": "z1",
+        "kind": "DOMAIN",
+        "domain_id": "01J00000000000000000000001",
+        "label": "Paiements — cible",
+        "x": 48,
+        "y": 212,
+        "w": 640,
+        "h": 228,
+        "layer_id": "application",
+        "boundary": true,
+        "collapsed": false,
+        "tone": "domain-2"
+      }
+    ],
+    "framing": {
+      "zoom": 0.8,
+      "x": 0,
+      "y": 0,
+      "focus": [],
+      "dim_others": false,
+      "caption": null
+    },
+    "nodes": [
+      {
+        "id": "n-business-process",
+        "object_id": "01J00000000000000000000047",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 88,
+        "y": 56,
+        "w": 176,
+        "h": 72,
+        "layer_id": "business",
+        "zone_id": null,
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-payment-api",
+        "object_id": "01J00000000000000000000048",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 88,
+        "y": 264,
+        "w": 176,
+        "h": 72,
+        "layer_id": "application",
+        "zone_id": "z1",
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-port-v1",
+        "object_id": "01J00000000000000000000049",
+        "kind": "INTERFACE",
+        "version_id": "01J000000000000000000008S9",
+        "x": 676,
+        "y": 264,
+        "w": 24,
+        "h": 24,
+        "layer_id": "application",
+        "zone_id": "z1",
+        "collapsed": false,
+        "port": {
+          "zone_id": "z1",
+          "side": "EAST",
+          "offset": 0.28
+        },
+        "style_override": {}
+      },
+      {
+        "id": "n-port-v2",
+        "object_id": "01J00000000000000000000049",
+        "kind": "INTERFACE",
+        "version_id": "01J000000000000000000008SA",
+        "x": 676,
+        "y": 344,
+        "w": 24,
+        "h": 24,
+        "layer_id": "application",
+        "zone_id": "z1",
+        "collapsed": false,
+        "port": {
+          "zone_id": "z1",
+          "side": "EAST",
+          "offset": 0.63
+        },
+        "style_override": {}
+      },
+      {
+        "id": "n-app-service",
+        "object_id": "01J0000000000000000000004B",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 296,
+        "y": 312,
+        "w": 176,
+        "h": 72,
+        "layer_id": "application",
+        "zone_id": "z1",
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-tech-node",
+        "object_id": "01J0000000000000000000004C",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 88,
+        "y": 496,
+        "w": 176,
+        "h": 72,
+        "layer_id": "technology",
+        "zone_id": null,
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-work-package",
+        "object_id": "01J0000000000000000000004D",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 88,
+        "y": 716,
+        "w": 200,
+        "h": 72,
+        "layer_id": "implementation",
+        "zone_id": null,
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-process-api",
+        "relationship_id": "01J000000000000000000004WR",
+        "kind": "RELATIONSHIP",
+        "waypoints": [],
+        "label_visible": true,
+        "routing": "ORTHOGONAL",
+        "layer_id": null
+      },
+      {
+        "id": "e-api-service",
+        "relationship_id": "01J000000000000000000004WS",
+        "kind": "RELATIONSHIP",
+        "waypoints": [],
+        "label_visible": true,
+        "routing": "ORTHOGONAL",
+        "layer_id": null
+      },
+      {
+        "id": "e-api-tech",
+        "relationship_id": "01J000000000000000000004WT",
+        "kind": "RELATIONSHIP",
+        "waypoints": [],
+        "label_visible": true,
+        "routing": "ORTHOGONAL",
+        "layer_id": null
+      }
+    ],
+    "drafts": [],
+    "annotations": []
+  }
+}

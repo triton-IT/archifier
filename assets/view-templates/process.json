@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "template_version": "1.0.0",
+  "id": "process",
+  "intent": "PROCESS",
+  "title_key": "template.process.title",
+  "summary_key": "template.process.summary",
+  "notation": "BPMN",
+  "scope": { "kind": "DOMAIN" },
+  "grid": { "size": 8, "snap": true },
+  "layers": [
+    { "id": "process", "label_key": "layer.process", "y": 0, "h": 360, "tone": "process" },
+    { "id": "flow", "label_key": "layer.flow", "y": 376, "h": 240, "tone": "flow" },
+    { "id": "data", "label_key": "layer.data", "y": 632, "h": 160, "tone": "data" },
+    { "id": "annotation", "label_key": "layer.annotation", "y": 808, "h": 120, "tone": "annotation" }
+  ],
+  "zones": [
+    {
+      "id": "z1",
+      "kind": "GROUP",
+      "label_key": "template.zone.client_lane",
+      "x": 48,
+      "y": 48,
+      "w": 640,
+      "h": 296,
+      "layer_id": "process",
+      "boundary": false,
+      "tone": null
+    }
+  ],
+  "framing": { "zoom": 1.0, "x": 0, "y": 0, "focus": [], "dim_others": false },
+  "drafts": [
+    {
+      "id": "d1",
+      "label_key": "template.process.draft.task",
+      "shape": "RECT",
+      "x": 96,
+      "y": 120,
+      "w": 176,
+      "h": 72,
+      "suggested_metaclass": "UserTask",
+      "status": "SKETCH",
+      "layer_id": "process",
+      "zone_id": "z1"
+    },
+    {
+      "id": "d2",
+      "label_key": "template.process.draft.start_event",
+      "shape": "RECT",
+      "x": 96,
+      "y": 392,
+      "w": 96,
+      "h": 64,
+      "suggested_metaclass": "StartEvent",
+      "status": "SKETCH",
+      "layer_id": "flow",
+      "zone_id": null
+    }
+  ],
+  "example": { "steps": ["place", "rename", "connect", "formalize"] }
+}

@@ -1,0 +1,84 @@
+{
+  "schema": 1,
+  "template_version": "1.0.0",
+  "id": "interface-review",
+  "intent": "INTERFACE_REVIEW",
+  "title_key": "template.interface_review.title",
+  "summary_key": "template.interface_review.summary",
+  "notation": "ARCHIMATE",
+  "scope": { "kind": "DOMAIN" },
+  "grid": { "size": 8, "snap": true },
+  "layers": [
+    { "id": "business", "label_key": "layer.business", "y": 0, "h": 220, "tone": "business" },
+    { "id": "application", "label_key": "layer.application", "y": 236, "h": 320, "tone": "application" }
+  ],
+  "zones": [
+    {
+      "id": "z1",
+      "kind": "DOMAIN",
+      "label_key": "template.zone.provider_domain",
+      "x": 48,
+      "y": 252,
+      "w": 320,
+      "h": 280,
+      "layer_id": "application",
+      "boundary": true,
+      "tone": "domain-1"
+    },
+    {
+      "id": "z2",
+      "kind": "DOMAIN",
+      "label_key": "template.zone.consumer_domain",
+      "x": 448,
+      "y": 252,
+      "w": 340,
+      "h": 280,
+      "layer_id": "application",
+      "boundary": true,
+      "tone": "domain-3"
+    }
+  ],
+  "framing": { "zoom": 0.9, "x": 0, "y": 0, "focus": [], "dim_others": false },
+  "drafts": [
+    {
+      "id": "d1",
+      "label_key": "template.interface_review.draft.port",
+      "shape": "PORT",
+      "x": 356,
+      "y": 372,
+      "w": 24,
+      "h": 24,
+      "suggested_metaclass": "ApplicationInterface",
+      "status": "SKETCH",
+      "layer_id": "application",
+      "zone_id": "z1"
+    },
+    {
+      "id": "d2",
+      "label_key": "template.interface_review.draft.consumer_1",
+      "shape": "RECT",
+      "x": 480,
+      "y": 300,
+      "w": 176,
+      "h": 72,
+      "suggested_metaclass": "ApplicationComponent",
+      "status": "SKETCH",
+      "layer_id": "application",
+      "zone_id": "z2"
+    },
+    {
+      "id": "d3",
+      "label_key": "template.interface_review.draft.consumer_2",
+      "shape": "RECT",
+      "x": 480,
+      "y": 396,
+      "w": 176,
+      "h": 72,
+      "suggested_metaclass": "ApplicationComponent",
+      "status": "SKETCH",
+      "layer_id": "application",
+      "zone_id": "z2"
+    }
+  ],
+  "example": { "steps": ["place", "rename", "connect", "share"] }
+}

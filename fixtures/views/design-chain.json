@@ -1,0 +1,199 @@
+{
+  "fixture_version": 1,
+  "name": "design-chain-paiements",
+  "domain": {
+    "id": "01J00000000000000000000001",
+    "name": "Paiements"
+  },
+  "diagram": {
+    "id": "01J00000000000000000000002",
+    "title": "Applicatif",
+    "notation": "ARCHIMATE"
+  },
+  "layout": {
+    "schema": 2,
+    "intent": "APPLICATION_LANDSCAPE",
+    "scope": {
+      "kind": "DOMAIN",
+      "domain_id": "01J00000000000000000000001"
+    },
+    "notation": "ARCHIMATE",
+    "temporal_cursor": null,
+    "viewport": {
+      "x": 0,
+      "y": 0,
+      "zoom": 0.9
+    },
+    "grid": {
+      "size": 8,
+      "snap": true
+    },
+    "layers": [
+      {
+        "id": "business",
+        "label": "Métier",
+        "y": 0,
+        "h": 200,
+        "collapsed": false,
+        "tone": "business"
+      },
+      {
+        "id": "application",
+        "label": "Applicatif",
+        "y": 216,
+        "h": 340,
+        "collapsed": false,
+        "tone": "application"
+      },
+      {
+        "id": "technology",
+        "label": "Technologique",
+        "y": 572,
+        "h": 200,
+        "collapsed": false,
+        "tone": "technology"
+      }
+    ],
+    "zones": [
+      {
+        "id": "z1",
+        "kind": "DOMAIN",
+        "domain_id": "01J00000000000000000000001",
+        "label": "Paiements",
+        "x": 48,
+        "y": 232,
+        "w": 520,
+        "h": 312,
+        "layer_id": "application",
+        "boundary": true,
+        "collapsed": false,
+        "tone": "domain-1"
+      }
+    ],
+    "framing": {
+      "zoom": 0.9,
+      "x": 0,
+      "y": 0,
+      "focus": [],
+      "dim_others": false,
+      "caption": null
+    },
+    "nodes": [
+      {
+        "id": "n-pricing",
+        "object_id": "01J000000000000000000000TN",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 88,
+        "y": 280,
+        "w": 176,
+        "h": 72,
+        "layer_id": "application",
+        "zone_id": "z1",
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-encaissement",
+        "object_id": "01J000000000000000000000TP",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 296,
+        "y": 280,
+        "w": 176,
+        "h": 72,
+        "layer_id": "application",
+        "zone_id": "z1",
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-notification",
+        "object_id": "01J000000000000000000000TQ",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 88,
+        "y": 376,
+        "w": 176,
+        "h": 72,
+        "layer_id": "application",
+        "zone_id": "z1",
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-port-pricing",
+        "object_id": "01J000000000000000000000TR",
+        "kind": "INTERFACE",
+        "version_id": "01J000000000000000000008S9",
+        "x": 556,
+        "y": 300,
+        "w": 24,
+        "h": 24,
+        "layer_id": "application",
+        "zone_id": "z1",
+        "collapsed": false,
+        "port": {
+          "zone_id": "z1",
+          "side": "EAST",
+          "offset": 0.26
+        },
+        "style_override": {}
+      },
+      {
+        "id": "n-port-notification",
+        "object_id": "01J000000000000000000000TS",
+        "kind": "INTERFACE",
+        "version_id": "01J000000000000000000008SA",
+        "x": 556,
+        "y": 372,
+        "w": 24,
+        "h": 24,
+        "layer_id": "application",
+        "zone_id": "z1",
+        "collapsed": false,
+        "port": {
+          "zone_id": "z1",
+          "side": "EAST",
+          "offset": 0.49
+        },
+        "style_override": {}
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-pricing-encaissement",
+        "relationship_id": "01J000000000000000000004X2",
+        "kind": "RELATIONSHIP",
+        "waypoints": [],
+        "label_visible": true,
+        "routing": "ORTHOGONAL",
+        "layer_id": null
+      },
+      {
+        "id": "e-encaissement-notification",
+        "relationship_id": "01J000000000000000000004X3",
+        "kind": "RELATIONSHIP",
+        "waypoints": [],
+        "label_visible": true,
+        "routing": "ORTHOGONAL",
+        "layer_id": null
+      }
+    ],
+    "drafts": [],
+    "annotations": [
+      {
+        "id": "a1",
+        "text": "Pricing · Encaissement · Notification",
+        "x": 88,
+        "y": 688,
+        "w": 400,
+        "h": 56,
+        "style": "NOTE"
+      }
+    ]
+  }
+}

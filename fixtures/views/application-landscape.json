@@ -1,0 +1,209 @@
+{
+  "fixture_version": 1,
+  "name": "application-landscape-paiements",
+  "domain": {
+    "id": "01J00000000000000000000001",
+    "name": "Paiements"
+  },
+  "diagram": {
+    "id": "01J00000000000000000000002",
+    "title": "Paiements — applicatif",
+    "notation": "ARCHIMATE"
+  },
+  "layout": {
+    "schema": 2,
+    "intent": "APPLICATION_LANDSCAPE",
+    "scope": {
+      "kind": "DOMAIN",
+      "domain_id": "01J00000000000000000000001"
+    },
+    "notation": "ARCHIMATE",
+    "temporal_cursor": null,
+    "viewport": {
+      "x": 0,
+      "y": 0,
+      "zoom": 0.9
+    },
+    "grid": {
+      "size": 8,
+      "snap": true
+    },
+    "layers": [
+      {
+        "id": "business",
+        "label": "Métier",
+        "y": 0,
+        "h": 200,
+        "collapsed": false,
+        "tone": "business"
+      },
+      {
+        "id": "application",
+        "label": "Applicatif",
+        "y": 216,
+        "h": 340,
+        "collapsed": false,
+        "tone": "application"
+      },
+      {
+        "id": "technology",
+        "label": "Technologique",
+        "y": 572,
+        "h": 200,
+        "collapsed": false,
+        "tone": "technology"
+      }
+    ],
+    "zones": [
+      {
+        "id": "z1",
+        "kind": "DOMAIN",
+        "domain_id": "01J00000000000000000000001",
+        "label": "Paiements",
+        "x": 48,
+        "y": 232,
+        "w": 520,
+        "h": 312,
+        "layer_id": "application",
+        "boundary": true,
+        "collapsed": false,
+        "tone": "domain-1"
+      }
+    ],
+    "framing": {
+      "zoom": 0.9,
+      "x": 0,
+      "y": 0,
+      "focus": [],
+      "dim_others": false,
+      "caption": null
+    },
+    "nodes": [
+      {
+        "id": "n-actor",
+        "object_id": "01J0000000000000000000003C",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 88,
+        "y": 64,
+        "w": 176,
+        "h": 72,
+        "layer_id": "business",
+        "zone_id": null,
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-business-service",
+        "object_id": "01J0000000000000000000003D",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 296,
+        "y": 64,
+        "w": 176,
+        "h": 72,
+        "layer_id": "business",
+        "zone_id": null,
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-component",
+        "object_id": "01J0000000000000000000003E",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 88,
+        "y": 280,
+        "w": 176,
+        "h": 72,
+        "layer_id": "application",
+        "zone_id": "z1",
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-app-service",
+        "object_id": "01J0000000000000000000003F",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 296,
+        "y": 280,
+        "w": 176,
+        "h": 72,
+        "layer_id": "application",
+        "zone_id": "z1",
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-port",
+        "object_id": "01J0000000000000000000003G",
+        "kind": "INTERFACE",
+        "version_id": "01J000000000000000000008S9",
+        "x": 556,
+        "y": 372,
+        "w": 24,
+        "h": 24,
+        "layer_id": "application",
+        "zone_id": "z1",
+        "collapsed": false,
+        "port": {
+          "zone_id": "z1",
+          "side": "EAST",
+          "offset": 0.49
+        },
+        "style_override": {}
+      },
+      {
+        "id": "n-tech-node",
+        "object_id": "01J0000000000000000000003H",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 88,
+        "y": 620,
+        "w": 176,
+        "h": 72,
+        "layer_id": "technology",
+        "zone_id": null,
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-actor-service",
+        "relationship_id": "01J000000000000000000004WB",
+        "kind": "RELATIONSHIP",
+        "waypoints": [],
+        "label_visible": true,
+        "routing": "ORTHOGONAL",
+        "layer_id": null
+      },
+      {
+        "id": "e-service-component",
+        "relationship_id": "01J000000000000000000004WC",
+        "kind": "RELATIONSHIP",
+        "waypoints": [],
+        "label_visible": true,
+        "routing": "ORTHOGONAL",
+        "layer_id": null
+      },
+      {
+        "id": "e-component-tech",
+        "relationship_id": "01J000000000000000000004WD",
+        "kind": "RELATIONSHIP",
+        "waypoints": [],
+        "label_visible": true,
+        "routing": "ORTHOGONAL",
+        "layer_id": null
+      }
+    ],
+    "drafts": [],
+    "annotations": []
+  }
+}

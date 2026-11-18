@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Archifier — l'atelier de vues</title>
+    <link rel="stylesheet" href="./assets/app.css" />
+  </head>
+  <body>
+    <div id="app-loading">
+      <div class="loading-card">
+        <h1>Archifier</h1>
+        <p>Ouverture du référentiel local…</p>
+      </div>
+    </div>
+    <script type="module">
+      import init from './pkg/archifier_ui.js';
+      init()
+        .then(() => {
+          const el = document.getElementById('app-loading');
+          if (el) el.remove();
+        })
+        .catch((error) => {
+          const el = document.getElementById('app-loading');
+          if (el) {
+            el.innerHTML =
+              '<div class="loading-card"><h1>Chargement impossible</h1><pre>' +
+              String(error) +
+              '</pre></div>';
+          }
+        });
+    </script>
+  </body>
+</html>

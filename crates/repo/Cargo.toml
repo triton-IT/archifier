@@ -1,0 +1,22 @@
+﻿[package]
+name = "archifier-repo"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description = "Dépôt local : index en mémoire, chemin d'écriture, recherche, persistance"
+
+[dependencies]
+archifier-core = { path = "../core" }
+archifier-metamodel = { path = "../metamodel" }
+serde.workspace = true
+serde_json.workspace = true
+time.workspace = true
+thiserror.workspace = true
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasm-bindgen = "0.2"
+wasm-bindgen-futures = "0.4"
+js-sys = "0.3"
+web-sys = { version = "0.3", features = ["Window", "Storage", "Event", "IdbFactory", "IdbDatabase", "IdbTransaction", "IdbTransactionMode", "IdbObjectStore", "IdbRequest", "IdbOpenDbRequest"] }
+
+

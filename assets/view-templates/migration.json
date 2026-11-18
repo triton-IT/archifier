@@ -1,0 +1,74 @@
+{
+  "schema": 1,
+  "template_version": "1.0.0",
+  "id": "migration",
+  "intent": "MIGRATION",
+  "title_key": "template.migration.title",
+  "summary_key": "template.migration.summary",
+  "notation": "ARCHIMATE",
+  "scope": { "kind": "DOMAIN" },
+  "grid": { "size": 8, "snap": true },
+  "layers": [
+    { "id": "business", "label_key": "layer.business", "y": 0, "h": 180, "tone": "business" },
+    { "id": "application", "label_key": "layer.application", "y": 196, "h": 260, "tone": "application" },
+    { "id": "technology", "label_key": "layer.technology", "y": 472, "h": 200, "tone": "technology" },
+    { "id": "implementation", "label_key": "layer.implementation", "y": 688, "h": 220, "tone": "implementation" }
+  ],
+  "zones": [
+    {
+      "id": "z1",
+      "kind": "DOMAIN",
+      "label_key": "template.zone.target_domain",
+      "x": 48,
+      "y": 212,
+      "w": 640,
+      "h": 228,
+      "layer_id": "application",
+      "boundary": true,
+      "tone": "domain-2"
+    }
+  ],
+  "framing": { "zoom": 0.8, "x": 0, "y": 0, "focus": [], "dim_others": false },
+  "drafts": [
+    {
+      "id": "d1",
+      "label_key": "template.migration.draft.component_v1",
+      "shape": "RECT",
+      "x": 96,
+      "y": 248,
+      "w": 176,
+      "h": 72,
+      "suggested_metaclass": "ApplicationComponent",
+      "status": "SKETCH",
+      "layer_id": "application",
+      "zone_id": "z1"
+    },
+    {
+      "id": "d2",
+      "label_key": "template.migration.draft.component_v2",
+      "shape": "RECT",
+      "x": 352,
+      "y": 248,
+      "w": 176,
+      "h": 72,
+      "suggested_metaclass": "ApplicationComponent",
+      "status": "SKETCH",
+      "layer_id": "application",
+      "zone_id": "z1"
+    },
+    {
+      "id": "d3",
+      "label_key": "template.migration.draft.work_package",
+      "shape": "RECT",
+      "x": 96,
+      "y": 716,
+      "w": 200,
+      "h": 72,
+      "suggested_metaclass": "WorkPackage",
+      "status": "SKETCH",
+      "layer_id": "implementation",
+      "zone_id": null
+    }
+  ],
+  "example": { "steps": ["place", "rename", "connect", "formalize"] }
+}

@@ -1,0 +1,131 @@
+{
+  "users": [
+    {
+      "id": "u1",
+      "email": "regis@example.org",
+      "display_name": "Régis Ramillien",
+      "initials": "RR"
+    }
+  ],
+  "domains": [
+    {
+      "object": {
+        "id": "01K8ZP4NZ80000000000000001",
+        "object_type": "DOMAIN",
+        "name": "Export invalide",
+        "responsible_domain_id": "01K8ZP4NZ80000000000000001",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-03-01T08:00:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-03-01T08:00:00Z",
+        "updated_by": "u1"
+      },
+      "slug": "invalide",
+      "description": "Diagramme dont une coordonnée est invalide : l'export doit échouer en EXPORT-002."
+    }
+  ],
+  "elements": [
+    {
+      "object": {
+        "id": "01K8ZP4NZ80000000000000002",
+        "object_type": "MODEL_ELEMENT",
+        "name": "Source",
+        "responsible_domain_id": "01K8ZP4NZ80000000000000001",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-03-01T08:01:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-03-01T08:01:00Z",
+        "updated_by": "u1"
+      },
+      "notation": "ARCHIMATE",
+      "metamodel_version": "archimate:3.2",
+      "metaclass": "ApplicationComponent",
+      "parent_id": null,
+      "semantic_properties": {}
+    },
+    {
+      "object": {
+        "id": "01K8ZP4NZ80000000000000003",
+        "object_type": "MODEL_ELEMENT",
+        "name": "Cible",
+        "responsible_domain_id": "01K8ZP4NZ80000000000000001",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-03-01T08:02:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-03-01T08:02:00Z",
+        "updated_by": "u1"
+      },
+      "notation": "ARCHIMATE",
+      "metamodel_version": "archimate:3.2",
+      "metaclass": "ApplicationComponent",
+      "parent_id": null,
+      "semantic_properties": {}
+    }
+  ],
+  "relationships": [],
+  "interfaces": [],
+  "interface_versions": [],
+  "interface_consumers": [],
+  "diagrams": [
+    {
+      "object": {
+        "id": "01K8ZP4NZ80000000000000004",
+        "object_type": "DIAGRAM",
+        "name": "Vue invalide",
+        "responsible_domain_id": "01K8ZP4NZ80000000000000001",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-03-01T08:03:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-03-01T08:03:00Z",
+        "updated_by": "u1"
+      },
+      "notation": "ARCHIMATE",
+      "description": "Largeur nulle : le SVG ne peut pas être calculé.",
+      "layout": {
+        "schema": 1,
+        "viewport": {
+          "x": 0.0,
+          "y": 0.0,
+          "zoom": 1.0
+        },
+        "nodes": [
+          {
+            "id": "n0",
+            "object_id": "01K8ZP4NZ80000000000000002",
+            "kind": "ELEMENT",
+            "version_id": null,
+            "x": 40.0,
+            "y": 40.0,
+            "w": 180.0,
+            "h": 80.0,
+            "style_override": {}
+          },
+          {
+            "id": "n1",
+            "object_id": "01K8ZP4NZ80000000000000003",
+            "kind": "ELEMENT",
+            "version_id": null,
+            "x": 320.0,
+            "y": 40.0,
+            "w": 0.0,
+            "h": 80.0,
+            "style_override": {}
+          }
+        ],
+        "edges": [],
+        "annotations": []
+      }
+    }
+  ],
+  "stories": [],
+  "reviews": [],
+  "documentation": [],
+  "comments": [],
+  "links": [],
+  "audit": [],
+  "revisions": {}
+}

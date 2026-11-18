@@ -1,0 +1,173 @@
+{
+    "components": {
+        "securitySchemes": {
+            "oauth2": {
+                "flows": {
+                    "clientCredentials": {
+                        "scopes": {
+                            "write:pets": "Modifier les animaux",
+                            "read:pets": "Lire les animaux"
+                        },
+                        "tokenUrl": "https://auth.petstore.example/token"
+                    }
+                },
+                "type": "oauth2"
+            }
+        },
+        "schemas": {
+            "Pet": {
+                "properties": {
+                    "tag": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "format": "int64",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "id",
+                    "name"
+                ],
+                "type": "object"
+            }
+        }
+    },
+    "paths": {
+        "/pets/{petId}": {
+            "delete": {
+                "responses": {
+                    "204": {
+                        "description": "Animal supprim\u00e9"
+                    },
+                    "404": {
+                        "description": "Animal inconnu"
+                    }
+                },
+                "parameters": [
+                    {
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true,
+                        "in": "path",
+                        "name": "petId"
+                    }
+                ],
+                "summary": "Supprimer un animal",
+                "operationId": "deletePet"
+            },
+            "get": {
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Pet"
+                                }
+                            }
+                        },
+                        "description": "Animal trouv\u00e9"
+                    },
+                    "404": {
+                        "description": "Animal inconnu"
+                    }
+                },
+                "parameters": [
+                    {
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true,
+                        "in": "path",
+                        "name": "petId"
+                    }
+                ],
+                "summary": "Lire un animal",
+                "operationId": "getPet"
+            }
+        },
+        "/pets": {
+            "post": {
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Pet"
+                                }
+                            }
+                        },
+                        "description": "Animal cr\u00e9\u00e9"
+                    }
+                },
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Pet"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "summary": "Cr\u00e9er un animal",
+                "operationId": "createPet"
+            },
+            "get": {
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "items": {
+                                        "$ref": "#/components/schemas/Pet"
+                                    },
+                                    "type": "array"
+                                }
+                            }
+                        },
+                        "description": "Liste des animaux"
+                    }
+                },
+                "parameters": [
+                    {
+                        "schema": {
+                            "maximum": 100,
+                            "format": "int32",
+                            "type": "integer"
+                        },
+                        "required": false,
+                        "in": "query",
+                        "name": "limit"
+                    }
+                ],
+                "summary": "Lister les animaux",
+                "operationId": "listPets"
+            }
+        }
+    },
+    "security": [
+        {
+            "oauth2": [
+                "read:pets",
+                "write:pets"
+            ]
+        }
+    ],
+    "servers": [
+        {
+            "description": "Production",
+            "url": "https://api.petstore.example/v1"
+        }
+    ],
+    "info": {
+        "description": "API de d\u00e9monstration pour l'import OpenAPI 3.1.",
+        "version": "1.0.0",
+        "title": "Petstore 3.1"
+    },
+    "openapi": "3.1.0"
+}

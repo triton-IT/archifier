@@ -1,0 +1,416 @@
+{
+  "users": [
+    {
+      "id": "u1",
+      "email": "regis@example.org",
+      "display_name": "Régis Ramillien",
+      "initials": "RR"
+    }
+  ],
+  "domains": [
+    {
+      "object": {
+        "id": "01K8ZP4N000000000000000001",
+        "object_type": "DOMAIN",
+        "name": "Paiements",
+        "responsible_domain_id": "01K8ZP4N000000000000000001",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-01-05T08:00:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-01-05T08:00:00Z",
+        "updated_by": "u1"
+      },
+      "slug": "paiements",
+      "description": "Fournit Payment API et consomme deux interfaces."
+    },
+    {
+      "object": {
+        "id": "01K8ZP4N000000000000000002",
+        "object_type": "DOMAIN",
+        "name": "Commande",
+        "responsible_domain_id": "01K8ZP4N000000000000000002",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-01-06T08:00:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-01-06T08:00:00Z",
+        "updated_by": "u1"
+      },
+      "slug": "commande",
+      "description": "Ne fournit aucune interface et consomme deux interfaces."
+    },
+    {
+      "object": {
+        "id": "01K8ZP4N000000000000000003",
+        "object_type": "DOMAIN",
+        "name": "Externe",
+        "responsible_domain_id": "01K8ZP4N000000000000000003",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-01-07T08:00:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-01-07T08:00:00Z",
+        "updated_by": "u1"
+      },
+      "slug": "externe",
+      "description": "Fournit deux interfaces dont une est expirée et consommée."
+    },
+    {
+      "object": {
+        "id": "01K8ZP4N000000000000000004",
+        "object_type": "DOMAIN",
+        "name": "Partenaire",
+        "responsible_domain_id": "01K8ZP4N000000000000000004",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-01-08T08:00:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-01-08T08:00:00Z",
+        "updated_by": "u1"
+      },
+      "slug": "partenaire",
+      "description": "Fournit Zebra API, active et consommée par Paiements."
+    }
+  ],
+  "elements": [],
+  "relationships": [],
+  "interfaces": [
+    {
+      "object": {
+        "id": "01K8ZP4N000000000000000010",
+        "object_type": "INTERFACE",
+        "name": "Payment API",
+        "responsible_domain_id": "01K8ZP4N000000000000000001",
+        "lifecycle": "ACTIVE",
+        "revision": 2,
+        "created_at": "2026-01-10T09:00:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-02-01T09:00:00Z",
+        "updated_by": "u1"
+      },
+      "logical_interface_key": "payment-api",
+      "category": "APPLICATION",
+      "provider_domain_id": "01K8ZP4N000000000000000001",
+      "contract_type": "NONE",
+      "notation_bindings": []
+    },
+    {
+      "object": {
+        "id": "01K8ZP4N000000000000000011",
+        "object_type": "INTERFACE",
+        "name": "Refund API",
+        "responsible_domain_id": "01K8ZP4N000000000000000003",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-01-11T09:00:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-01-11T09:00:00Z",
+        "updated_by": "u1"
+      },
+      "logical_interface_key": "refund-api",
+      "category": "APPLICATION",
+      "provider_domain_id": "01K8ZP4N000000000000000003",
+      "contract_type": "NONE",
+      "notation_bindings": []
+    },
+    {
+      "object": {
+        "id": "01K8ZP4N000000000000000012",
+        "object_type": "INTERFACE",
+        "name": "Legacy API",
+        "responsible_domain_id": "01K8ZP4N000000000000000003",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-01-12T09:00:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-01-12T09:00:00Z",
+        "updated_by": "u1"
+      },
+      "logical_interface_key": "legacy-api",
+      "category": "APPLICATION",
+      "provider_domain_id": "01K8ZP4N000000000000000003",
+      "contract_type": "NONE",
+      "notation_bindings": []
+    },
+    {
+      "object": {
+        "id": "01K8ZP4N000000000000000013",
+        "object_type": "INTERFACE",
+        "name": "Zebra API",
+        "responsible_domain_id": "01K8ZP4N000000000000000004",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-01-13T09:00:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-01-13T09:00:00Z",
+        "updated_by": "u1"
+      },
+      "logical_interface_key": "zebra-api",
+      "category": "APPLICATION",
+      "provider_domain_id": "01K8ZP4N000000000000000004",
+      "contract_type": "NONE",
+      "notation_bindings": []
+    },
+    {
+      "object": {
+        "id": "01K8ZP4N000000000000000014",
+        "object_type": "INTERFACE",
+        "name": "Shared API",
+        "responsible_domain_id": "01K8ZP4N000000000000000003",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-01-14T09:00:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-01-14T09:00:00Z",
+        "updated_by": "u1"
+      },
+      "logical_interface_key": "shared-api",
+      "category": "APPLICATION",
+      "provider_domain_id": "01K8ZP4N000000000000000003",
+      "contract_type": "NONE",
+      "notation_bindings": []
+    }
+  ],
+  "interface_versions": [
+    {
+      "id": "01K8ZP4N000000000000000020",
+      "interface_id": "01K8ZP4N000000000000000010",
+      "semantic_version": "1.0.0",
+      "revision": 1,
+      "publication_status": "PUBLISHED",
+      "created_at": "2026-01-10T09:05:00Z",
+      "created_by": "u1",
+      "published_at": "2026-01-10T09:05:00Z",
+      "available_from": "2026-01-10T09:05:00Z",
+      "available_until": "2027-12-31T00:00:00Z",
+      "breaking_change": false,
+      "supersedes_version_id": null,
+      "contract_snapshot": {},
+      "contract_format": null,
+      "contract_raw": null,
+      "contract_hash": null
+    },
+    {
+      "id": "01K8ZP4N000000000000000021",
+      "interface_id": "01K8ZP4N000000000000000011",
+      "semantic_version": "1.0.0",
+      "revision": 1,
+      "publication_status": "PUBLISHED",
+      "created_at": "2026-01-11T09:05:00Z",
+      "created_by": "u1",
+      "published_at": "2026-01-11T09:05:00Z",
+      "available_from": "2026-01-11T09:05:00Z",
+      "available_until": "2026-03-01T00:00:00Z",
+      "breaking_change": false,
+      "supersedes_version_id": null,
+      "contract_snapshot": {},
+      "contract_format": null,
+      "contract_raw": null,
+      "contract_hash": null
+    },
+    {
+      "id": "01K8ZP4N000000000000000022",
+      "interface_id": "01K8ZP4N000000000000000012",
+      "semantic_version": "1.0.0",
+      "revision": 1,
+      "publication_status": "PUBLISHED",
+      "created_at": "2026-01-12T09:05:00Z",
+      "created_by": "u1",
+      "published_at": "2026-01-12T09:05:00Z",
+      "available_from": "2026-01-12T09:05:00Z",
+      "available_until": "2026-02-01T00:00:00Z",
+      "breaking_change": false,
+      "supersedes_version_id": null,
+      "contract_snapshot": {},
+      "contract_format": null,
+      "contract_raw": null,
+      "contract_hash": null
+    },
+    {
+      "id": "01K8ZP4N000000000000000023",
+      "interface_id": "01K8ZP4N000000000000000013",
+      "semantic_version": "1.0.0",
+      "revision": 1,
+      "publication_status": "PUBLISHED",
+      "created_at": "2026-01-13T09:05:00Z",
+      "created_by": "u1",
+      "published_at": "2026-01-13T09:05:00Z",
+      "available_from": "2026-01-13T09:05:00Z",
+      "available_until": "2027-12-31T00:00:00Z",
+      "breaking_change": false,
+      "supersedes_version_id": null,
+      "contract_snapshot": {},
+      "contract_format": null,
+      "contract_raw": null,
+      "contract_hash": null
+    },
+    {
+      "id": "01K8ZP4N000000000000000024",
+      "interface_id": "01K8ZP4N000000000000000014",
+      "semantic_version": "1.0.0",
+      "revision": 1,
+      "publication_status": "PUBLISHED",
+      "created_at": "2026-01-14T09:05:00Z",
+      "created_by": "u1",
+      "published_at": "2026-01-14T09:05:00Z",
+      "available_from": "2026-01-14T09:05:00Z",
+      "available_until": "2026-03-01T00:00:00Z",
+      "breaking_change": false,
+      "supersedes_version_id": null,
+      "contract_snapshot": {},
+      "contract_format": null,
+      "contract_raw": null,
+      "contract_hash": null
+    },
+    {
+      "id": "01K8ZP4N000000000000000025",
+      "interface_id": "01K8ZP4N000000000000000014",
+      "semantic_version": "2.0.0",
+      "revision": 1,
+      "publication_status": "PUBLISHED",
+      "created_at": "2026-03-15T09:05:00Z",
+      "created_by": "u1",
+      "published_at": "2026-03-15T09:05:00Z",
+      "available_from": "2026-03-15T09:05:00Z",
+      "available_until": "2026-05-01T00:00:00Z",
+      "breaking_change": false,
+      "supersedes_version_id": "01K8ZP4N000000000000000024",
+      "contract_snapshot": {},
+      "contract_format": null,
+      "contract_raw": null,
+      "contract_hash": null
+    }
+  ],
+  "interface_consumers": [
+    {
+      "id": "01K8ZP4N000000000000000030",
+      "interface_version_id": "01K8ZP4N000000000000000021",
+      "consumer_object_id": "01K8ZP4N000000000000000001",
+      "consumer_domain_id": "01K8ZP4N000000000000000001",
+      "declared_at": "2026-01-15T09:00:00Z",
+      "declared_by": "u1"
+    },
+    {
+      "id": "01K8ZP4N000000000000000031",
+      "interface_version_id": "01K8ZP4N000000000000000023",
+      "consumer_object_id": "01K8ZP4N000000000000000001",
+      "consumer_domain_id": "01K8ZP4N000000000000000001",
+      "declared_at": "2026-01-16T09:00:00Z",
+      "declared_by": "u1"
+    },
+    {
+      "id": "01K8ZP4N000000000000000032",
+      "interface_version_id": "01K8ZP4N000000000000000022",
+      "consumer_object_id": "01K8ZP4N000000000000000002",
+      "consumer_domain_id": "01K8ZP4N000000000000000002",
+      "declared_at": "2026-01-17T09:00:00Z",
+      "declared_by": "u1"
+    },
+    {
+      "id": "01K8ZP4N000000000000000033",
+      "interface_version_id": "01K8ZP4N000000000000000020",
+      "consumer_object_id": "01K8ZP4N000000000000000002",
+      "consumer_domain_id": "01K8ZP4N000000000000000002",
+      "declared_at": "2026-01-18T09:00:00Z",
+      "declared_by": "u1"
+    },
+    {
+      "id": "01K8ZP4N000000000000000034",
+      "interface_version_id": "01K8ZP4N000000000000000024",
+      "consumer_object_id": "01K8ZP4N000000000000000001",
+      "consumer_domain_id": "01K8ZP4N000000000000000001",
+      "declared_at": "2026-01-19T09:00:00Z",
+      "declared_by": "u1"
+    },
+    {
+      "id": "01K8ZP4N000000000000000035",
+      "interface_version_id": "01K8ZP4N000000000000000025",
+      "consumer_object_id": "01K8ZP4N000000000000000002",
+      "consumer_domain_id": "01K8ZP4N000000000000000002",
+      "declared_at": "2026-01-19T10:00:00Z",
+      "declared_by": "u1"
+    }
+  ],
+  "diagrams": [],
+  "stories": [],
+  "reviews": [
+    {
+      "object": {
+        "id": "01K8ZP4N000000000000000040",
+        "object_type": "REVIEW",
+        "name": "Revue Paiements T1",
+        "responsible_domain_id": "01K8ZP4N000000000000000001",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-01-20T09:00:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-01-20T09:00:00Z",
+        "updated_by": "u1"
+      },
+      "domain_id": "01K8ZP4N000000000000000001",
+      "filter_snapshot": {
+        "view": "EXPOSED",
+        "category": "APPLICATION",
+        "status": "ACTIVE"
+      },
+      "temporal_window_start": "2026-01-01T00:00:00Z",
+      "temporal_window_end": "2026-06-30T00:00:00Z",
+      "status": "OPEN",
+      "markdown_summary": "Périmètre exposé du domaine Paiements."
+    },
+    {
+      "object": {
+        "id": "01K8ZP4N000000000000000041",
+        "object_type": "REVIEW",
+        "name": "Revue Commande T2",
+        "responsible_domain_id": "01K8ZP4N000000000000000002",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-07-01T09:00:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-07-01T09:00:00Z",
+        "updated_by": "u1"
+      },
+      "domain_id": "01K8ZP4N000000000000000002",
+      "filter_snapshot": {
+        "view": "CONSUMED",
+        "category": "APPLICATION",
+        "status": "EXPIRED"
+      },
+      "temporal_window_start": "2026-07-01T00:00:00Z",
+      "temporal_window_end": null,
+      "status": "OPEN",
+      "markdown_summary": "Périmètre consommé du domaine Commande, sans borne de fin."
+    },
+    {
+      "object": {
+        "id": "01K8ZP4N000000000000000042",
+        "object_type": "REVIEW",
+        "name": "Revue Paiements T3",
+        "responsible_domain_id": "01K8ZP4N000000000000000001",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-05-01T09:00:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-05-01T09:00:00Z",
+        "updated_by": "u1"
+      },
+      "domain_id": "01K8ZP4N000000000000000001",
+      "filter_snapshot": {
+        "view": "CONSUMED",
+        "category": "TECHNICAL",
+        "status": "ACTIVE"
+      },
+      "temporal_window_start": null,
+      "temporal_window_end": "2026-09-30T00:00:00Z",
+      "status": "OPEN",
+      "markdown_summary": "Même domaine que la revue T1, fenêtre à fin seule et filtre différent."
+    }
+  ],
+  "documentation": [],
+  "comments": [],
+  "links": [],
+  "audit": [],
+  "revisions": {}
+}

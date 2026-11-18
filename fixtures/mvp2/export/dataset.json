@@ -1,0 +1,636 @@
+{
+  "users": [
+    {
+      "id": "u1",
+      "email": "regis@example.org",
+      "display_name": "Régis Ramillien",
+      "initials": "RR"
+    }
+  ],
+  "domains": [
+    {
+      "object": {
+        "id": "01K8ZP4N000000000000000001",
+        "object_type": "DOMAIN",
+        "name": "Paiements",
+        "responsible_domain_id": "01K8ZP4N000000000000000001",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-01-05T08:00:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-01-05T08:00:00Z",
+        "updated_by": "u1"
+      },
+      "slug": "paiements",
+      "description": "Domaine de référence pour l'export Markdown et le graphe de dépendances."
+    },
+    {
+      "object": {
+        "id": "01K8ZP4N00000000000000000W",
+        "object_type": "DOMAIN",
+        "name": "Vide",
+        "responsible_domain_id": "01K8ZP4N00000000000000000W",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-01-06T08:00:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-01-06T08:00:00Z",
+        "updated_by": "u1"
+      },
+      "slug": "vide",
+      "description": "Domaine sans aucun objet : l'export doit produire un index valide."
+    }
+  ],
+  "elements": [
+    {
+      "object": {
+        "id": "01K8ZP4N000000000000000002",
+        "object_type": "MODEL_ELEMENT",
+        "name": "Order Service v2",
+        "responsible_domain_id": "01K8ZP4N000000000000000001",
+        "lifecycle": "ACTIVE",
+        "revision": 2,
+        "created_at": "2026-01-12T09:00:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-02-03T10:30:00Z",
+        "updated_by": "u1"
+      },
+      "notation": "ARCHIMATE",
+      "metamodel_version": "archimate:3.2",
+      "metaclass": "ApplicationComponent",
+      "parent_id": null,
+      "semantic_properties": {
+        "owner": "Marie",
+        "criticality": "HIGH",
+        "tier": "1"
+      }
+    },
+    {
+      "object": {
+        "id": "01K8ZP4N000000000000000003",
+        "object_type": "MODEL_ELEMENT",
+        "name": "Pricing Service",
+        "responsible_domain_id": "01K8ZP4N000000000000000001",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-01-12T09:05:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-01-12T09:05:00Z",
+        "updated_by": "u1"
+      },
+      "notation": "ARCHIMATE",
+      "metamodel_version": "archimate:3.2",
+      "metaclass": "ApplicationService",
+      "parent_id": null,
+      "semantic_properties": {
+        "owner": "Régis",
+        "criticality": "MEDIUM"
+      }
+    },
+    {
+      "object": {
+        "id": "01K8ZP4N000000000000000004",
+        "object_type": "MODEL_ELEMENT",
+        "name": "Tarification",
+        "responsible_domain_id": "01K8ZP4N000000000000000001",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-01-12T09:06:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-01-12T09:06:00Z",
+        "updated_by": "u1"
+      },
+      "notation": "ARCHIMATE",
+      "metamodel_version": "archimate:3.2",
+      "metaclass": "ApplicationComponent",
+      "parent_id": null,
+      "semantic_properties": {}
+    },
+    {
+      "object": {
+        "id": "01K8ZP4N000000000000000005",
+        "object_type": "MODEL_ELEMENT",
+        "name": "Grille tarifaire",
+        "responsible_domain_id": "01K8ZP4N000000000000000001",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-01-12T09:07:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-01-12T09:07:00Z",
+        "updated_by": "u1"
+      },
+      "notation": "ARCHIMATE",
+      "metamodel_version": "archimate:3.2",
+      "metaclass": "ApplicationComponent",
+      "parent_id": null,
+      "semantic_properties": {}
+    },
+    {
+      "object": {
+        "id": "01K8ZP4N000000000000000006",
+        "object_type": "MODEL_ELEMENT",
+        "name": "Référentiel prix",
+        "responsible_domain_id": "01K8ZP4N000000000000000001",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-01-12T09:08:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-01-12T09:08:00Z",
+        "updated_by": "u1"
+      },
+      "notation": "ARCHIMATE",
+      "metamodel_version": "archimate:3.2",
+      "metaclass": "DataObject",
+      "parent_id": null,
+      "semantic_properties": {}
+    },
+    {
+      "object": {
+        "id": "01K8ZP4N000000000000000007",
+        "object_type": "MODEL_ELEMENT",
+        "name": "Réplication prix",
+        "responsible_domain_id": "01K8ZP4N000000000000000001",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-01-12T09:09:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-01-12T09:09:00Z",
+        "updated_by": "u1"
+      },
+      "notation": "ARCHIMATE",
+      "metamodel_version": "archimate:3.2",
+      "metaclass": "ApplicationComponent",
+      "parent_id": null,
+      "semantic_properties": {}
+    },
+    {
+      "object": {
+        "id": "01K8ZP4N000000000000000008",
+        "object_type": "MODEL_ELEMENT",
+        "name": "Journal prix",
+        "responsible_domain_id": "01K8ZP4N000000000000000001",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-01-12T09:10:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-01-12T09:10:00Z",
+        "updated_by": "u1"
+      },
+      "notation": "ARCHIMATE",
+      "metamodel_version": "archimate:3.2",
+      "metaclass": "ApplicationComponent",
+      "parent_id": null,
+      "semantic_properties": {}
+    },
+    {
+      "object": {
+        "id": "01K8ZP4N000000000000000009",
+        "object_type": "MODEL_ELEMENT",
+        "name": "Archive prix",
+        "responsible_domain_id": "01K8ZP4N000000000000000001",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-01-12T09:11:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-01-12T09:11:00Z",
+        "updated_by": "u1"
+      },
+      "notation": "ARCHIMATE",
+      "metamodel_version": "archimate:3.2",
+      "metaclass": "DataObject",
+      "parent_id": null,
+      "semantic_properties": {}
+    },
+    {
+      "object": {
+        "id": "01K8ZP4N00000000000000000A",
+        "object_type": "MODEL_ELEMENT",
+        "name": "Purge prix",
+        "responsible_domain_id": "01K8ZP4N000000000000000001",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-01-12T09:12:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-01-12T09:12:00Z",
+        "updated_by": "u1"
+      },
+      "notation": "ARCHIMATE",
+      "metamodel_version": "archimate:3.2",
+      "metaclass": "ApplicationComponent",
+      "parent_id": null,
+      "semantic_properties": {}
+    },
+    {
+      "object": {
+        "id": "01K8ZP4N00000000000000000B",
+        "object_type": "MODEL_ELEMENT",
+        "name": "Legacy Billing",
+        "responsible_domain_id": "01K8ZP4N000000000000000001",
+        "lifecycle": "ARCHIVED",
+        "revision": 2,
+        "created_at": "2026-01-12T09:13:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-01-20T16:00:00Z",
+        "updated_by": "u1"
+      },
+      "notation": "ARCHIMATE",
+      "metamodel_version": "archimate:3.2",
+      "metaclass": "ApplicationComponent",
+      "parent_id": null,
+      "semantic_properties": {
+        "owner": "Ancien système"
+      }
+    },
+    {
+      "object": {
+        "id": "01K8ZP4N00000000000000000X",
+        "object_type": "MODEL_ELEMENT",
+        "name": "Facturation",
+        "responsible_domain_id": "01K8ZP4N000000000000000001",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-01-12T09:14:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-01-12T09:14:00Z",
+        "updated_by": "u1"
+      },
+      "notation": "ARCHIMATE",
+      "metamodel_version": "archimate:3.2",
+      "metaclass": "ApplicationComponent",
+      "parent_id": null,
+      "semantic_properties": {}
+    }
+  ],
+  "relationships": [
+    {
+      "object": {
+        "id": "01K8ZP4N00000000000000000D",
+        "object_type": "RELATIONSHIP",
+        "name": "Order Service v2 → Pricing Service",
+        "responsible_domain_id": "01K8ZP4N000000000000000001",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-01-12T09:20:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-01-12T09:20:00Z",
+        "updated_by": "u1"
+      },
+      "source_id": "01K8ZP4N000000000000000002",
+      "target_id": "01K8ZP4N000000000000000003",
+      "relation_type": "serving",
+      "notation": "ARCHIMATE",
+      "metamodel_version": "archimate:3.2"
+    },
+    {
+      "object": {
+        "id": "01K8ZP4N00000000000000000E",
+        "object_type": "RELATIONSHIP",
+        "name": "Pricing Service → Tarification",
+        "responsible_domain_id": "01K8ZP4N000000000000000001",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-01-12T09:21:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-01-12T09:21:00Z",
+        "updated_by": "u1"
+      },
+      "source_id": "01K8ZP4N000000000000000003",
+      "target_id": "01K8ZP4N000000000000000004",
+      "relation_type": "serving",
+      "notation": "ARCHIMATE",
+      "metamodel_version": "archimate:3.2"
+    },
+    {
+      "object": {
+        "id": "01K8ZP4N00000000000000000F",
+        "object_type": "RELATIONSHIP",
+        "name": "Tarification → Grille tarifaire",
+        "responsible_domain_id": "01K8ZP4N000000000000000001",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-01-12T09:22:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-01-12T09:22:00Z",
+        "updated_by": "u1"
+      },
+      "source_id": "01K8ZP4N000000000000000004",
+      "target_id": "01K8ZP4N000000000000000005",
+      "relation_type": "serving",
+      "notation": "ARCHIMATE",
+      "metamodel_version": "archimate:3.2"
+    },
+    {
+      "object": {
+        "id": "01K8ZP4N00000000000000000G",
+        "object_type": "RELATIONSHIP",
+        "name": "Grille tarifaire → Référentiel prix",
+        "responsible_domain_id": "01K8ZP4N000000000000000001",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-01-12T09:23:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-01-12T09:23:00Z",
+        "updated_by": "u1"
+      },
+      "source_id": "01K8ZP4N000000000000000005",
+      "target_id": "01K8ZP4N000000000000000006",
+      "relation_type": "serving",
+      "notation": "ARCHIMATE",
+      "metamodel_version": "archimate:3.2"
+    },
+    {
+      "object": {
+        "id": "01K8ZP4N00000000000000000H",
+        "object_type": "RELATIONSHIP",
+        "name": "Référentiel prix → Réplication prix",
+        "responsible_domain_id": "01K8ZP4N000000000000000001",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-01-12T09:24:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-01-12T09:24:00Z",
+        "updated_by": "u1"
+      },
+      "source_id": "01K8ZP4N000000000000000006",
+      "target_id": "01K8ZP4N000000000000000007",
+      "relation_type": "serving",
+      "notation": "ARCHIMATE",
+      "metamodel_version": "archimate:3.2"
+    },
+    {
+      "object": {
+        "id": "01K8ZP4N00000000000000000J",
+        "object_type": "RELATIONSHIP",
+        "name": "Réplication prix → Journal prix",
+        "responsible_domain_id": "01K8ZP4N000000000000000001",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-01-12T09:25:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-01-12T09:25:00Z",
+        "updated_by": "u1"
+      },
+      "source_id": "01K8ZP4N000000000000000007",
+      "target_id": "01K8ZP4N000000000000000008",
+      "relation_type": "serving",
+      "notation": "ARCHIMATE",
+      "metamodel_version": "archimate:3.2"
+    },
+    {
+      "object": {
+        "id": "01K8ZP4N00000000000000000K",
+        "object_type": "RELATIONSHIP",
+        "name": "Journal prix → Archive prix",
+        "responsible_domain_id": "01K8ZP4N000000000000000001",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-01-12T09:26:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-01-12T09:26:00Z",
+        "updated_by": "u1"
+      },
+      "source_id": "01K8ZP4N000000000000000008",
+      "target_id": "01K8ZP4N000000000000000009",
+      "relation_type": "serving",
+      "notation": "ARCHIMATE",
+      "metamodel_version": "archimate:3.2"
+    },
+    {
+      "object": {
+        "id": "01K8ZP4N00000000000000000M",
+        "object_type": "RELATIONSHIP",
+        "name": "Archive prix → Purge prix",
+        "responsible_domain_id": "01K8ZP4N000000000000000001",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-01-12T09:27:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-01-12T09:27:00Z",
+        "updated_by": "u1"
+      },
+      "source_id": "01K8ZP4N000000000000000009",
+      "target_id": "01K8ZP4N00000000000000000A",
+      "relation_type": "serving",
+      "notation": "ARCHIMATE",
+      "metamodel_version": "archimate:3.2"
+    },
+    {
+      "object": {
+        "id": "01K8ZP4N00000000000000000Y",
+        "object_type": "RELATIONSHIP",
+        "name": "Facturation → Legacy Billing",
+        "responsible_domain_id": "01K8ZP4N000000000000000001",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-01-12T09:28:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-01-12T09:28:00Z",
+        "updated_by": "u1"
+      },
+      "source_id": "01K8ZP4N00000000000000000X",
+      "target_id": "01K8ZP4N00000000000000000B",
+      "relation_type": "serving",
+      "notation": "ARCHIMATE",
+      "metamodel_version": "archimate:3.2"
+    }
+  ],
+  "interfaces": [],
+  "interface_versions": [],
+  "interface_consumers": [],
+  "diagrams": [
+    {
+      "object": {
+        "id": "01K8ZP4N00000000000000000N",
+        "object_type": "DIAGRAM",
+        "name": "Vue Paiements",
+        "responsible_domain_id": "01K8ZP4N000000000000000001",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-02-10T09:00:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-02-10T09:00:00Z",
+        "updated_by": "u1"
+      },
+      "notation": "ARCHIMATE",
+      "description": "Deux services et la relation qui les unit.",
+      "layout": {
+        "schema": 1,
+        "viewport": {
+          "x": 0.0,
+          "y": 0.0,
+          "zoom": 1.0
+        },
+        "nodes": [
+          {
+            "id": "n-order",
+            "object_id": "01K8ZP4N000000000000000002",
+            "kind": "ELEMENT",
+            "version_id": null,
+            "x": 40.0,
+            "y": 40.0,
+            "w": 180.0,
+            "h": 80.0,
+            "style_override": {}
+          },
+          {
+            "id": "n-pricing",
+            "object_id": "01K8ZP4N000000000000000003",
+            "kind": "ELEMENT",
+            "version_id": null,
+            "x": 320.0,
+            "y": 40.0,
+            "w": 180.0,
+            "h": 80.0,
+            "style_override": {}
+          }
+        ],
+        "edges": [
+          {
+            "id": "e-order-pricing",
+            "relationship_id": "01K8ZP4N00000000000000000D",
+            "waypoints": [],
+            "label_visible": true
+          }
+        ],
+        "annotations": []
+      }
+    }
+  ],
+  "stories": [
+    {
+      "object": {
+        "id": "01K8ZP4N00000000000000000P",
+        "object_type": "STORY",
+        "name": "Récit de la commande",
+        "responsible_domain_id": "01K8ZP4N000000000000000001",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-02-11T09:00:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-02-11T09:00:00Z",
+        "updated_by": "u1"
+      },
+      "structure": {
+        "chapters": [
+          {
+            "id": "ch-1",
+            "title": "Parcours de commande",
+            "blocks": [
+              {
+                "kind": "MARKDOWN",
+                "id": "b-1",
+                "markdown": "Le parcours part de arch://element/01K8ZP4N000000000000000002 puis descend vers Pricing Service."
+              },
+              {
+                "kind": "DIAGRAM",
+                "id": "b-2",
+                "diagram_id": "01K8ZP4N00000000000000000N",
+                "framing": {
+                  "zoom": 1.0,
+                  "focus_element_ids": [],
+                  "dimmed_element_ids": [],
+                  "caption": "Vue Paiements"
+                }
+              },
+              {
+                "kind": "ELEMENT",
+                "id": "b-3",
+                "element_id": "01K8ZP4N000000000000000002",
+                "highlight": true
+              }
+            ]
+          }
+        ],
+        "pinned_revisions": {}
+      }
+    }
+  ],
+  "reviews": [],
+  "documentation": [
+    {
+      "id": "01K8ZP4N00000000000000000Q",
+      "owner_object_id": "01K8ZP4N000000000000000002",
+      "markdown": "# Order Service v2\n\nLe service de commande expose le passage de commande.\n\n- Consomme [Pricing Service](arch://element/01K8ZP4N000000000000000003) pour le calcul du tarif.\n- [Lien cassé volontaire](arch://element/01K8ZP4N00000000000000000C) : la cible n'existe pas dans le référentiel ; cette ligne est volontairement longue afin de vérifier que le contexte du diagnostic est bien tronqué à cent soixante caractères et jamais au-delà, tout en gardant l'URI visible au début de l'extrait.\n- Deuxième mention du même [lien cassé](arch://element/01K8ZP4N00000000000000000C) dans une autre ligne : le diagnostic ne doit apparaître qu'une fois.\n- Ancien service de facturation, désormais [archivé](arch://element/01K8ZP4N00000000000000000B).\n",
+      "revision": 1,
+      "created_at": "2026-02-03T10:31:00Z",
+      "created_by": "u1"
+    }
+  ],
+  "comments": [],
+  "links": [
+    {
+      "id": "01K8ZP4N00000000000000000R",
+      "source_object_id": "01K8ZP4N000000000000000002",
+      "target_uri": "arch://element/01K8ZP4N000000000000000003",
+      "target_object_id": "01K8ZP4N000000000000000003",
+      "link_type": "REFERENCE",
+      "status": "OK"
+    },
+    {
+      "id": "01K8ZP4N00000000000000000S",
+      "source_object_id": "01K8ZP4N000000000000000002",
+      "target_uri": "arch://element/01K8ZP4N00000000000000000C",
+      "target_object_id": null,
+      "link_type": "REFERENCE",
+      "status": "BROKEN"
+    },
+    {
+      "id": "01K8ZP4N00000000000000000T",
+      "source_object_id": "01K8ZP4N000000000000000002",
+      "target_uri": "arch://element/01K8ZP4N00000000000000000B",
+      "target_object_id": "01K8ZP4N00000000000000000B",
+      "link_type": "REFERENCE",
+      "status": "OK"
+    }
+  ],
+  "audit": [],
+  "revisions": {
+    "01K8ZP4N000000000000000002": {
+      "1": {
+        "object": {
+          "id": "01K8ZP4N000000000000000002",
+          "object_type": "MODEL_ELEMENT",
+          "name": "Order Service",
+          "responsible_domain_id": "01K8ZP4N000000000000000001",
+          "lifecycle": "ACTIVE",
+          "revision": 1,
+          "created_at": "2026-01-12T09:00:00Z",
+          "created_by": "u1",
+          "updated_at": "2026-01-12T09:00:00Z",
+          "updated_by": "u1"
+        },
+        "notation": "ARCHIMATE",
+        "metamodel_version": "archimate:3.2",
+        "metaclass": "ApplicationComponent",
+        "parent_id": null,
+        "semantic_properties": {
+          "owner": "Régis",
+          "criticality": "HIGH"
+        }
+      },
+      "2": {
+        "object": {
+          "id": "01K8ZP4N000000000000000002",
+          "object_type": "MODEL_ELEMENT",
+          "name": "Order Service v2",
+          "responsible_domain_id": "01K8ZP4N000000000000000001",
+          "lifecycle": "ACTIVE",
+          "revision": 2,
+          "created_at": "2026-01-12T09:00:00Z",
+          "created_by": "u1",
+          "updated_at": "2026-02-03T10:30:00Z",
+          "updated_by": "u1"
+        },
+        "notation": "ARCHIMATE",
+        "metamodel_version": "archimate:3.2",
+        "metaclass": "ApplicationComponent",
+        "parent_id": null,
+        "semantic_properties": {
+          "owner": "Marie",
+          "criticality": "HIGH",
+          "tier": "1"
+        }
+      }
+    }
+  }
+}

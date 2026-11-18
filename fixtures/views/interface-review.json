@@ -1,0 +1,224 @@
+{
+  "fixture_version": 1,
+  "name": "interface-review-payment-api",
+  "domain": {
+    "id": "01J00000000000000000000001",
+    "name": "Paiements"
+  },
+  "diagram": {
+    "id": "01J00000000000000000000002",
+    "title": "Payment API : v1 et v2 en transition",
+    "notation": "ARCHIMATE"
+  },
+  "layout": {
+    "schema": 2,
+    "intent": "INTERFACE_REVIEW",
+    "scope": {
+      "kind": "DOMAIN",
+      "domain_id": "01J00000000000000000000001"
+    },
+    "notation": "ARCHIMATE",
+    "temporal_cursor": null,
+    "viewport": {
+      "x": 0,
+      "y": 0,
+      "zoom": 0.9
+    },
+    "grid": {
+      "size": 8,
+      "snap": true
+    },
+    "layers": [
+      {
+        "id": "business",
+        "label": "Métier",
+        "y": 0,
+        "h": 220,
+        "collapsed": false,
+        "tone": "business"
+      },
+      {
+        "id": "application",
+        "label": "Applicatif",
+        "y": 236,
+        "h": 320,
+        "collapsed": false,
+        "tone": "application"
+      }
+    ],
+    "zones": [
+      {
+        "id": "z1",
+        "kind": "DOMAIN",
+        "domain_id": "01J00000000000000000000001",
+        "label": "Paiements — fournisseur",
+        "x": 48,
+        "y": 252,
+        "w": 320,
+        "h": 280,
+        "layer_id": "application",
+        "boundary": true,
+        "collapsed": false,
+        "tone": "domain-1"
+      },
+      {
+        "id": "z2",
+        "kind": "DOMAIN",
+        "domain_id": "01J00000000000000000000003",
+        "label": "Commande — consommateur",
+        "x": 448,
+        "y": 252,
+        "w": 340,
+        "h": 280,
+        "layer_id": "application",
+        "boundary": true,
+        "collapsed": false,
+        "tone": "domain-3"
+      }
+    ],
+    "framing": {
+      "zoom": 0.9,
+      "x": 0,
+      "y": 0,
+      "focus": [],
+      "dim_others": false,
+      "caption": null
+    },
+    "nodes": [
+      {
+        "id": "n-actor",
+        "object_id": "01J0000000000000000000004E",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 88,
+        "y": 64,
+        "w": 176,
+        "h": 72,
+        "layer_id": "business",
+        "zone_id": null,
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-business-service",
+        "object_id": "01J0000000000000000000004F",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 296,
+        "y": 64,
+        "w": 176,
+        "h": 72,
+        "layer_id": "business",
+        "zone_id": null,
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-provider",
+        "object_id": "01J0000000000000000000004G",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 88,
+        "y": 300,
+        "w": 176,
+        "h": 72,
+        "layer_id": "application",
+        "zone_id": "z1",
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-port",
+        "object_id": "01J0000000000000000000004H",
+        "kind": "INTERFACE",
+        "version_id": "01J000000000000000000008S9",
+        "x": 356,
+        "y": 372,
+        "w": 24,
+        "h": 24,
+        "layer_id": "application",
+        "zone_id": "z1",
+        "collapsed": false,
+        "port": {
+          "zone_id": "z1",
+          "side": "EAST",
+          "offset": 0.47
+        },
+        "style_override": {}
+      },
+      {
+        "id": "n-consumer-1",
+        "object_id": "01J0000000000000000000004J",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 480,
+        "y": 300,
+        "w": 176,
+        "h": 72,
+        "layer_id": "application",
+        "zone_id": "z2",
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-consumer-2",
+        "object_id": "01J0000000000000000000004K",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 480,
+        "y": 396,
+        "w": 176,
+        "h": 72,
+        "layer_id": "application",
+        "zone_id": "z2",
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-consumer-1-port",
+        "relationship_id": "01J000000000000000000004WV",
+        "kind": "RELATIONSHIP",
+        "waypoints": [],
+        "label_visible": true,
+        "routing": "ORTHOGONAL",
+        "layer_id": null
+      },
+      {
+        "id": "e-consumer-2-port",
+        "relationship_id": "01J000000000000000000004WW",
+        "kind": "RELATIONSHIP",
+        "waypoints": [],
+        "label_visible": true,
+        "routing": "ORTHOGONAL",
+        "layer_id": null
+      },
+      {
+        "id": "e-actor-service",
+        "relationship_id": "01J000000000000000000004WX",
+        "kind": "RELATIONSHIP",
+        "waypoints": [],
+        "label_visible": true,
+        "routing": "ORTHOGONAL",
+        "layer_id": null
+      },
+      {
+        "id": "e-service-provider",
+        "relationship_id": "01J000000000000000000004WY",
+        "kind": "RELATIONSHIP",
+        "waypoints": [],
+        "label_visible": true,
+        "routing": "ORTHOGONAL",
+        "layer_id": null
+      }
+    ],
+    "drafts": [],
+    "annotations": []
+  }
+}

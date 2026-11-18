@@ -1,0 +1,73 @@
+﻿# Profil BPMN 2.0.2 Core Modeling Subset (MVP1).
+# Chorégraphies, conversations, transactions complexes et sémantique d'exécution : hors périmètre.
+
+[profile]
+id = "bpmn:2.0.2-core"
+notation = "BPMN"
+language = "BPMN"
+version = "2.0.2"
+target_family = "BPMN 2.0"
+status = "SUBSET"
+reference = "OMG BPMN 2.0.2"
+common_properties = ["owner", "tags"]
+
+layers = [
+  { id = "process", label = "Processus", order = 1 },
+  { id = "flow", label = "Flux", order = 2 },
+  { id = "data", label = "Données", order = 3 },
+  { id = "annotation", label = "Annotation", order = 4 },
+]
+
+elements = [
+  { id = "process", metaclass = "Process", layer = "process", label = "Processus", glyph = "process" },
+  { id = "participant", metaclass = "Participant", layer = "process", label = "Participant / Pool", glyph = "pool" },
+  { id = "lane", metaclass = "Lane", layer = "process", label = "Couloir", glyph = "lane" },
+  { id = "sub-process", metaclass = "SubProcess", layer = "process", label = "Sous-processus", glyph = "subprocess" },
+  { id = "call-activity", metaclass = "CallActivity", layer = "process", label = "Activité appelée", glyph = "task" },
+  { id = "task", metaclass = "Task", layer = "process", label = "Tâche", glyph = "task" },
+  { id = "user-task", metaclass = "UserTask", layer = "process", label = "Tâche utilisateur", glyph = "task" },
+  { id = "service-task", metaclass = "ServiceTask", layer = "process", label = "Tâche de service", glyph = "task" },
+  { id = "manual-task", metaclass = "ManualTask", layer = "process", label = "Tâche manuelle", glyph = "task" },
+  { id = "business-rule-task", metaclass = "BusinessRuleTask", layer = "process", label = "Tâche de règle métier", glyph = "task" },
+  { id = "start-event", metaclass = "StartEvent", layer = "flow", label = "Événement de début", glyph = "event-start" },
+  { id = "end-event", metaclass = "EndEvent", layer = "flow", label = "Événement de fin", glyph = "event-end" },
+  { id = "intermediate-catch", metaclass = "IntermediateCatchEvent", layer = "flow", label = "Événement intermédiaire capturé", glyph = "event" },
+  { id = "intermediate-throw", metaclass = "IntermediateThrowEvent", layer = "flow", label = "Événement intermédiaire émis", glyph = "event" },
+  { id = "exclusive-gateway", metaclass = "ExclusiveGateway", layer = "flow", label = "Passerelle exclusive", glyph = "gateway-x" },
+  { id = "parallel-gateway", metaclass = "ParallelGateway", layer = "flow", label = "Passerelle parallèle", glyph = "gateway-plus" },
+  { id = "inclusive-gateway", metaclass = "InclusiveGateway", layer = "flow", label = "Passerelle inclusive", glyph = "gateway-o" },
+  { id = "sequence-flow", metaclass = "SequenceFlow", layer = "flow", label = "Flux de séquence", glyph = "flow" },
+  { id = "message-flow", metaclass = "MessageFlow", layer = "flow", label = "Flux de message", glyph = "flow-dashed" },
+  { id = "association", metaclass = "Association", layer = "annotation", label = "Association", glyph = "link" },
+  { id = "data-object", metaclass = "DataObject", layer = "data", label = "Objet de données", glyph = "object" },
+  { id = "data-store", metaclass = "DataStore", layer = "data", label = "Magasin de données", glyph = "store" },
+  { id = "text-annotation", metaclass = "TextAnnotation", layer = "annotation", label = "Annotation texte", glyph = "note" },
+]
+
+relations = [
+  { id = "sequence-flow", metaclass = "SequenceFlow", label = "Flux de séquence", direction = "DIRECTED", symmetric = false, transitive = true },
+  { id = "message-flow", metaclass = "MessageFlow", label = "Flux de message", direction = "DIRECTED", symmetric = false, transitive = false },
+  { id = "association", metaclass = "Association", label = "Association", direction = "UNDIRECTED", symmetric = true, transitive = false },
+  { id = "data-association", metaclass = "DataAssociation", label = "Association de données", direction = "DIRECTED", symmetric = false, transitive = false },
+]
+
+[[profile.relation_rules]]
+relation = "sequence-flow"
+sources = ["class:task", "class:user-task", "class:service-task", "class:manual-task", "class:business-rule-task", "class:sub-process", "class:call-activity", "class:start-event", "class:end-event", "class:intermediate-catch", "class:intermediate-throw", "class:exclusive-gateway", "class:parallel-gateway", "class:inclusive-gateway"]
+targets = ["class:task", "class:user-task", "class:service-task", "class:manual-task", "class:business-rule-task", "class:sub-process", "class:call-activity", "class:start-event", "class:end-event", "class:intermediate-catch", "class:intermediate-throw", "class:exclusive-gateway", "class:parallel-gateway", "class:inclusive-gateway"]
+
+[[profile.relation_rules]]
+relation = "message-flow"
+sources = ["layer:process"]
+targets = ["layer:process"]
+
+[[profile.relation_rules]]
+relation = "association"
+sources = ["layer:annotation"]
+targets = ["layer:process", "layer:flow", "layer:data"]
+
+[[profile.relation_rules]]
+relation = "data-association"
+sources = ["layer:process", "layer:flow"]
+targets = ["layer:data"]
+

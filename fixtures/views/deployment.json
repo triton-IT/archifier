@@ -1,0 +1,226 @@
+{
+  "fixture_version": 1,
+  "name": "deployment-production",
+  "domain": {
+    "id": "01J00000000000000000000001",
+    "name": "Paiements"
+  },
+  "diagram": {
+    "id": "01J00000000000000000000002",
+    "title": "Production Paiements",
+    "notation": "UML"
+  },
+  "layout": {
+    "schema": 2,
+    "intent": "DEPLOYMENT",
+    "scope": {
+      "kind": "DOMAIN",
+      "domain_id": "01J00000000000000000000001"
+    },
+    "notation": "UML",
+    "temporal_cursor": null,
+    "viewport": {
+      "x": 0,
+      "y": 0,
+      "zoom": 0.9
+    },
+    "grid": {
+      "size": 8,
+      "snap": true
+    },
+    "layers": [
+      {
+        "id": "structure",
+        "label": "Structure",
+        "y": 0,
+        "h": 200,
+        "collapsed": false,
+        "tone": "structure"
+      },
+      {
+        "id": "deployment",
+        "label": "Déploiement",
+        "y": 216,
+        "h": 340,
+        "collapsed": false,
+        "tone": "deployment"
+      }
+    ],
+    "zones": [
+      {
+        "id": "z1",
+        "kind": "GROUP",
+        "domain_id": null,
+        "label": "Production",
+        "x": 48,
+        "y": 232,
+        "w": 360,
+        "h": 300,
+        "layer_id": "deployment",
+        "boundary": false,
+        "collapsed": false,
+        "tone": null
+      },
+      {
+        "id": "z2",
+        "kind": "GROUP",
+        "domain_id": null,
+        "label": "Recette",
+        "x": 432,
+        "y": 232,
+        "w": 360,
+        "h": 300,
+        "layer_id": "deployment",
+        "boundary": false,
+        "collapsed": false,
+        "tone": null
+      }
+    ],
+    "framing": {
+      "zoom": 0.9,
+      "x": 0,
+      "y": 0,
+      "focus": [],
+      "dim_others": false,
+      "caption": null
+    },
+    "nodes": [
+      {
+        "id": "n-component",
+        "object_id": "01J0000000000000000000003T",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 88,
+        "y": 56,
+        "w": 176,
+        "h": 72,
+        "layer_id": "structure",
+        "zone_id": null,
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-artifact",
+        "object_id": "01J0000000000000000000003V",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 296,
+        "y": 56,
+        "w": 176,
+        "h": 72,
+        "layer_id": "structure",
+        "zone_id": null,
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-node-prod",
+        "object_id": "01J0000000000000000000003W",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 88,
+        "y": 280,
+        "w": 176,
+        "h": 72,
+        "layer_id": "deployment",
+        "zone_id": "z1",
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-exec",
+        "object_id": "01J0000000000000000000003X",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 88,
+        "y": 376,
+        "w": 176,
+        "h": 72,
+        "layer_id": "deployment",
+        "zone_id": "z1",
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-device",
+        "object_id": "01J0000000000000000000003Y",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 296,
+        "y": 280,
+        "w": 176,
+        "h": 72,
+        "layer_id": "deployment",
+        "zone_id": "z1",
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-node-recette",
+        "object_id": "01J0000000000000000000003Z",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 472,
+        "y": 280,
+        "w": 176,
+        "h": 72,
+        "layer_id": "deployment",
+        "zone_id": "z2",
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-artifact-recette",
+        "object_id": "01J00000000000000000000040",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 472,
+        "y": 376,
+        "w": 176,
+        "h": 72,
+        "layer_id": "deployment",
+        "zone_id": "z2",
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-component-artifact",
+        "relationship_id": "01J000000000000000000004WJ",
+        "kind": "RELATIONSHIP",
+        "waypoints": [],
+        "label_visible": true,
+        "routing": "ORTHOGONAL",
+        "layer_id": null
+      },
+      {
+        "id": "e-artifact-prod",
+        "relationship_id": "01J000000000000000000004WK",
+        "kind": "RELATIONSHIP",
+        "waypoints": [],
+        "label_visible": true,
+        "routing": "ORTHOGONAL",
+        "layer_id": null
+      },
+      {
+        "id": "e-artifact-recette",
+        "relationship_id": "01J000000000000000000004WM",
+        "kind": "RELATIONSHIP",
+        "waypoints": [],
+        "label_visible": true,
+        "routing": "ORTHOGONAL",
+        "layer_id": null
+      }
+    ],
+    "drafts": [],
+    "annotations": []
+  }
+}

@@ -1,0 +1,190 @@
+{
+  "fixture_version": 1,
+  "name": "capability-paiements",
+  "domain": {
+    "id": "01J00000000000000000000001",
+    "name": "Paiements"
+  },
+  "diagram": {
+    "id": "01J00000000000000000000002",
+    "title": "Capacités de la chaîne Paiements",
+    "notation": "ARCHIMATE"
+  },
+  "layout": {
+    "schema": 2,
+    "intent": "CAPABILITY",
+    "scope": {
+      "kind": "DOMAIN",
+      "domain_id": "01J00000000000000000000001"
+    },
+    "notation": "ARCHIMATE",
+    "temporal_cursor": null,
+    "viewport": {
+      "x": 0,
+      "y": 0,
+      "zoom": 0.9
+    },
+    "grid": {
+      "size": 8,
+      "snap": true
+    },
+    "layers": [
+      {
+        "id": "motivation",
+        "label": "Motivation",
+        "y": 0,
+        "h": 180,
+        "collapsed": false,
+        "tone": "motivation"
+      },
+      {
+        "id": "business",
+        "label": "Métier",
+        "y": 196,
+        "h": 320,
+        "collapsed": false,
+        "tone": "business"
+      },
+      {
+        "id": "implementation",
+        "label": "Mise en œuvre",
+        "y": 532,
+        "h": 220,
+        "collapsed": false,
+        "tone": "implementation"
+      }
+    ],
+    "zones": [],
+    "framing": {
+      "zoom": 0.9,
+      "x": 0,
+      "y": 0,
+      "focus": [],
+      "dim_others": false,
+      "caption": null
+    },
+    "nodes": [
+      {
+        "id": "n-driver",
+        "object_id": "01J00000000000000000000041",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 88,
+        "y": 24,
+        "w": 176,
+        "h": 72,
+        "layer_id": "motivation",
+        "zone_id": null,
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-goal",
+        "object_id": "01J00000000000000000000042",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 296,
+        "y": 24,
+        "w": 176,
+        "h": 72,
+        "layer_id": "motivation",
+        "zone_id": null,
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-capability",
+        "object_id": "01J00000000000000000000043",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 88,
+        "y": 220,
+        "w": 176,
+        "h": 72,
+        "layer_id": "business",
+        "zone_id": null,
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-business-service",
+        "object_id": "01J00000000000000000000044",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 296,
+        "y": 220,
+        "w": 176,
+        "h": 72,
+        "layer_id": "business",
+        "zone_id": null,
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-product",
+        "object_id": "01J00000000000000000000045",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 88,
+        "y": 316,
+        "w": 176,
+        "h": 72,
+        "layer_id": "business",
+        "zone_id": null,
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-work-package",
+        "object_id": "01J00000000000000000000046",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 88,
+        "y": 556,
+        "w": 176,
+        "h": 72,
+        "layer_id": "implementation",
+        "zone_id": null,
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-driver-capability",
+        "relationship_id": "01J000000000000000000004WN",
+        "kind": "RELATIONSHIP",
+        "waypoints": [],
+        "label_visible": true,
+        "routing": "ORTHOGONAL",
+        "layer_id": null
+      },
+      {
+        "id": "e-goal-capability",
+        "relationship_id": "01J000000000000000000004WP",
+        "kind": "RELATIONSHIP",
+        "waypoints": [],
+        "label_visible": true,
+        "routing": "ORTHOGONAL",
+        "layer_id": null
+      },
+      {
+        "id": "e-capability-work-package",
+        "relationship_id": "01J000000000000000000004WQ",
+        "kind": "RELATIONSHIP",
+        "waypoints": [],
+        "label_visible": true,
+        "routing": "ORTHOGONAL",
+        "layer_id": null
+      }
+    ],
+    "drafts": [],
+    "annotations": []
+  }
+}

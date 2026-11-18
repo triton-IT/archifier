@@ -1,0 +1,62 @@
+﻿# Métamodèle natif du produit : relations qui traversent les notations.
+# Aucune équivalence implicite entre concepts de notations différentes.
+
+[profile]
+id = "native:1.0"
+notation = "NATIVE"
+language = "Archifier"
+version = "1.0"
+target_family = "Native"
+status = "SUBSET"
+reference = "Spécifications fonctionnelles v0.1, relations transverses"
+common_properties = ["tags"]
+
+layers = []
+
+elements = []
+
+relations = [
+  { id = "refines", metaclass = "Refines", label = "Affine", direction = "DIRECTED", symmetric = false, transitive = true },
+  { id = "implements", metaclass = "Implements", label = "Implémente", direction = "DIRECTED", symmetric = false, transitive = true },
+  { id = "realizes", metaclass = "Realizes", label = "Réalise", direction = "DIRECTED", symmetric = false, transitive = true },
+  { id = "describes", metaclass = "Describes", label = "Décrit", direction = "DIRECTED", symmetric = false, transitive = false },
+  { id = "exposes", metaclass = "Exposes", label = "Expose", direction = "DIRECTED", symmetric = false, transitive = false },
+  { id = "consumes", metaclass = "Consumes", label = "Consomme", direction = "DIRECTED", symmetric = false, transitive = false },
+  { id = "trace-to", metaclass = "TraceTo", label = "Trace vers", direction = "DIRECTED", symmetric = false, transitive = true },
+]
+
+[[profile.relation_rules]]
+relation = "refines"
+sources = ["*"]
+targets = ["*"]
+
+[[profile.relation_rules]]
+relation = "implements"
+sources = ["*"]
+targets = ["*"]
+
+[[profile.relation_rules]]
+relation = "realizes"
+sources = ["*"]
+targets = ["*"]
+
+[[profile.relation_rules]]
+relation = "describes"
+sources = ["*"]
+targets = ["*"]
+
+[[profile.relation_rules]]
+relation = "exposes"
+sources = ["*"]
+targets = ["*"]
+
+[[profile.relation_rules]]
+relation = "consumes"
+sources = ["*"]
+targets = ["*"]
+
+[[profile.relation_rules]]
+relation = "trace-to"
+sources = ["*"]
+targets = ["*"]
+

@@ -1,0 +1,252 @@
+{
+  "fixture_version": 1,
+  "name": "process-encaissement",
+  "domain": {
+    "id": "01J00000000000000000000001",
+    "name": "Paiements"
+  },
+  "diagram": {
+    "id": "01J00000000000000000000002",
+    "title": "Encaissement d’une commande",
+    "notation": "BPMN"
+  },
+  "layout": {
+    "schema": 2,
+    "intent": "PROCESS",
+    "scope": {
+      "kind": "DOMAIN",
+      "domain_id": "01J00000000000000000000001"
+    },
+    "notation": "BPMN",
+    "temporal_cursor": null,
+    "viewport": {
+      "x": 0,
+      "y": 0,
+      "zoom": 1
+    },
+    "grid": {
+      "size": 8,
+      "snap": true
+    },
+    "layers": [
+      {
+        "id": "process",
+        "label": "Processus",
+        "y": 0,
+        "h": 360,
+        "collapsed": false,
+        "tone": "process"
+      },
+      {
+        "id": "flow",
+        "label": "Flux",
+        "y": 376,
+        "h": 240,
+        "collapsed": false,
+        "tone": "flow"
+      },
+      {
+        "id": "data",
+        "label": "Données",
+        "y": 632,
+        "h": 160,
+        "collapsed": false,
+        "tone": "data"
+      },
+      {
+        "id": "annotation",
+        "label": "Annotation",
+        "y": 808,
+        "h": 120,
+        "collapsed": false,
+        "tone": "annotation"
+      }
+    ],
+    "zones": [
+      {
+        "id": "z1",
+        "kind": "GROUP",
+        "domain_id": null,
+        "label": "Couloir client",
+        "x": 48,
+        "y": 48,
+        "w": 640,
+        "h": 296,
+        "layer_id": "process",
+        "boundary": false,
+        "collapsed": false,
+        "tone": null
+      }
+    ],
+    "framing": {
+      "zoom": 1,
+      "x": 0,
+      "y": 0,
+      "focus": [],
+      "dim_others": false,
+      "caption": null
+    },
+    "nodes": [
+      {
+        "id": "n-start",
+        "object_id": "01J0000000000000000000003J",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 88,
+        "y": 408,
+        "w": 96,
+        "h": 64,
+        "layer_id": "flow",
+        "zone_id": null,
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-task",
+        "object_id": "01J0000000000000000000003K",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 88,
+        "y": 120,
+        "w": 176,
+        "h": 72,
+        "layer_id": "process",
+        "zone_id": "z1",
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-service-task",
+        "object_id": "01J0000000000000000000003M",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 296,
+        "y": 120,
+        "w": 176,
+        "h": 72,
+        "layer_id": "process",
+        "zone_id": "z1",
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-gateway",
+        "object_id": "01J0000000000000000000003N",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 296,
+        "y": 408,
+        "w": 64,
+        "h": 64,
+        "layer_id": "flow",
+        "zone_id": null,
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-end",
+        "object_id": "01J0000000000000000000003P",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 480,
+        "y": 408,
+        "w": 96,
+        "h": 64,
+        "layer_id": "flow",
+        "zone_id": null,
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-data",
+        "object_id": "01J0000000000000000000003Q",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 88,
+        "y": 656,
+        "w": 160,
+        "h": 72,
+        "layer_id": "data",
+        "zone_id": null,
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-store",
+        "object_id": "01J0000000000000000000003R",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 296,
+        "y": 656,
+        "w": 160,
+        "h": 72,
+        "layer_id": "data",
+        "zone_id": null,
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-note",
+        "object_id": "01J0000000000000000000003S",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 88,
+        "y": 832,
+        "w": 240,
+        "h": 64,
+        "layer_id": "annotation",
+        "zone_id": null,
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-start-task",
+        "relationship_id": "01J000000000000000000004WE",
+        "kind": "RELATIONSHIP",
+        "waypoints": [],
+        "label_visible": true,
+        "routing": "ORTHOGONAL",
+        "layer_id": null
+      },
+      {
+        "id": "e-task-service-task",
+        "relationship_id": "01J000000000000000000004WF",
+        "kind": "RELATIONSHIP",
+        "waypoints": [],
+        "label_visible": true,
+        "routing": "ORTHOGONAL",
+        "layer_id": null
+      },
+      {
+        "id": "e-service-task-gateway",
+        "relationship_id": "01J000000000000000000004WG",
+        "kind": "RELATIONSHIP",
+        "waypoints": [],
+        "label_visible": true,
+        "routing": "ORTHOGONAL",
+        "layer_id": null
+      },
+      {
+        "id": "e-gateway-end",
+        "relationship_id": "01J000000000000000000004WH",
+        "kind": "RELATIONSHIP",
+        "waypoints": [],
+        "label_visible": true,
+        "routing": "ORTHOGONAL",
+        "layer_id": null
+      }
+    ],
+    "drafts": [],
+    "annotations": []
+  }
+}

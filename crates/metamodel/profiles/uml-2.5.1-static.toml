@@ -1,0 +1,100 @@
+﻿# Profil UML 2.5.1 — architecture statique (MVP1).
+# State Machines, Activity et Sequence complets : hors périmètre.
+
+[profile]
+id = "uml:2.5.1-static"
+notation = "UML"
+language = "UML"
+version = "2.5.1"
+target_family = "UML 2.5.1"
+status = "SUBSET"
+reference = "OMG UML 2.5.1"
+common_properties = ["owner", "tags"]
+
+layers = [
+  { id = "structure", label = "Structure", order = 1 },
+  { id = "behavior", label = "Comportement", order = 2 },
+  { id = "deployment", label = "Déploiement", order = 3 },
+]
+
+elements = [
+  { id = "component", metaclass = "Component", layer = "structure", label = "Composant", glyph = "component" },
+  { id = "interface", metaclass = "Interface", layer = "structure", label = "Interface", glyph = "interface" },
+  { id = "port", metaclass = "Port", layer = "structure", label = "Port", glyph = "port" },
+  { id = "package", metaclass = "Package", layer = "structure", label = "Paquetage", glyph = "package" },
+  { id = "class", metaclass = "Class", layer = "structure", label = "Classe", glyph = "class" },
+  { id = "data-type", metaclass = "DataType", layer = "structure", label = "Type de données", glyph = "class" },
+  { id = "enumeration", metaclass = "Enumeration", layer = "structure", label = "Énumération", glyph = "enum" },
+  { id = "property", metaclass = "Property", layer = "structure", label = "Propriété", glyph = "property" },
+  { id = "node", metaclass = "Node", layer = "deployment", label = "Nœud", glyph = "node" },
+  { id = "device", metaclass = "Device", layer = "deployment", label = "Dispositif", glyph = "device" },
+  { id = "execution-environment", metaclass = "ExecutionEnvironment", layer = "deployment", label = "Environnement d'exécution", glyph = "node" },
+  { id = "artifact", metaclass = "Artifact", layer = "deployment", label = "Artefact", glyph = "artifact" },
+  { id = "actor", metaclass = "Actor", layer = "behavior", label = "Acteur", glyph = "actor" },
+  { id = "use-case", metaclass = "UseCase", layer = "behavior", label = "Cas d'usage", glyph = "usecase" },
+  { id = "system-boundary", metaclass = "SystemBoundary", layer = "behavior", label = "Frontière du système", glyph = "boundary" },
+]
+
+relations = [
+  { id = "association", metaclass = "Association", label = "Association", direction = "UNDIRECTED", symmetric = true, transitive = false },
+  { id = "dependency", metaclass = "Dependency", label = "Dépendance", direction = "DIRECTED", symmetric = false, transitive = true },
+  { id = "usage", metaclass = "Usage", label = "Utilisation", direction = "DIRECTED", symmetric = false, transitive = true },
+  { id = "realization", metaclass = "Realization", label = "Réalisation", direction = "DIRECTED", symmetric = false, transitive = true },
+  { id = "interface-realization", metaclass = "InterfaceRealization", label = "Réalisation d'interface", direction = "DIRECTED", symmetric = false, transitive = false },
+  { id = "generalization", metaclass = "Generalization", label = "Généralisation", direction = "DIRECTED", symmetric = false, transitive = true },
+  { id = "composition", metaclass = "Composition", label = "Composition", direction = "DIRECTED", symmetric = false, transitive = false },
+  { id = "aggregation", metaclass = "Aggregation", label = "Agrégation", direction = "DIRECTED", symmetric = false, transitive = false },
+  { id = "deployment", metaclass = "Deployment", label = "Déploiement", direction = "DIRECTED", symmetric = false, transitive = false },
+]
+
+[[profile.relation_rules]]
+relation = "association"
+sources = ["layer:structure", "layer:behavior"]
+targets = ["layer:structure", "layer:behavior"]
+allow_any = true
+
+[[profile.relation_rules]]
+relation = "dependency"
+sources = ["layer:structure", "layer:behavior", "layer:deployment"]
+targets = ["layer:structure", "layer:behavior", "layer:deployment"]
+allow_any = true
+
+[[profile.relation_rules]]
+relation = "usage"
+sources = ["layer:structure", "layer:behavior", "layer:deployment"]
+targets = ["layer:structure", "layer:behavior", "layer:deployment"]
+allow_any = true
+
+[[profile.relation_rules]]
+relation = "realization"
+sources = ["class:component", "class:class", "class:use-case"]
+targets = ["class:interface", "class:class", "class:use-case"]
+
+[[profile.relation_rules]]
+relation = "interface-realization"
+sources = ["class:component", "class:class"]
+targets = ["class:interface"]
+
+[[profile.relation_rules]]
+relation = "generalization"
+sources = ["layer:structure", "layer:behavior"]
+targets = ["layer:structure", "layer:behavior"]
+same_layer = true
+
+[[profile.relation_rules]]
+relation = "composition"
+sources = ["class:class", "class:component", "class:package"]
+targets = ["layer:structure"]
+same_layer = true
+
+[[profile.relation_rules]]
+relation = "aggregation"
+sources = ["class:class", "class:component", "class:package"]
+targets = ["layer:structure"]
+same_layer = true
+
+[[profile.relation_rules]]
+relation = "deployment"
+sources = ["class:artifact"]
+targets = ["class:node", "class:device", "class:execution-environment"]
+

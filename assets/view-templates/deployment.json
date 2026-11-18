@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "template_version": "1.0.0",
+  "id": "deployment",
+  "intent": "DEPLOYMENT",
+  "title_key": "template.deployment.title",
+  "summary_key": "template.deployment.summary",
+  "notation": "UML",
+  "scope": { "kind": "DOMAIN" },
+  "grid": { "size": 8, "snap": true },
+  "layers": [
+    { "id": "structure", "label_key": "layer.structure", "y": 0, "h": 200, "tone": "structure" },
+    { "id": "deployment", "label_key": "layer.deployment", "y": 216, "h": 340, "tone": "deployment" }
+  ],
+  "zones": [
+    {
+      "id": "z1",
+      "kind": "GROUP",
+      "label_key": "template.zone.production",
+      "x": 48,
+      "y": 232,
+      "w": 360,
+      "h": 300,
+      "layer_id": "deployment",
+      "boundary": false,
+      "tone": null
+    },
+    {
+      "id": "z2",
+      "kind": "GROUP",
+      "label_key": "template.zone.recette",
+      "x": 432,
+      "y": 232,
+      "w": 360,
+      "h": 300,
+      "layer_id": "deployment",
+      "boundary": false,
+      "tone": null
+    }
+  ],
+  "framing": { "zoom": 0.9, "x": 0, "y": 0, "focus": [], "dim_others": false },
+  "drafts": [
+    {
+      "id": "d1",
+      "label_key": "template.deployment.draft.node",
+      "shape": "RECT",
+      "x": 96,
+      "y": 280,
+      "w": 176,
+      "h": 72,
+      "suggested_metaclass": "Node",
+      "status": "SKETCH",
+      "layer_id": "deployment",
+      "zone_id": "z1"
+    },
+    {
+      "id": "d2",
+      "label_key": "template.deployment.draft.artifact",
+      "shape": "RECT",
+      "x": 480,
+      "y": 280,
+      "w": 176,
+      "h": 72,
+      "suggested_metaclass": "Artifact",
+      "status": "SKETCH",
+      "layer_id": "deployment",
+      "zone_id": "z2"
+    }
+  ],
+  "example": { "steps": ["place", "rename", "connect"] }
+}

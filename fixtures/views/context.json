@@ -1,0 +1,238 @@
+{
+  "fixture_version": 1,
+  "name": "context-paiements",
+  "domain": {
+    "id": "01J00000000000000000000001",
+    "name": "Paiements"
+  },
+  "diagram": {
+    "id": "01J00000000000000000000002",
+    "title": "Paiements — contexte",
+    "notation": "ARCHIMATE"
+  },
+  "layout": {
+    "schema": 2,
+    "intent": "CONTEXT",
+    "scope": {
+      "kind": "DOMAIN",
+      "domain_id": "01J00000000000000000000001"
+    },
+    "notation": "ARCHIMATE",
+    "temporal_cursor": null,
+    "viewport": {
+      "x": 0,
+      "y": 0,
+      "zoom": 0.9
+    },
+    "grid": {
+      "size": 8,
+      "snap": true
+    },
+    "layers": [
+      {
+        "id": "motivation",
+        "label": "Motivation",
+        "y": 0,
+        "h": 180,
+        "collapsed": false,
+        "tone": "motivation"
+      },
+      {
+        "id": "business",
+        "label": "Métier",
+        "y": 196,
+        "h": 240,
+        "collapsed": false,
+        "tone": "business"
+      },
+      {
+        "id": "application",
+        "label": "Applicatif",
+        "y": 452,
+        "h": 260,
+        "collapsed": false,
+        "tone": "application"
+      },
+      {
+        "id": "technology",
+        "label": "Technologique",
+        "y": 728,
+        "h": 200,
+        "collapsed": false,
+        "tone": "technology"
+      }
+    ],
+    "zones": [],
+    "framing": {
+      "zoom": 0.9,
+      "x": 0,
+      "y": 0,
+      "focus": [],
+      "dim_others": false,
+      "caption": null
+    },
+    "nodes": [
+      {
+        "id": "n-driver",
+        "object_id": "01J00000000000000000000034",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 88,
+        "y": 24,
+        "w": 176,
+        "h": 72,
+        "layer_id": "motivation",
+        "zone_id": null,
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-goal",
+        "object_id": "01J00000000000000000000035",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 296,
+        "y": 24,
+        "w": 176,
+        "h": 72,
+        "layer_id": "motivation",
+        "zone_id": null,
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-actor",
+        "object_id": "01J00000000000000000000036",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 88,
+        "y": 220,
+        "w": 176,
+        "h": 72,
+        "layer_id": "business",
+        "zone_id": null,
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-business-service",
+        "object_id": "01J00000000000000000000037",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 296,
+        "y": 220,
+        "w": 176,
+        "h": 72,
+        "layer_id": "business",
+        "zone_id": null,
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-component",
+        "object_id": "01J00000000000000000000038",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 88,
+        "y": 476,
+        "w": 176,
+        "h": 72,
+        "layer_id": "application",
+        "zone_id": null,
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-app-service",
+        "object_id": "01J00000000000000000000039",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 296,
+        "y": 476,
+        "w": 176,
+        "h": 72,
+        "layer_id": "application",
+        "zone_id": null,
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-tech-node",
+        "object_id": "01J0000000000000000000003A",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 88,
+        "y": 752,
+        "w": 176,
+        "h": 72,
+        "layer_id": "technology",
+        "zone_id": null,
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      },
+      {
+        "id": "n-tech-service",
+        "object_id": "01J0000000000000000000003B",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 296,
+        "y": 752,
+        "w": 176,
+        "h": 72,
+        "layer_id": "technology",
+        "zone_id": null,
+        "collapsed": false,
+        "port": null,
+        "style_override": {}
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-driver-goal",
+        "relationship_id": "01J000000000000000000004W8",
+        "kind": "RELATIONSHIP",
+        "waypoints": [],
+        "label_visible": true,
+        "routing": "ORTHOGONAL",
+        "layer_id": null
+      },
+      {
+        "id": "e-goal-service",
+        "relationship_id": "01J000000000000000000004W9",
+        "kind": "RELATIONSHIP",
+        "waypoints": [],
+        "label_visible": true,
+        "routing": "ORTHOGONAL",
+        "layer_id": null
+      },
+      {
+        "id": "e-service-component",
+        "relationship_id": "01J000000000000000000004WA",
+        "kind": "RELATIONSHIP",
+        "waypoints": [],
+        "label_visible": true,
+        "routing": "ORTHOGONAL",
+        "layer_id": null
+      }
+    ],
+    "drafts": [],
+    "annotations": [
+      {
+        "id": "a1",
+        "text": "Contexte de la refonte Paiements",
+        "x": 40,
+        "y": 952,
+        "w": 360,
+        "h": 64,
+        "style": "CALLOUT"
+      }
+    ]
+  }
+}

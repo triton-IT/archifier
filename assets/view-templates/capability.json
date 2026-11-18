@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "template_version": "1.0.0",
+  "id": "capability",
+  "intent": "CAPABILITY",
+  "title_key": "template.capability.title",
+  "summary_key": "template.capability.summary",
+  "notation": "ARCHIMATE",
+  "scope": { "kind": "DOMAIN" },
+  "grid": { "size": 8, "snap": true },
+  "layers": [
+    { "id": "motivation", "label_key": "layer.motivation", "y": 0, "h": 180, "tone": "motivation" },
+    { "id": "business", "label_key": "layer.business", "y": 196, "h": 320, "tone": "business" },
+    { "id": "implementation", "label_key": "layer.implementation", "y": 532, "h": 220, "tone": "implementation" }
+  ],
+  "zones": [],
+  "framing": { "zoom": 0.9, "x": 0, "y": 0, "focus": [], "dim_others": false },
+  "drafts": [
+    {
+      "id": "d1",
+      "label_key": "template.capability.draft.capability",
+      "shape": "RECT",
+      "x": 96,
+      "y": 220,
+      "w": 176,
+      "h": 72,
+      "suggested_metaclass": "BusinessFunction",
+      "status": "SKETCH",
+      "layer_id": "business",
+      "zone_id": null
+    },
+    {
+      "id": "d2",
+      "label_key": "template.capability.draft.goal",
+      "shape": "RECT",
+      "x": 96,
+      "y": 24,
+      "w": 176,
+      "h": 72,
+      "suggested_metaclass": "Goal",
+      "status": "SKETCH",
+      "layer_id": "motivation",
+      "zone_id": null
+    }
+  ],
+  "example": { "steps": ["place", "rename", "connect", "share"] }
+}

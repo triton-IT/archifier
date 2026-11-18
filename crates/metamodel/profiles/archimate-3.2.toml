@@ -1,0 +1,155 @@
+﻿# Profil ArchiMate 3.2 — sous-ensemble MVP1 (42 classes, 11 relations).
+# Cible produit : ArchiMate 4. Aucune classe « 4 » n'est déclarée avant publication normative.
+
+[profile]
+id = "archimate:3.2"
+notation = "ARCHIMATE"
+language = "ArchiMate"
+version = "3.2"
+target_family = "ArchiMate 4"
+status = "SUBSET"
+reference = "The Open Group, ArchiMate 3.2 Specification"
+common_properties = ["owner", "criticality", "cost_center", "tags"]
+
+layers = [
+  { id = "business", label = "Métier", order = 1 },
+  { id = "application", label = "Applicatif", order = 2 },
+  { id = "technology", label = "Technologique", order = 3 },
+  { id = "physical", label = "Physique", order = 4 },
+  { id = "motivation", label = "Motivation", order = 5 },
+  { id = "implementation", label = "Mise en œuvre", order = 6 },
+]
+
+elements = [
+  { id = "business-actor", metaclass = "BusinessActor", layer = "business", label = "Acteur métier", glyph = "actor" },
+  { id = "business-role", metaclass = "BusinessRole", layer = "business", label = "Rôle métier", glyph = "role" },
+  { id = "business-collaboration", metaclass = "BusinessCollaboration", layer = "business", label = "Collaboration métier", glyph = "collaboration" },
+  { id = "business-interface", metaclass = "BusinessInterface", layer = "business", label = "Interface métier", glyph = "interface" },
+  { id = "business-process", metaclass = "BusinessProcess", layer = "business", label = "Processus métier", glyph = "process" },
+  { id = "business-function", metaclass = "BusinessFunction", layer = "business", label = "Fonction métier", glyph = "function" },
+  { id = "business-service", metaclass = "BusinessService", layer = "business", label = "Service métier", glyph = "service" },
+  { id = "business-event", metaclass = "BusinessEvent", layer = "business", label = "Événement métier", glyph = "event" },
+  { id = "business-object", metaclass = "BusinessObject", layer = "business", label = "Objet métier", glyph = "object" },
+  { id = "contract", metaclass = "Contract", layer = "business", label = "Contrat", glyph = "contract" },
+  { id = "representation", metaclass = "Representation", layer = "business", label = "Représentation", glyph = "object" },
+  { id = "product", metaclass = "Product", layer = "business", label = "Produit", glyph = "product" },
+  { id = "business-interaction", metaclass = "BusinessInteraction", layer = "business", label = "Interaction métier", glyph = "interaction" },
+  { id = "business-behavior", metaclass = "BusinessInternalBehaviorElement", layer = "business", label = "Comportement métier interne", glyph = "function", abstract = true },
+
+  { id = "application-component", metaclass = "ApplicationComponent", layer = "application", label = "Composant applicatif", glyph = "component" },
+  { id = "application-collaboration", metaclass = "ApplicationCollaboration", layer = "application", label = "Collaboration applicative", glyph = "collaboration" },
+  { id = "application-interface", metaclass = "ApplicationInterface", layer = "application", label = "Interface applicative", glyph = "interface" },
+  { id = "application-process", metaclass = "ApplicationProcess", layer = "application", label = "Processus applicatif", glyph = "process" },
+  { id = "application-function", metaclass = "ApplicationFunction", layer = "application", label = "Fonction applicative", glyph = "function" },
+  { id = "application-interaction", metaclass = "ApplicationInteraction", layer = "application", label = "Interaction applicative", glyph = "interaction" },
+  { id = "application-service", metaclass = "ApplicationService", layer = "application", label = "Service applicatif", glyph = "service" },
+  { id = "application-event", metaclass = "ApplicationEvent", layer = "application", label = "Événement applicatif", glyph = "event" },
+  { id = "application-data-object", metaclass = "ApplicationDataObject", layer = "application", label = "Objet de données", glyph = "object" },
+  { id = "application-behavior", metaclass = "ApplicationInternalBehaviorElement", layer = "application", label = "Comportement applicatif interne", glyph = "function", abstract = true },
+
+  { id = "node", metaclass = "Node", layer = "technology", label = "Nœud", glyph = "node" },
+  { id = "device", metaclass = "Device", layer = "technology", label = "Dispositif", glyph = "device" },
+  { id = "system-software", metaclass = "SystemSoftware", layer = "technology", label = "Logiciel système", glyph = "component" },
+  { id = "technology-collaboration", metaclass = "TechnologyCollaboration", layer = "technology", label = "Collaboration technique", glyph = "collaboration" },
+  { id = "technology-interface", metaclass = "TechnologyInterface", layer = "technology", label = "Interface technique", glyph = "interface" },
+  { id = "path", metaclass = "Path", layer = "technology", label = "Chemin", glyph = "path" },
+  { id = "communication-network", metaclass = "CommunicationNetwork", layer = "technology", label = "Réseau de communication", glyph = "network" },
+  { id = "technology-service", metaclass = "TechnologyService", layer = "technology", label = "Service technique", glyph = "service" },
+  { id = "technology-event", metaclass = "TechnologyEvent", layer = "technology", label = "Événement technique", glyph = "event" },
+
+  { id = "equipment", metaclass = "Equipment", layer = "physical", label = "Équipement", glyph = "device" },
+  { id = "facility", metaclass = "Facility", layer = "physical", label = "Installation", glyph = "node" },
+  { id = "distribution-network", metaclass = "DistributionNetwork", layer = "physical", label = "Réseau de distribution", glyph = "network" },
+
+  { id = "stakeholder", metaclass = "Stakeholder", layer = "motivation", label = "Partie prenante", glyph = "actor" },
+  { id = "driver", metaclass = "Driver", layer = "motivation", label = "Moteur", glyph = "driver" },
+  { id = "assessment", metaclass = "Assessment", layer = "motivation", label = "Évaluation", glyph = "assessment" },
+  { id = "goal", metaclass = "Goal", layer = "motivation", label = "Objectif", glyph = "goal" },
+
+  { id = "work-package", metaclass = "WorkPackage", layer = "implementation", label = "Lot de travail", glyph = "workpackage" },
+  { id = "deliverable", metaclass = "Deliverable", layer = "implementation", label = "Livrable", glyph = "deliverable" },
+]
+
+relations = [
+  { id = "composition", metaclass = "Composition", label = "Composition", direction = "DIRECTED", symmetric = false, transitive = false },
+  { id = "aggregation", metaclass = "Aggregation", label = "Agrégation", direction = "DIRECTED", symmetric = false, transitive = false },
+  { id = "assignment", metaclass = "Assignment", label = "Affectation", direction = "DIRECTED", symmetric = false, transitive = false },
+  { id = "realization", metaclass = "Realization", label = "Réalisation", direction = "DIRECTED", symmetric = false, transitive = true },
+  { id = "serving", metaclass = "Serving", label = "Sert", direction = "DIRECTED", symmetric = false, transitive = true },
+  { id = "access", metaclass = "Access", label = "Accès", direction = "DIRECTED", symmetric = false, transitive = false },
+  { id = "influence", metaclass = "Influence", label = "Influence", direction = "DIRECTED", symmetric = false, transitive = false },
+  { id = "triggering", metaclass = "Triggering", label = "Déclenche", direction = "DIRECTED", symmetric = false, transitive = true },
+  { id = "flow", metaclass = "Flow", label = "Flux", direction = "DIRECTED", symmetric = false, transitive = true },
+  { id = "association", metaclass = "Association", label = "Association", direction = "UNDIRECTED", symmetric = true, transitive = false },
+  { id = "specialization", metaclass = "Specialization", label = "Spécialisation", direction = "DIRECTED", symmetric = false, transitive = true },
+]
+
+# Matrice d'autorisation. Chaque règle autorise un triplet
+# (classe source, relation, classe cible). Aucune règle implicite.
+
+[[profile.relation_rules]]
+relation = "composition"
+sources = ["layer:business", "layer:application", "layer:technology", "layer:physical", "layer:motivation", "layer:implementation"]
+targets = ["layer:business", "layer:application", "layer:technology", "layer:physical", "layer:motivation", "layer:implementation"]
+same_layer = true
+
+[[profile.relation_rules]]
+relation = "aggregation"
+sources = ["layer:business", "layer:application", "layer:technology", "layer:physical"]
+targets = ["layer:business", "layer:application", "layer:technology", "layer:physical"]
+same_layer = true
+
+[[profile.relation_rules]]
+relation = "assignment"
+sources = ["layer:business", "layer:application", "layer:technology", "layer:physical"]
+targets = ["layer:business", "layer:application", "layer:technology", "layer:physical"]
+same_layer = true
+
+[[profile.relation_rules]]
+relation = "realization"
+sources = ["layer:business", "layer:application", "layer:technology", "layer:implementation"]
+targets = ["layer:business", "layer:application", "layer:motivation"]
+allow_cross_layer_downward = true
+
+[[profile.relation_rules]]
+relation = "serving"
+sources = ["layer:business", "layer:application", "layer:technology"]
+targets = ["layer:business", "layer:application", "layer:technology"]
+allow_cross_layer_downward = true
+
+[[profile.relation_rules]]
+relation = "access"
+sources = ["layer:business", "layer:application", "layer:technology"]
+targets = ["layer:business", "layer:application", "layer:technology"]
+same_layer = true
+
+[[profile.relation_rules]]
+relation = "influence"
+sources = ["layer:motivation", "layer:business", "layer:application", "layer:technology"]
+targets = ["layer:motivation"]
+allow_any = true
+
+[[profile.relation_rules]]
+relation = "triggering"
+sources = ["layer:business", "layer:application", "layer:technology"]
+targets = ["layer:business", "layer:application", "layer:technology"]
+allow_any = true
+
+[[profile.relation_rules]]
+relation = "flow"
+sources = ["layer:business", "layer:application", "layer:technology"]
+targets = ["layer:business", "layer:application", "layer:technology"]
+same_layer = true
+
+[[profile.relation_rules]]
+relation = "association"
+sources = ["layer:business", "layer:application", "layer:technology", "layer:physical", "layer:motivation", "layer:implementation"]
+targets = ["layer:business", "layer:application", "layer:technology", "layer:physical", "layer:motivation", "layer:implementation"]
+allow_any = true
+
+[[profile.relation_rules]]
+relation = "specialization"
+sources = ["layer:business", "layer:application", "layer:technology", "layer:physical", "layer:motivation"]
+targets = ["layer:business", "layer:application", "layer:technology", "layer:physical", "layer:motivation"]
+same_layer = true
+

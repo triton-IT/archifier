@@ -1,0 +1,15 @@
+[package]
+name = "archifier-core"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description = "Moteur de domaine Archifier : identifiants, invariants, temporalité, liens, Markdown"
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+time.workspace = true
+sha2.workspace = true
+serde_yaml_ng.workspace = true
+pulldown-cmark = { version = "0.13", default-features = false, features = ["html"] }

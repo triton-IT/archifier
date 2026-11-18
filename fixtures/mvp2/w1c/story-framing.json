@@ -1,0 +1,368 @@
+{
+  "users": [
+    {
+      "id": "u1",
+      "email": "regis@example.org",
+      "display_name": "Régis Ramillien",
+      "initials": "RR"
+    }
+  ],
+  "domains": [
+    {
+      "object": {
+        "id": "01K8ZP4N000000000000000301",
+        "object_type": "DOMAIN",
+        "name": "Paiements",
+        "responsible_domain_id": "01K8ZP4N000000000000000301",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-01-05T08:00:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-01-05T08:00:00Z",
+        "updated_by": "u1"
+      },
+      "slug": "paiements",
+      "description": "Récit avec cadrage et objets à révisions distinctes."
+    }
+  ],
+  "elements": [
+    {
+      "object": {
+        "id": "01K8ZP4N000000000000000401",
+        "object_type": "MODEL_ELEMENT",
+        "name": "Order Service",
+        "responsible_domain_id": "01K8ZP4N000000000000000301",
+        "lifecycle": "ACTIVE",
+        "revision": 3,
+        "created_at": "2026-01-12T09:00:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-03-01T10:00:00Z",
+        "updated_by": "u1"
+      },
+      "notation": "ARCHIMATE",
+      "metamodel_version": "archimate:3.2",
+      "metaclass": "ApplicationComponent",
+      "parent_id": null,
+      "semantic_properties": {
+        "owner": "Régis"
+      }
+    },
+    {
+      "object": {
+        "id": "01K8ZP4N000000000000000402",
+        "object_type": "MODEL_ELEMENT",
+        "name": "Pricing Service",
+        "responsible_domain_id": "01K8ZP4N000000000000000301",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-01-12T09:05:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-01-12T09:05:00Z",
+        "updated_by": "u1"
+      },
+      "notation": "ARCHIMATE",
+      "metamodel_version": "archimate:3.2",
+      "metaclass": "ApplicationService",
+      "parent_id": null,
+      "semantic_properties": {}
+    }
+  ],
+  "relationships": [],
+  "interfaces": [
+    {
+      "object": {
+        "id": "01K8ZP4N000000000000000403",
+        "object_type": "INTERFACE",
+        "name": "Payment API",
+        "responsible_domain_id": "01K8ZP4N000000000000000301",
+        "lifecycle": "ACTIVE",
+        "revision": 4,
+        "created_at": "2026-01-20T09:00:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-04-02T09:00:00Z",
+        "updated_by": "u1"
+      },
+      "logical_interface_key": "payment-api",
+      "category": "APPLICATION",
+      "provider_domain_id": "01K8ZP4N000000000000000301",
+      "contract_type": "NONE",
+      "notation_bindings": []
+    }
+  ],
+  "interface_versions": [
+    {
+      "id": "01K8ZP4N000000000000000406",
+      "interface_id": "01K8ZP4N000000000000000403",
+      "semantic_version": "1.0.0",
+      "revision": 1,
+      "publication_status": "PUBLISHED",
+      "created_at": "2026-01-20T09:05:00Z",
+      "created_by": "u1",
+      "published_at": "2026-01-20T09:05:00Z",
+      "available_from": "2026-01-20T09:05:00Z",
+      "available_until": null,
+      "breaking_change": false,
+      "supersedes_version_id": null,
+      "contract_snapshot": {},
+      "contract_format": null,
+      "contract_raw": null,
+      "contract_hash": null
+    },
+    {
+      "id": "01K8ZP4N000000000000000409",
+      "interface_id": "01K8ZP4N000000000000000403",
+      "semantic_version": "2.0.0",
+      "revision": 1,
+      "publication_status": "PUBLISHED",
+      "created_at": "2026-05-01T09:05:00Z",
+      "created_by": "u1",
+      "published_at": "2026-05-01T09:05:00Z",
+      "available_from": "2026-05-01T09:05:00Z",
+      "available_until": "2027-12-31T00:00:00Z",
+      "breaking_change": true,
+      "supersedes_version_id": "01K8ZP4N000000000000000406",
+      "contract_snapshot": {},
+      "contract_format": null,
+      "contract_raw": null,
+      "contract_hash": null
+    },
+    {
+      "id": "01K8ZP4N000000000000000410",
+      "interface_id": "01K8ZP4N000000000000000403",
+      "semantic_version": "3.0.0",
+      "revision": 1,
+      "publication_status": "DRAFT",
+      "created_at": "2026-06-01T09:05:00Z",
+      "created_by": "u1",
+      "published_at": null,
+      "available_from": "2026-06-01T09:05:00Z",
+      "available_until": null,
+      "breaking_change": false,
+      "supersedes_version_id": "01K8ZP4N000000000000000409",
+      "contract_snapshot": {},
+      "contract_format": null,
+      "contract_raw": null,
+      "contract_hash": null
+    }
+  ],
+  "interface_consumers": [],
+  "diagrams": [
+    {
+      "object": {
+        "id": "01K8ZP4N000000000000000404",
+        "object_type": "DIAGRAM",
+        "name": "Vue ciblée",
+        "responsible_domain_id": "01K8ZP4N000000000000000301",
+        "lifecycle": "ACTIVE",
+        "revision": 2,
+        "created_at": "2026-02-01T09:00:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-02-10T09:00:00Z",
+        "updated_by": "u1"
+      },
+      "notation": "ARCHIMATE",
+      "description": "Deux nœuds pour le cadrage : un en focus, un atténué.",
+      "layout": {
+        "schema": 1,
+        "viewport": {
+          "x": 0.0,
+          "y": 0.0,
+          "zoom": 1.0
+        },
+        "nodes": [
+          {
+            "id": "n-order",
+            "object_id": "01K8ZP4N000000000000000401",
+            "kind": "ELEMENT",
+            "version_id": null,
+            "x": 40.0,
+            "y": 40.0,
+            "w": 180.0,
+            "h": 80.0,
+            "style_override": {}
+          },
+          {
+            "id": "n-pricing",
+            "object_id": "01K8ZP4N000000000000000402",
+            "kind": "ELEMENT",
+            "version_id": null,
+            "x": 320.0,
+            "y": 40.0,
+            "w": 180.0,
+            "h": 80.0,
+            "style_override": {}
+          }
+        ],
+        "edges": [],
+        "annotations": []
+      }
+    }
+  ],
+  "stories": [
+    {
+      "object": {
+        "id": "01K8ZP4N000000000000000405",
+        "object_type": "STORY",
+        "name": "Récit de la commande",
+        "responsible_domain_id": "01K8ZP4N000000000000000301",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-02-11T09:00:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-02-11T09:00:00Z",
+        "updated_by": "u1"
+      },
+      "structure": {
+        "chapters": [
+          {
+            "id": "ch-1",
+            "title": "Parcours de commande",
+            "blocks": [
+              {
+                "kind": "MARKDOWN",
+                "id": "b-1",
+                "markdown": "Le parcours part du composant **Order Service**."
+              },
+              {
+                "kind": "DIAGRAM",
+                "id": "b-2",
+                "diagram_id": "01K8ZP4N000000000000000404",
+                "framing": {
+                  "zoom": 2.0,
+                  "focus_element_ids": [
+                    "01K8ZP4N000000000000000401"
+                  ],
+                  "dimmed_element_ids": [
+                    "01K8ZP4N000000000000000402"
+                  ],
+                  "caption": "Vue ciblée"
+                }
+              },
+              {
+                "kind": "ELEMENT",
+                "id": "b-3",
+                "element_id": "01K8ZP4N000000000000000401",
+                "highlight": true
+              },
+              {
+                "kind": "ELEMENT",
+                "id": "b-4",
+                "element_id": "01K8ZP4N000000000000000401",
+                "highlight": false
+              },
+              {
+                "kind": "INTERFACE",
+                "id": "b-5",
+                "interface_id": "01K8ZP4N000000000000000403",
+                "version_id": "01K8ZP4N000000000000000406"
+              },
+              {
+                "kind": "TRANSITION",
+                "id": "b-6",
+                "label": "Vers l'interface",
+                "target_block_id": "b-5"
+              }
+            ]
+          }
+        ],
+        "pinned_revisions": {},
+        "pinned_versions": {}
+      }
+    },
+    {
+      "object": {
+        "id": "01K8ZP4N000000000000000407",
+        "object_type": "STORY",
+        "name": "Récit incomplet",
+        "responsible_domain_id": "01K8ZP4N000000000000000301",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-02-12T09:00:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-02-12T09:00:00Z",
+        "updated_by": "u1"
+      },
+      "structure": {
+        "chapters": [
+          {
+            "id": "ch-1",
+            "title": "Référence sans instantané",
+            "blocks": [
+              {
+                "kind": "ELEMENT",
+                "id": "b-1",
+                "element_id": "01K8ZP4N000000000000000402",
+                "highlight": true
+              }
+            ]
+          }
+        ],
+        "pinned_revisions": {},
+        "pinned_versions": {}
+      }
+    },
+    {
+      "object": {
+        "id": "01K8ZP4N000000000000000408",
+        "object_type": "STORY",
+        "name": "Récit sans version",
+        "responsible_domain_id": "01K8ZP4N000000000000000301",
+        "lifecycle": "ACTIVE",
+        "revision": 1,
+        "created_at": "2026-02-13T09:00:00Z",
+        "created_by": "u1",
+        "updated_at": "2026-02-13T09:00:00Z",
+        "updated_by": "u1"
+      },
+      "structure": {
+        "chapters": [
+          {
+            "id": "ch-1",
+            "title": "Version publiée la plus récente",
+            "blocks": [
+              {
+                "kind": "INTERFACE",
+                "id": "b-1",
+                "interface_id": "01K8ZP4N000000000000000403",
+                "version_id": null
+              }
+            ]
+          }
+        ],
+        "pinned_revisions": {},
+        "pinned_versions": {}
+      }
+    }
+  ],
+  "reviews": [],
+  "documentation": [],
+  "comments": [],
+  "links": [],
+  "audit": [],
+  "revisions": {
+    "01K8ZP4N000000000000000401": {
+      "3": {
+        "object": {
+          "id": "01K8ZP4N000000000000000401",
+          "revision": 3
+        }
+      }
+    },
+    "01K8ZP4N000000000000000403": {
+      "4": {
+        "object": {
+          "id": "01K8ZP4N000000000000000403",
+          "revision": 4
+        }
+      }
+    },
+    "01K8ZP4N000000000000000404": {
+      "2": {
+        "object": {
+          "id": "01K8ZP4N000000000000000404",
+          "revision": 2
+        }
+      }
+    }
+  }
+}

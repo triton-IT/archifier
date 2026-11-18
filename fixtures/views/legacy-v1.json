@@ -1,0 +1,108 @@
+{
+  "fixture_version": 1,
+  "name": "legacy-paiements-v1",
+  "domain": {
+    "id": "01J00000000000000000000001",
+    "name": "Paiements"
+  },
+  "diagram": {
+    "id": "01J00000000000000000000002",
+    "title": "Paiements — vue historique",
+    "notation": "ARCHIMATE"
+  },
+  "layout": {
+    "schema": 1,
+    "viewport": {
+      "x": 0,
+      "y": 0,
+      "zoom": 1
+    },
+    "nodes": [
+      {
+        "id": "n-order",
+        "object_id": "01J0000000000000000000004M",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 40,
+        "y": 40,
+        "w": 180,
+        "h": 80,
+        "style_override": {}
+      },
+      {
+        "id": "n-pricing",
+        "object_id": "01J0000000000000000000004N",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 320,
+        "y": 40,
+        "w": 180,
+        "h": 80,
+        "style_override": {}
+      },
+      {
+        "id": "n-payment",
+        "object_id": "01J0000000000000000000004P",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 40,
+        "y": 200,
+        "w": 180,
+        "h": 80,
+        "style_override": {}
+      },
+      {
+        "id": "n-notification",
+        "object_id": "01J0000000000000000000004Q",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 320,
+        "y": 200,
+        "w": 180,
+        "h": 80,
+        "style_override": {}
+      },
+      {
+        "id": "n-ledger",
+        "object_id": "01J0000000000000000000004R",
+        "kind": "ELEMENT",
+        "version_id": null,
+        "x": 600,
+        "y": 120,
+        "w": 180,
+        "h": 80,
+        "style_override": {}
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-order-pricing",
+        "relationship_id": "01J000000000000000000004WZ",
+        "waypoints": [],
+        "label_visible": true
+      },
+      {
+        "id": "e-pricing-payment",
+        "relationship_id": "01J000000000000000000004X0",
+        "waypoints": [],
+        "label_visible": true
+      },
+      {
+        "id": "e-payment-ledger",
+        "relationship_id": "01J000000000000000000004X1",
+        "waypoints": [],
+        "label_visible": true
+      }
+    ],
+    "annotations": [
+      {
+        "id": "a1",
+        "text": "Vue schéma 1 conservée pour la migration",
+        "x": 40,
+        "y": 320,
+        "w": 360,
+        "h": 64
+      }
+    ]
+  }
+}
