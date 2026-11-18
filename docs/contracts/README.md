@@ -1,12 +1,12 @@
-# Contrats G0 — Atelier de vues (MVP3)
+# Contrats G0 — Atelier MVP3 et cible produit v0.4
 
 | | |
 |---|---|
-| **Document** | Registre des contrats gelés à la porte G0 |
-| **Version** | 1.0 — 18 novembre 2026 |
-| **Statut** | **FIGÉ — G0** (signé par l'orchestrateur) |
-| **Entrées** | ADR-022, `functional-specifications.md` (FR-040..054, NFR-021..030), `technical-specifications.md` (§14.4, §15.0..15.6) |
-| **Sortie** | 9 contrats opposables, référencés par les vagues W1 → W6 |
+| **Document** | Registre des contrats gelés à la porte G0, complété par la cible v0.4 |
+| **Version** | 1.1 — 18 novembre 2026 |
+| **Statut** | **FIGÉ — G0** pour C-01..C-09 ; **C-10 proposé** (ADR-023) |
+| **Entrées** | ADR-022, ADR-023, `functional-specifications.md` (FR-040..081, NFR-021..036), `technical-specifications.md` (§14.4, §15.0..15.6) |
+| **Sortie** | 9 contrats gelés + 1 contrat proposé (C-10), référencés par les vagues |
 
 ## Règle de gel
 
@@ -17,7 +17,7 @@ mineure du contrat (`1.0` → `1.1`) qui liste les champs ajoutés et les tests 
 Aucun contrat ne peut **retirer** un champ ou renommer une variante entre deux vagues :
 seules les évolutions **additives** sont autorisées, avec valeur par défaut.
 
-## Les neuf contrats
+## Les contrats
 
 | Réf. | Contrat | Fichier | Propriétaire d'écriture |
 |---|---|---|---|
@@ -30,10 +30,16 @@ seules les évolutions **additives** sont autorisées, avec valeur par défaut.
 | **C-07** | Tokens : bandes, zones, frontières, ports, temporalité, statuts | [`C-07-tokens.md`](C-07-tokens.md) | UX |
 | **C-08** | Codes `DSG-001..005`, `REV-409`, codes réutilisés | [`C-08-codes.md`](C-08-codes.md) | Orchestrateur |
 | **C-09** | Surface `Repository` : gel + évolutions additives approuvées | [`C-09-repository-surface.md`](C-09-repository-surface.md) | Orchestrateur |
+| **C-10** | Produit, carte et navigation par zoom : objets, cardinalités, projection, routes | [`C-10-produit-carte-navigation.md`](C-10-produit-carte-navigation.md) | Produit + UX + Navigation + Core (proposé, ADR-023) |
+
+> **C-10 est proposé, pas gelé.** Il est additif et ne modifie aucun champ de C-01..C-09.
+> Il devient opposable après revue de la cible v0.4 et ouverture de la vague correspondante.
 
 ## Ce que ces contrats ne couvrent pas
 
 - L'algorithme de disposition automatique, le routage avancé des arêtes (hors MVP3).
+- La projection de carte, les lentilles et les pages produit/équipe/value stream : **C-10**
+  (proposé, ADR-023), qui ne modifie aucun champ de C-01..C-09.
 - La collaboration temps réel sur le layout (ADR-014) : C-01 prépare l'idempotence,
   elle ne l'active pas.
 - La charte de marque, les polices, les icônes : C-07 fixe les **noms** de tokens,
@@ -58,3 +64,4 @@ par vague. Un test squelette ne prouve rien : il réserve le nom.
 | Date | Révision | Décision |
 |---|---|---|
 | 18/11/2026 | 1.0 | Création des neuf contrats, alignés sur ADR-022 et §14.4/§15 |
+| 18/11/2026 | 1.1 | Ajout de C-10 (produit, carte, zoom) sous ADR-023 ; C-01..C-09 inchangés |

@@ -1,22 +1,22 @@
-# Spécification fonctionnelle et technique — MVP1 / v0.1 de l’outil de modélisation d’architecture d’entreprise
+# Spécification fonctionnelle — La carte produit de l’entreprise (cible v0.4, base MVP1)
 
 ## Cadre, objectifs et décisions structurantes
 
-Cette spécification décrit un **MVP1 / v0.1 réalisé sur mesure** d’un référentiel de modélisation d’architecture d’entreprise collaboratif. Le produit doit permettre à plusieurs domaines de construire leurs modèles, de publier des interfaces qu’ils exposent aux autres domaines, de réutiliser les objets publiés sans les dupliquer, de documenter l’architecture, de la parcourir et de l’interroger en langage naturel.
+Cette spécification décrit la cible **v0.4** d’un référentiel de modélisation d’architecture d’entreprise collaboratif, adossée au MVP1/MVP3 existant. Le produit doit permettre à plusieurs équipes de construire et de posséder leurs produits, de publier les interfaces qu’ils exposent aux autres produits, de réutiliser les objets publiés sans les dupliquer, de documenter l’architecture, de la parcourir de l’entreprise jusqu’à l’infrastructure et de l’interroger en langage naturel.
 
-Le produit possède une surface principale, l’**Atelier de vues**, qui est son point d’entrée, et deux postures de cette même surface : **CONCEPTION**, orientée création et modification, et **LECTURE**, orientée navigation, recherche, consultation historique, comparaison, storytelling et revue des interfaces. Un espace secondaire de **Contrôle** héberge inventaires, anomalies et couverture. Archifier est un outil d’architecture, pas une CMDB : on y conçoit en dessinant, et le référentiel se remplit comme conséquence du geste de conception.
+Le produit possède une surface principale, la **Carte de l’entreprise**, qui est son point d’entrée, et une surface d’édition, l’**Atelier de vues**, qui conserve deux postures : **CONCEPTION**, orientée création et modification, et **LECTURE**, orientée navigation, recherche, consultation historique, comparaison, storytelling et revue des interfaces. Un espace secondaire de **Contrôle** héberge inventaires, anomalies et couverture. Archifier est un outil d’architecture, pas une CMDB : on y navigue en zoomant et on y conçoit en dessinant ; le référentiel se remplit comme conséquence du geste de conception.
 
-Le référentiel est la source de vérité ; une vue est une **représentation d’objets du référentiel**. La suppression d’une occurrence graphique ne supprime donc jamais implicitement l’objet qu’elle représente. Inversement, un même objet peut apparaître dans plusieurs vues, plusieurs histoires et plusieurs domaines consommateurs. Cette séparation est ce qui permet à la surface d’être fluide sans que la vérité devienne approximative.
+Le référentiel est la source de vérité ; une carte ou une vue est une **représentation d’objets du référentiel**. La suppression d’une occurrence graphique ne supprime donc jamais implicitement l’objet qu’elle représente. Inversement, un même objet peut apparaître dans plusieurs cartes, plusieurs vues, plusieurs histoires et plusieurs contextes produits. Cette séparation est ce qui permet à la surface d’être fluide sans que la vérité devienne approximative.
 
 ### Statut d’ArchiMate 4
 
 Il faut recadrer explicitement la cible ArchiMate 4. Au **17 novembre 2026**, les sources officielles de The Open Group que j’ai pu vérifier continuent d’indiquer **ArchiMate 3.2 comme dernière version du standard**. Le programme de certification officiel reste nommé « ArchiMate 3 » et The Open Group décrit 3.2 comme la version la plus récente du standard. Je n’ai trouvé aucune spécification ArchiMate 4 publiée officiellement par The Open Group à cette date. citeturn992156search0turn992156search1
 
-La v0.1 doit donc avoir **ArchiMate 4 comme cible explicite**, mais **ne doit inventer aucun métamodèle ArchiMate 4**. L’implémentation initiale doit être conforme au métamodèle ArchiMate 3.2 disponible, avec une architecture permettant de charger ultérieurement un métamodèle `archimate:4.x` sans migration destructive du référentiel.
+La cible doit donc avoir **ArchiMate 4 comme cible explicite**, mais **ne doit inventer aucun métamodèle ArchiMate 4**. L’implémentation initiale doit être conforme au métamodèle ArchiMate 3.2 disponible, avec une architecture permettant de charger ultérieurement un métamodèle `archimate:4.x` sans migration destructive du référentiel.
 
 La décision de conception est donc :
 
-| Sujet | Décision v0.1 |
+| Sujet | Décision cible |
 |---|---|
 | Cible métier | ArchiMate 4 |
 | Métamodèle effectivement implémenté au lancement | ArchiMate 3.2 |
@@ -30,15 +30,561 @@ Cette séparation est d’autant plus importante qu’ArchiMate définit de vrai
 
 BPMN sera basé sur **BPMN 2.0.2**, qui reste la spécification formelle publiée par l’OMG avec métamodèles et XSD normatifs. UML sera basé sur **UML 2.5.1**, également publié avec métamodèle XMI normatif. citeturn339674search6turn339674search7
 
-**Hypothèses MVP1.** Une instance correspond à un référentiel d’entreprise. Les utilisateurs sont identifiés individuellement afin d’assurer auteur, historique et commentaires. Tous les utilisateurs ont exactement les mêmes capacités. Un « domaine » est une unité de responsabilité architecturale, pas une frontière de sécurité.
+**Hypothèses de la cible.** Une instance correspond à un référentiel d’entreprise. Les utilisateurs sont identifiés individuellement afin d’assurer auteur, historique et commentaires. Tous les utilisateurs ont exactement les mêmes capacités. Une **équipe** est l’unité de responsabilité ; un **domaine métier** est une classification, pas une frontière de sécurité.
 
 **Hors périmètre MVP1.** Il n’existe ni RBAC, ni ABAC, ni workflow d’approbation obligatoire, ni restriction de modification par domaine. Aucun connecteur applicatif tiers n’est fourni, à l’exception de l’import/export OpenAPI. La synchronisation temps réel de type édition simultanée caractère par caractère est **reportée au MVP2** (voir « Collaboration temps réel ») ; le moteur BPMN exécutable, la simulation de processus et la conformité UML/BPMN intégrale restent différés.
 
+**Lecture des sections historiques.** Les sections MVP1 conservées ci-dessous parlent encore de « domaine responsable ». Elles se lisent désormais comme **équipe accountable** pour la propriété et **domaine métier** pour la classification. Les FR-055 à FR-081 et l’ADR-023 prévalent.
+
+## Cible v0.4 — Le produit, la carte et le zoom
+
+> **Décision structurante (ADR-023).** Le point d’entrée du produit n’est plus l’Atelier de vues ni un formulaire de domaine. C’est la **Carte de l’entreprise**, une projection navigable du référentiel qui se zoome de l’entreprise jusqu’à l’infrastructure en passant par les produits, les applications et les interfaces. Le **produit** devient l’unité de lecture et de responsabilité ; le **domaine** redevient ce qu’il aurait toujours dû être : une classification.
+
+Cette section définit la cible. Les sections « Périmètre fonctionnel du MVP1 » et « L’Atelier de vues » restent la base historique de l’Atelier ; elles sont désormais **subordonnées** à la carte et à l’ontologie produit. En cas de conflit, la présente section et l’ADR-023 prévalent.
+
+### 1. Le problème que la cible résout
+
+Le MVP3 a corrigé un défaut réel : le lot 1 s’ouvrait sur un inventaire de domaines et se lisait comme une CMDB. Mais l’accueil est devenu **ultra guidé** : il demande de choisir une intention de vue avant d’avoir vu l’entreprise, puis de nommer un domaine. Ce parcours mélange trois questions distinctes :
+
+| Question de l’utilisateur | Réponse attendue | Ce que le MVP3 proposait |
+|---|---|---|
+| « À quoi ressemble mon entreprise ? » | une carte, des produits, des flux | sept intentions de vue |
+| « Qui est responsable de quoi ? » | des équipes, des produits, des interfaces | un domaine, notion ambiguë |
+| « Que se passe-t-il si je change ceci ? » | une traversée produit → application → interface → infrastructure | un canevas à dessiner |
+
+Le résultat est un **guide de création** là où l’utilisateur cherchait une **carte mentale**. La cible inverse le parcours : on voit d’abord l’entreprise, on zoome ensuite, on modifie au niveau où l’on se trouve.
+
+**Ce que la cible supprime.**
+
+- On ne demande plus de créer un domaine avant d’avoir vu l’entreprise.
+- On ne propose plus une intention de vue comme préalable : elle devient une lentille ou une action de détail.
+- On ne dessine plus la carte à la main : elle est générée depuis le référentiel, avec des ancres stables.
+- On ne confond plus produit et application : le produit utilise, l’application est utilisée.
+- On ne réduit plus une interface à une flèche : elle a un fournisseur, des consommateurs, des versions et un contrat.
+
+### 2. Ce que la recherche confirme
+
+La cible ne part pas d’une intuition isolée. Elle assemble des pratiques établies, en corrigeant leurs limites.
+
+| Source | Ce qu’elle apporte | Ce qu’elle ne suffit pas à faire |
+|---|---|---|
+| **ArchiMate 3.2** (The Open Group) | `Product`, `ValueStream`, `Capability`, couches Business/Application/Technology, relations contraintes | `Product` ArchiMate est un composite métier (services + structure passive + contrat), pas une unité de propriété ; il ne compose pas des applications |
+| **C4 model** (Simon Brown) | zoom hiérarchique système → conteneur → composant → code, public adapté | s’arrête au logiciel ; ne couvre ni l’entreprise, ni les value streams, ni l’infrastructure physique |
+| **Team Topologies** (Skelton & Pais) | équipes stream-aligned, plateforme, enabling, sous-système compliqué ; modes d’interaction | ne dit pas comment rattacher une équipe à un produit ni comment visualiser le SI |
+| **TOGAF / Business Architecture Guild** | capability map stable, value stream en étapes, croisement capacité × étape | ne fournit pas de modèle de portefeuille produit ni de navigation |
+| **Product operating model / taxonomies produit** | portefeuille → ligne/famille → produit → plateforme ; le produit n’est pas l’application | les taxonomies commerciales ne couvrent pas les applications et les interfaces |
+| **Pratiques de catalogue d’API** | interface = fournisseur, consommateurs, versions, cycle de vie, contrat | ne couvre pas les interfaces métier ni les interfaces d’infrastructure |
+| **Pratiques de « city map » / paysage applicatif** | géographie stable, pan/zoom, calques et styles, mémoire spatiale | une carte dessinée à la main pourrit ; elle doit être générée depuis le référentiel |
+
+La synthèse est donc : **ArchiMate pour la structure, un modèle natif pour le produit et l’équipe, une carte pour la navigation, des lentilles pour les dimensions, BPMN et UML pour le détail.** Aucune de ces pièces ne remplace les autres.
+
+### 3. Vocabulaire : les distinctions qui manquaient
+
+Le mot « domaine » est utilisé pour désigner au moins quatre choses. La cible les sépare.
+
+| Notion | Question à laquelle elle répond | Définition | Exemple | N’est pas |
+|---|---|---|---|---|
+| **Produit** (`Product`) | Quelle valeur, pour qui, sous quelle responsabilité ? | Unité durable de valeur offerte à des utilisateurs internes ou externes, possédée par une équipe, avec cycle de vie, capacités, applications, interfaces et données. | « Paiement en ligne » | Une application, un projet, un domaine. |
+| **Équipe** (`Team`) | Qui possède et qui opère ? | Unité durable de responsabilité, avec une mission et un type de topologie. | « Équipe Paiements » | Un département, un domaine, un service. |
+| **Value stream** (`ValueStream`) | Quel parcours de bout en bout ? | Séquence d’étapes qui produit un résultat pour un client ou un ayant droit. | « Souscrire un contrat » | Un processus BPMN, un produit. |
+| **Étape de value stream** (`ValueStreamStage`) | Quelle valeur à quelle étape ? | Étape ordonnée du flux, avec la valeur produite. | « Encaisser » | Une tâche BPMN. |
+| **Capacité** (`Capability`) | Que sait faire l’entreprise ? | Aptitude stable et hiérarchique, indépendante de l’organisation. | « Gestion des paiements » | Une fonction, un processus, une application. |
+| **Portefeuille** (`Portfolio`) | Comment investir et grouper ? | Regroupement de produits pour l’investissement ou la navigation. | « Portefeuille Clients » | Un value stream. |
+| **Application** (`Application`) | Quel système logiciel déployé ? | Système composé de composants, exposant et consommant des interfaces, opéré par une équipe. | « Payment Service » | Un produit. |
+| **Composant applicatif** (`ApplicationComponent`) | Quelle partie de l’application ? | Module, service, batch, adaptateur, base ou UI à l’intérieur d’une application. | « Ledger » | Une application. |
+| **Interface** (`Interface`) | Quel contrat à quelle frontière ? | Point d’accès versionné, avec fournisseur, consommateurs, contrat et cycle de vie. | « Payment API v2 » | Une flèche, une intégration. |
+| **Nœud technique** (`TechnologyNode`) | Sur quoi ça tourne ? | Plateforme, serveur, cluster, réseau, base, environnement. | « Cluster paiement » | Une application. |
+| **Domaine métier** (`BusinessDomain`) | Quelle zone de connaissance ? | Classification transversale des produits, capacités et applications. | « Paiements » | Un propriétaire. |
+| **Initiative** (`Initiative`) | Quel changement daté ? | Lot de changement (migration, programme, vague). | « Migration v2 » | Un produit. |
+
+Trois distinctions sont **opposables** :
+
+1. **Produit ≠ application.** Un produit peut utiliser plusieurs applications ; une application peut servir plusieurs produits. Une application partagée est un fait architectural, pas une anomalie à masquer.
+2. **Équipe ≠ domaine.** L’équipe possède et opère ; le domaine classifie. Un domaine ne peut pas remplacer une équipe accountable.
+3. **Value stream ≠ processus.** Le value stream est un flux de valeur agrégé, sans gateway ni exception ; le processus BPMN est sa réalisation détaillée, avec chemins et événements.
+
+**Produit informatique.** Un produit est dit informatique lorsque sa valeur est rendue principalement par du logiciel : application, API, plateforme, données. La cible couvre les produits informatiques **internes** (outils métier, plateformes, services partagés) et **externes** (offres clients, partenaires). C’est le point de départ de la carte : les produits informatiques de l’entreprise, leurs applications, leurs interfaces et leur infrastructure.
+
+Un produit métier qui n’est pas rendu par du logiciel n’est pas un nœud de la carte. Il peut apparaître comme acteur, contexte ou produit ArchiMate dans une vue authored, mais il ne dilue pas la carte des produits informatiques.
+
+**Hiérarchie de portefeuille.** Un portefeuille regroupe des produits pour l’investissement ou la navigation. Une ligne ou famille de produits est un regroupement facultatif, utilisé quand le portefeuille est trop large. La cible s’arrête à **trois niveaux** : portefeuille → produit → sous-produit. Les taxonomies commerciales fines (bundle, variante, SKU) ne sont pas modélisées : elles appartiennent au système de gestion produit, pas à l’architecture d’entreprise.
+
+### 4. Ontologie et règles
+
+```text
+Entreprise
+ ├─ Unités organisationnelles (optionnel)
+ ├─ Équipes ──possède──> Produits
+ │            └──opère──> Applications
+ ├─ Value streams ──étapes──> [Produits, Capacités]
+ ├─ Portefeuilles ──regroupent──> Produits
+ ├─ Capacités ──réalisées par──> Produits
+ │             └──supportées par──> Applications
+ ├─ Produits ──utilisent──> Applications ──composées de──> Composants
+ │     ├──exposent/consomment──> Interfaces ──versions──> Contrats
+ │     └──contribuent à──> Étapes de value stream
+ ├─ Applications ──déployées sur──> Nœuds techniques
+ └─ Domaines métier ──classifient──> Produits, Capacités, Applications
+```
+
+Les relations et cardinalités exactes sont fixées par le contrat `docs/contracts/C-10-produit-carte-navigation.md`. Les règles fonctionnelles suivantes sont, elles, directement vérifiables en revue.
+
+| ID | Règle |
+|---|---|
+| `PRD-001` | Un produit a exactement une équipe accountable. |
+| `PRD-002` | Un produit contribue à au moins une étape de value stream, ou porte l’anomalie `PRODUCT_WITHOUT_VALUE_STAGE`. |
+| `PRD-003` | Un produit réalise au moins une capacité, ou porte l’anomalie `PRODUCT_WITHOUT_CAPABILITY`. |
+| `PRD-004` | Un produit peut être décomposé en sous-produits, sur trois niveaux maximum. |
+| `PRD-005` | Un produit **utilise** des applications ; il ne les possède pas. |
+| `PRD-006` | Une application utilisée par plus d’un produit est marquée `shared` et exposée comme couplage. |
+| `PRD-007` | Un produit plateforme expose au moins une interface à d’autres produits. |
+| `PRD-008` | Une équipe peut posséder plusieurs produits ; un produit n’a qu’une équipe accountable. |
+| `PRD-009` | Une application a exactement une équipe qui l’opère. |
+| `PRD-010` | Une équipe peut contribuer à un produit sans le posséder ; la contribution est explicite. |
+| `PRD-011` | Une équipe `ENABLING` ne possède pas d’application en propre. |
+| `PRD-012` | Une étape de value stream appartient à un seul value stream. |
+| `PRD-013` | Une étape est réalisée par un processus BPMN ou décrite par un document ; le lien est `REALIZES` ou `DESCRIBES`. |
+| `PRD-014` | Un value stream n’est pas un processus : il agrège des chemins, il ne porte pas de gateway. |
+| `PRD-015` | Un produit peut contribuer à plusieurs étapes ; la contribution est datable. |
+| `PRD-016` | Une capacité est réalisée par des produits, supportée par des applications ; elle n’est possédée par aucune application. |
+| `PRD-017` | Une capacité peut être déclinée, mais la profondeur s’arrête là où la décision de portefeuille ne change plus. |
+| `PRD-018` | Une capacité sans produit réalisateur porte l’anomalie `CAPABILITY_WITHOUT_REALIZATION`. |
+| `PRD-019` | Le cycle de vie d’une application est distinct de celui du produit qui l’utilise ; l’un ne se déduit pas de l’autre. |
+| `PRD-020` | Une application peut servir plusieurs produits ; le produit ne la possède pas. |
+| `PRD-021` | Une application est composée de composants, ou est une feuille assumée (COTS/SaaS). |
+| `PRD-022` | Une application est déployée sur au moins un nœud, ou porte l’anomalie `APPLICATION_WITHOUT_DEPLOYMENT`. |
+| `PRD-023` | Un composant n’est pas déployable seul ; c’est l’application qui l’est. |
+| `PRD-024` | Une interface a exactement un fournisseur (produit, application, composant ou nœud). |
+| `PRD-025` | Une interface a au moins une version pour être publiée. |
+| `PRD-026` | Une consommation référence une **version** d’interface, jamais l’interface nue. |
+| `PRD-027` | Une interface `PRODUCT` est exposée par un produit ; une interface `INTERNAL` peut rester interne à une application. |
+| `PRD-028` | Une interface applicative peut être exposée au niveau produit sans être dupliquée. |
+| `PRD-029` | Une interface d’infrastructure a un fournisseur `TechnologyNode` et n’est jamais `PARTNER` ou `PUBLIC`. |
+| `PRD-030` | Une rupture de contrat crée une nouvelle version ; les consommateurs restent sur l’ancienne jusqu’à migration explicite. |
+| `PRD-031` | Un domaine métier ne peut pas être propriétaire ; l’équipe accountable reste requise. |
+| `PRD-032` | Un produit sans application est autorisé en découverte, mais signalé comme incomplet. |
+| `PRD-033` | Un produit a un **value stream principal** (ou un portefeuille de repli) qui détermine son quartier d’accueil à L0. Il n’apparaît qu’une fois sur la carte ; ses contributions aux autres value streams sont des liens de contexte, jamais des duplications. |
+
+**Heuristique d’alignement équipe / produit.** Un produit `CUSTOMER` ou `INTERNAL` est généralement possédé par une équipe **stream-aligned** ; un produit `PLATFORM` par une équipe **plateforme** ; un produit `DATA` par une équipe plateforme ou stream-aligned ; une équipe **enabling** ne possède pas de produit en propre, elle aide les autres à élever leur capacité. Ce n’est pas une contrainte de validation, mais un signal de cohérence que la carte peut afficher.
+
+### 5. La carte de l’entreprise
+
+#### 5.1 Définition
+
+La carte est une **projection générée, à géographie stable, du référentiel**. Elle n’est :
+
+- ni un diagramme authored : on ne la dessine pas à la main ;
+- ni un inventaire : elle ne présente pas de table comme contenu principal ;
+- ni un tableau de bord : les compteurs sont des symptômes, pas le contenu.
+
+Elle est une **carte** au sens où elle donne des repères stables, se parcourt au zoom et accepte des calques. La métaphore urbaine est une grammaire de lecture, pas une décoration :
+
+| Élément de carte | Objet du référentiel | Rôle |
+|---|---|---|
+| **Quartier** | Value stream, portefeuille ou unité d’organisation | Périmètre navigable |
+| **Bâtiment** | Produit | Unité de valeur et de responsabilité |
+| **Bloc / pièce** | Application | Système logiciel à l’intérieur du produit |
+| **Étage / local** | Composant applicatif | Partie de l’application |
+| **Utilitaire** | Produit plateforme, nœud partagé | Capacité transverse |
+| **Route** | Interface ou flux agrégé | Dépendance entre fournisseur et consommateur |
+| **Port** | Interface exposée | Point d’entrée sur une frontière |
+| **Panneau** | Label, état, criticité, propriétaire | Information lisible sans ouvrir de fiche |
+
+La carte ne crée pas de concept métier : un quartier n’est pas un objet, c’est le rendu d’un value stream ou d’un portefeuille. Un bâtiment est un produit ; un bloc est une application. Un bloc est dessiné dans la frontière d’un produit parce qu’il est **utilisé dans ce contexte**, pas parce qu’il appartient au produit : une application partagée apparaît dans plusieurs produits, et c’est précisément ce que la carte doit rendre visible. Cette discipline évite la « carte jolie mais fausse ».
+
+#### 5.2 Les cinq niveaux
+
+| Niveau | Nom | Périmètre typique | Ce que l’on voit | Ce que l’on ne voit pas | Clic |
+|---|---|---|---|---|---|
+| **L0** | Entreprise | Toute l’entreprise | Value streams/quartiers, produits, produits plateformes, flux produit agrégés, criticité | Applications individuelles, composants, nœuds | Quartier → L1, produit → L2, route → panneau d’interfaces |
+| **L1** | Portefeuille / quartier | Un value stream, un portefeuille, une BU | Produits du périmètre, plateformes partagées, interfaces produit à produit, capacités en chaleur | Composants, infrastructure | Produit → L2 |
+| **L2** | Produit | Un produit | Frontière, ports, applications, interfaces applicatives, produits externes, dépendances | Composants internes, nœuds individuels | Application → L3, port → interface |
+| **L3** | Application | Une application | Composants, services, interfaces, données, déploiement | Produits, value streams | Composant → détail, nœud → L4 |
+| **L4** | Infrastructure | Un nœud, un environnement, une zone réseau | Nœuds, environnements, réseaux, applications déployées, interfaces techniques | Composants métier | Nœud → détail, application → L3 |
+
+Le zoom est **sémantique** : franchir un seuil change la requête et l’agrégation, pas seulement l’échelle du dessin. Il est aussi **géographique** : le cadrage reste continu, l’objet cliqué reste au même endroit, le fil d’Ariane situe le niveau courant.
+
+À L1, la **liste des produits du périmètre** est toujours accessible (panneau latéral ou mode liste) avec nom, équipe, cycle de vie, criticité, nombre d’applications et d’interfaces. La carte reste le contenu principal ; la liste est un index de lecture, pas un tableau de bord.
+
+Lorsque le quartier est un value stream, ses étapes forment une **bande de lecture** en haut du quartier ; les produits restent dans une zone unique et sont reliés aux étapes par des arêtes de contribution. Un produit n’est jamais dupliqué dans plusieurs bandes : sa contribution multiple se lit par ses arêtes et ses badges.
+
+#### 5.3 Géographie stable
+
+- Chaque objet reçoit une **ancre** (`MapAnchor`) par niveau. Une ancre est persistée ; elle n’est pas le layout d’une vue authored.
+- Un objet sans ancre reçoit une position déterministe par une heuristique de placement. Deux sessions produisent la même carte.
+- Un produit n’apparaît **qu’une fois** à L0, dans son value stream principal (ou son portefeuille de repli). Ses contributions aux autres value streams sont des liens de contexte, jamais des duplications. Sans value stream principal, il est placé dans « Non rattaché » et signalé.
+- Déplacer un objet est une **édition explicite** : l’ancre devient `pinned=true`.
+- Changer de lentille, de filtre ou de date **ne déplace rien**. C’est la garantie de la mémoire spatiale.
+- Les nouveaux objets sont placés dans leur quartier ou leur frontière, avec évitement de collision visuel ; le déplacement manuel reste possible.
+- Un conflit d’ancre est résolu visuellement, jamais par une écriture implicite.
+
+#### 5.4 Arêtes et agrégation
+
+Une route représente un ensemble de consommations d’interfaces. Elle n’est pas une flèche anonyme :
+
+- à L0, une route agrège les interfaces entre les applications de deux produits ;
+- à L1, elle agrège les interfaces du périmètre et distingue les plateformes ;
+- à L2, elle montre les interfaces applicatives réelles et les ports du produit ;
+- à L3, elle montre les interfaces de composants ;
+- à L4, elle montre les interfaces techniques et les déploiements.
+
+Toute route agrégée est **dépliable** : le clic liste les interfaces, versions, fournisseurs, consommateurs et états. Une route non dépliable est un défaut (`MAP-005`). Une arête stratégique saisie manuellement est marquée comme telle et ne remplace jamais une arête dérivée.
+
+#### 5.5 Contexte, focus, profondeur
+
+- Le périmètre courant est pleinement rendu ; les objets externes restent visibles en **contexte atténué** pour montrer les dépendances sortantes.
+- Un objet sélectionné met en évidence ses chemins entrants et sortants, sans quitter la carte.
+- Le fil d’Ariane est toujours visible : `Entreprise › Commande client › Paiement › Payment Service › Cluster paiement`.
+- Une mini-carte situe le viewport ; la recherche et la palette de commandes permettent de sauter à un objet et de zoomer au bon niveau.
+- Une vue « liste » est disponible pour l’accessibilité et le contrôle, mais elle n’est jamais le contenu principal.
+
+#### 5.6 Lire et éditer sur la carte
+
+La carte a deux postures, comme l’Atelier :
+
+- **Lecture** : chrome réduit, pas de poignées, navigation par zoom, panneaux contextuels, liens profonds.
+- **Édition** : création et modification **sur place** d’un produit, d’une équipe, d’une application, d’une interface, d’un rattachement de capability ou d’une étape de value stream. Aucun formulaire modal, aucun changement de route obligatoire.
+
+Créer depuis la carte reste un geste explicite : une forme vide n’est pas un objet ; un clic sur « Nouveau produit » ouvre un panneau latéral non bloquant, avec nom, équipe, type et cycle de vie. La formalisation peut être différée, la publication non.
+
+### 6. Les lentilles : plusieurs dimensions, une géographie
+
+Une **lentille** est une projection du même graphe. Elle répond à une question et encode une dimension. Les lentilles se **superposent** : couleur par équipe, arêtes par interface, filtre par cycle de vie.
+
+| Lentille | Question | Encodage principal | Arêtes | Niveaux |
+|---|---|---|---|---|
+| **Valeur** | Quel parcours, quelles étapes, quels produits ? | Quartiers = value streams, étapes = bandes | Contribution produit → étape | L0, L1, L2 |
+| **Capacité** | Quelles capacités, couvertes par quoi ? | Chaleur de couverture et de maturité | Réalisation, support | L0, L1, L2 |
+| **Produit** | Quel portefeuille, quel cycle de vie, quelle criticité ? | Couleur = lifecycle/criticality | Dépendances produit | L0, L1, L2 |
+| **Organisation** | Qui possède quoi, où sont les dépendances ? | Couleur = équipe, frontières d’équipe | Interfaces inter-équipes | L0, L1, L2 |
+| **Applicatif** | Quelles applications, quels composants, quel âge ? | Couleur = type/âge | Interfaces applicatives | L1, L2, L3 |
+| **Interface** | Qui expose/consomme quoi, quelles versions ? | Ports + routes, filtre catégorie/état | Consommations | L0, L1, L2, L3, L4 |
+| **Technologie** | Quelles plateformes, quels nœuds, quelle obsolescence ? | Couleur = type/âge/environnement | Déploiement, réseau | L2, L3, L4 |
+| **Données** | Quels objets, quels flux, quelle classification ? | Couleur = classification | Échanges de données | L1, L2, L3 |
+| **Temps** | Où en est-on à T, que se passe-t-il ? | Motif = scheduled/active/expired | Arêtes datées | Tous |
+| **Risque / coût** | Où sont les risques, coûts, dettes ? | Chaleur | Propagation de risque | L0, L1, L2, L3 |
+
+Règles :
+
+- Au moins une lentille est active ; la lentille par défaut est `PRODUIT` à L0/L1 et `INTERFACE` à L2/L3.
+- Une lentille ne modifie jamais la position, la taille ou la hiérarchie.
+- Une lentille indisponible au niveau courant est grisée avec sa raison, pas silencieusement retirée.
+- La légende est toujours accessible et nomme la lentille, l’encodage et les états.
+- Les sept intentions de l’Atelier deviennent des **lentilles ou des actions de détail** : « Applicatif » → lentille applicative ; « Processus » → ouverture BPMN d’une étape ; « Revue d’interface » → lentille interface. Elles ne sont plus un préalable à la création d’un domaine.
+
+### 7. Les pages : du produit à l’infrastructure
+
+Chaque page est une **carte à son niveau**, pas un formulaire. Un panneau latéral porte les propriétés ; le contenu principal reste spatial.
+
+#### 7.1 Page produit
+
+- **Bandeau** : nom, type, cycle de vie, criticité, équipe accountable, value streams, domaine métier, complétude.
+- **Carte L2** : frontière du produit, ports d’interfaces exposées, applications à l’intérieur, produits/applications externes en contexte, socle technique en bas.
+- **Sections** : Vue d’ensemble · Valeur & clients · Capacités · Applications · Interfaces · Données · Équipe & organisation · Cycle de vie & roadmap · Risques & conformité · Vues, Stories, décisions.
+- **Actions** : ajouter une application, exposer une interface, rattacher une capacité, changer le cycle de vie, ouvrir une vue authored, lancer une analyse d’impact.
+- **État vide** : « Ce produit n’a pas encore d’application. Ajoutez la première, ou rattachez-en une existante. »
+
+#### 7.2 Page équipe
+
+- **Bandeau** : nom, type de topologie, mission, unité d’organisation.
+- **Carte** : produits possédés, applications opérées, interfaces fournies et consommées, dépendances vers d’autres équipes.
+- **Sections** : Produits · Applications · Interfaces · Dépendances · Modes d’interaction · Charge & criticité.
+- **Signal** : une équipe qui possède trop de produits critiques ou trop d’applications partagées est un signal de charge cognitive, pas une faute.
+
+#### 7.3 Page value stream
+
+- **Bandeau** : nom, client, proposition de valeur, équipe propriétaire.
+- **Carte L1** : étapes de gauche à droite, produits contributeurs, capacités habilitantes, interfaces critiques, applications de support.
+- **Sections** : Étapes · Produits · Capacités · Interfaces critiques · Processus BPMN · Indicateurs · Initiatives.
+- **Action** : ouvrir le processus BPMN d’une étape, ou créer le lien `REALIZES`.
+
+#### 7.4 Page capacité
+
+- **Bandeau** : nom, niveau, maturité, criticité.
+- **Carte** : hiérarchie de capacités, chaleur de couverture, produits réalisateurs, applications de support, étapes de value stream habilitées.
+- **Deux lectures** : la carte des produits qui réalisent la capacité, et la **capability map** hiérarchique (grille) qui montre la décomposition et la couverture. Les deux lectures partagent le même modèle ; aucune ne duplique les objets.
+- **Sections** : Décomposition · Couverture · Produits · Applications · Value streams · Écarts et duplications · Roadmap.
+- **Usage** : identifier les capacités sans produit, les duplications d’applications et les investissements à arbitrer.
+
+#### 7.5 Page application
+
+- **Bandeau** : nom, type, cycle de vie, criticité, équipe opératrice, produits servis, partagée ou non.
+- **Carte L3** : composants, services, interfaces, données, déploiement, consommateurs.
+- **Sections** : Vue d’ensemble · Composants · Interfaces · Données · Déploiement · Produits servis · Consommateurs · Risques & dette · Historique.
+- **Notations** : ArchiMate par défaut ; UML Component, Class ou Sequence pour le détail.
+
+#### 7.6 Page infrastructure
+
+- **Bandeau** : nom, type, environnement, équipe, cycle de vie, criticité.
+- **Carte L4** : nœuds, réseaux, environnements, applications déployées, interfaces techniques.
+- **Sections** : Nœuds · Applications déployées · Interfaces techniques · Résilience · Obsolescence · Coûts · Incidents.
+- **Usage** : répondre à « qu’est-ce qui tourne où ? », « qui dépend de ce nœud ? », « qu’est-ce qui est obsolète ? ».
+
+#### 7.7 Page interface
+
+La page interface existante est conservée et enrichie :
+
+- fournisseur et consommateurs **objets** (produit, application, composant, nœud), et non seulement des domaines ;
+- niveau, catégorie, type, exposition, criticité, classification de données ;
+- versions, calendrier, contrat, consommateurs par version, impact, historique ;
+- lien vers le produit qui expose l’interface et vers les applications qui la consomment.
+
+### 8. Les interfaces, à tous les niveaux
+
+Une interface est un **objet de gouvernance**, pas une arête. Elle existe à trois niveaux :
+
+| Niveau | Frontière | Exemple | Binding possible |
+|---|---|---|---|
+| **BUSINESS** | Produit / partenaire | « Demander un remboursement » | Business Service / Business Interface / Product |
+| **APPLICATION** | Application / composant | « Payment API » | Application Service / Application Interface + OpenAPI |
+| **INFRASTRUCTURE** | Nœud / réseau / plateforme | « Flux événements orders.v1 » | Technology Service / Technology Interface |
+
+Propriétés obligatoires : fournisseur, niveau, catégorie, type, versions, exposition, criticité. Les consommateurs sont optionnels mais suivis : une interface sans consommateur connu est un signal, pas une erreur.
+
+Règles de lecture :
+
+- **Interface produit** : une interface `exposure=PRODUCT` est visible sur la frontière du produit et sur la carte L2. Elle n’est pas dupliquée depuis l’interface applicative : c’est la même interface, exposée.
+- **Interface applicative** : elle existe entre applications ou composants. Elle peut être interne, exposée au produit, ou consommée par un autre produit.
+- **Interface d’infrastructure** : elle relie des nœuds ou des applications à des nœuds. Elle n’est jamais exposée à un partenaire.
+- **Consommation** : elle référence une version. Une consommation d’une version expirée est une anomalie visible (`DEPENDENCY_ON_EXPIRED_INTERFACE`).
+- **Agrégation** : une route de carte agrège des consommations ; elle est toujours dépliable vers les interfaces et versions réelles.
+- **Contrat** : OpenAPI pour HTTP, AsyncAPI ou autre pour les événements ; aucun faux contrat OpenAPI pour une interface non HTTP.
+
+### 9. ArchiMate, BPMN, UML : la bonne notation au bon niveau
+
+| Niveau | Notation par défaut | Notations de détail | Ce que l’on gagne |
+|---|---|---|---|
+| **L0 Entreprise** | ArchiMate (Business, Strategy) | — | Value streams, produits, capacités, flux |
+| **L1 Portefeuille** | ArchiMate | — | Produits, plateformes, interfaces produit |
+| **L2 Produit** | ArchiMate (Business + Application) | BPMN pour un processus de produit | Applications, services, ports, interfaces |
+| **L3 Application** | ArchiMate (Application) | UML Component / Class / Sequence | Composants, services, données, contrats |
+| **L4 Infrastructure** | ArchiMate (Technology) | UML Deployment | Nœuds, réseaux, artefacts, déploiement |
+
+Règles :
+
+- **ArchiMate est la colonne vertébrale.** La carte ne mélange pas les notations au même niveau : elle utilise ArchiMate pour la structure, puis ouvre BPMN ou UML dans un panneau ou une vue de détail.
+- **BPMN n’apparaît pas à L0/L1.** Il s’ouvre depuis une étape de value stream ou un processus de produit, avec un lien `REALIZES` ou `DESCRIBES`.
+- **UML n’apparaît pas à L0/L1.** Il s’ouvre depuis une application, un composant ou une interface, avec un lien `IMPLEMENTS` ou `REALIZES`.
+- **Un objet, plusieurs représentations.** Un composant applicatif et un composant UML restent deux objets distincts reliés par une relation native ; ils ne fusionnent jamais silencieusement.
+- **Le métamodèle valide.** Une relation interdite est refusée avant création, même si elle est visuellement pratique.
+
+> **Produit natif et produit ArchiMate.** Le `Product` natif ne remplace pas l'élément ArchiMate `Product`. L'élément ArchiMate porte la composition de services, le contrat et la sémantique de l'offre ; le produit natif porte la propriété (équipe), le cycle de vie, les applications, les interfaces et les capacités. Les deux sont reliés par `REALIZES` ou `REFINES`, jamais fusionnés. Une carte ne montre qu'un produit natif ; une vue authored peut montrer l'élément ArchiMate correspondant.
+
+> **Application native et composant ArchiMate.** Une `Application` native est portée par un ou plusieurs `ApplicationComponent` ArchiMate ; un composant natif correspond à un `ApplicationComponent` (ou à un service exposé). L'application native porte l'équipe opératrice, le cycle de vie, les produits servis et les interfaces ; l'élément ArchiMate porte la structure et les relations. Aucun objet n'est dupliqué : la carte agrège, la vue authored détaille.
+
+> **Note de profil (écart E-04).** Le profil `archimate:3.2` livré au MVP3 ne contient pas la couche Strategy : `Capability` et `ValueStream` n’y sont pas encore disponibles, alors qu’ils font partie d’ArchiMate 3.2. La cible doit **compléter le profil** avec ces classes officielles avant de présenter les lentilles Valeur/Capacité comme des bindings ArchiMate. En attendant, `Capability` et `ValueStream` existent comme objets **natifs** et sont rendus par le modèle natif : aucune classe n’est inventée, aucune donnée n’est perdue. Voir `technical-specifications-lot3.md` §E-04.
+
+### 10. Le parcours de zoom : de la carte au contrat
+
+Le parcours de référence, démontrable en recette :
+
+1. **J’ouvre `/`.** Je vois la carte de l’entreprise : des quartiers (value streams), des bâtiments (produits), des utilités (plateformes), des routes (flux).
+2. **Je clique sur le quartier « Commande client ».** La carte zoome en L1 : les produits du value stream, leurs interfaces, les plateformes partagées.
+3. **Je clique sur le produit « Paiement ».** La carte zoome en L2 : la frontière du produit, ses ports, ses applications, ses dépendances externes.
+4. **Je clique sur le port « Payment API v2 ».** Le panneau interface s’ouvre : fournisseur, consommateurs, versions, contrat, calendrier.
+5. **Je clique sur un consommateur « Checkout ».** La carte zoome en L3 : les composants de l’application, ses interfaces, ses données, son déploiement.
+6. **Je clique sur un nœud « Cluster paiement ».** La carte zoome en L4 : les applications déployées, les interfaces techniques, l’environnement.
+7. **Je change de lentille.** « Organisation » colore par équipe et montre les dépendances inter-équipes ; « Temps » montre la migration v1 → v2 ; « Capacité » montre la couverture. La géographie ne bouge pas.
+8. **Je demande un impact.** « Que casse la fin de Payment API v1 ? » La carte surligne les consommateurs, les produits impactés, les équipes et les échéances, avec un chemin vers chaque objet.
+
+Aucun écran d’inventaire n’a été ouvert. Le référentiel s’est pourtant enrichi de produits, d’équipes, d’applications, d’interfaces et de liens.
+
+### 11. Migration depuis le modèle MVP3
+
+| Objet MVP3 | Devient | Règle |
+|---|---|---|
+| `Domain` | `BusinessDomain` | Conservé comme classification ; ne possède plus d’objets. |
+| `responsibleDomainId` | `businessDomainId` | Conservé pour l’historique ; les nouveaux objets utilisent `accountableTeamId`. |
+| Page `/library/domains/:id` | `/business-domains/:id` | Ancienne route conservée en alias. |
+| `ViewIntent` | `ViewIntent` (Atelier) + `MapLens` (Carte) | Aucune fusion ; les deux catalogues sont distincts. |
+| Interface `providerDomainId` | `providerObjectId` + `businessDomainId?` | Le fournisseur peut être un produit, une application, un composant ou un nœud. |
+| Diagramme authored | Vue authored | Inchangé ; il reste éditable dans l’Atelier. |
+| Carte | Nouvel objet de projection | Pas de migration de layout ; la carte a ses propres ancres. |
+
+La migration est **guidée et additive** : le produit propose de rattacher un ancien domaine à une équipe et à un produit, mais ne supprime jamais l’objet ni son historique. Un domaine sans équipe reste visible avec l’anomalie `PRD-031`.
+
+### 12. Exigences de la cible
+
+Ces exigences complètent FR-001 à FR-054. Elles prévalent en cas de conflit avec l’entrée « Atelier ».
+
+| ID | Exigence |
+|---|---|
+| FR-055 | Ouvrir `/` sur la **Carte de l’entreprise**, et non sur un inventaire, un tableau de bord ou une galerie d’intentions. |
+| FR-056 | Naviguer de l’entreprise au value stream/portefeuille, puis au produit, à l’application et à l’infrastructure par zoom sémantique, avec fil d’Ariane et lien profond. |
+| FR-057 | Gérer les **produits** comme objets de premier rang : type, cycle de vie, criticité, équipe accountable, value streams, capacités. |
+| FR-058 | Gérer les **équipes** comme objets de premier rang : topologie, mission, produits possédés, applications opérées, interfaces fournies/consommées. |
+| FR-059 | Gérer les **value streams** et leurs étapes, avec produits contributeurs, capacités habilitantes et processus BPMN liés. |
+| FR-060 | Gérer les **capacités** comme une hiérarchie stable, avec réalisation par les produits, support par les applications, couverture et écarts. |
+| FR-061 | Gérer les **applications** comme systèmes utilisés par des produits, composés de composants, déployés sur des nœuds. |
+| FR-062 | Afficher les **interfaces** à tous les niveaux, avec fournisseur, consommateurs, niveau, type, version, exposition, criticité et état temporel. |
+| FR-063 | Proposer des **lentilles** (valeur, capacité, produit, organisation, applicatif, interface, technologie, données, temps, risque) qui changent l’encodage et les filtres sans changer la géographie. |
+| FR-064 | Appliquer un **curseur temporel** à la carte, aux produits, aux applications, aux interfaces et aux initiatives. |
+| FR-065 | Créer et modifier un produit, une équipe, une application, une interface, une étape ou un rattachement de capacité **depuis la carte**, sans modal ni changement de route obligatoire. |
+| FR-066 | Fournir une **page produit** centrée sur une carte L2 et un panneau de valeur, capacités, applications, interfaces, données, risques, équipe et roadmap. |
+| FR-067 | Fournir une **page équipe** avec produits, applications, interfaces, dépendances et charge. |
+| FR-068 | Fournir une **page value stream** avec étapes, produits, capacités, interfaces critiques et processus BPMN. |
+| FR-069 | Fournir une **page capacité** avec maturité, couverture, duplications, écarts et roadmap. |
+| FR-070 | Fournir une **page application** avec composants, interfaces, données, déploiement, produits servis et consommateurs. |
+| FR-071 | Fournir une **page infrastructure** avec nœuds, environnements, réseaux, applications déployées et interfaces techniques. |
+| FR-072 | Fournir une **analyse d’impact** traversant produit, application, interface, équipe et infrastructure, avec chemins et effets temporels. |
+| FR-073 | Utiliser **ArchiMate** comme notation par défaut, **BPMN** pour le détail des processus et **UML** pour le détail des applications et interfaces ; ne jamais imposer une notation à un niveau où elle n’apporte pas de précision. |
+| FR-074 | Garantir la **traçabilité inter-notations** par des relations natives, sans duplication d’objets. |
+| FR-075 | Importer produits, applications et interfaces depuis CSV/JSON/OpenAPI et réconcilier sans doublon. |
+| FR-076 | Exporter une carte (SVG/Markdown) avec niveau, lentille, date, légende et sources. |
+| FR-077 | Accompagner le premier lancement par un parcours qui crée un **premier produit** et une **première équipe**, pas un domaine ni une intention. |
+| FR-078 | Permettre à la recherche et à la palette de commandes de sauter à tout objet et de zoomer au bon niveau. |
+| FR-079 | Signaler les anomalies de modèle : produit sans équipe, application sans opérateur, interface sans fournisseur ou version, consommation d’une version expirée, application partagée non marquée, capacité sans réalisation, produit orphelin, domaine utilisé comme propriétaire. |
+| FR-080 | Garantir l’accessibilité de la carte : navigation clavier entre niveaux, liste alternative, lecteur d’écran, réduction de mouvement. |
+| FR-081 | Capturer une carte (périmètre, niveau, lentilles, date, focus) dans une Story ou une Revue, avec sa révision, sans dupliquer les objets. |
+
+#### 12.1 Révision des exigences existantes
+
+| Exigence | Lecture MVP3 | Lecture cible v0.4 |
+|---|---|---|
+| FR-001 | Créer, modifier, archiver et consulter des domaines. | Créer des produits, équipes, value streams et applications ; le domaine devient une classification. |
+| FR-002 | Affecter un `responsibleDomainId`. | Affecter un `accountableTeamId` et, facultativement, un `businessDomainId`. |
+| FR-040 | L’Atelier est le point d’entrée. | La Carte est le point d’entrée ; l’Atelier est la surface d’édition des vues authored. |
+| FR-046 | Démarrer une vue depuis une intention. | La carte se lit par niveau et lentille ; une vue authored garde une intention. |
+| FR-048 | Chaque vue a une intention, un périmètre, une notation, un cadrage. | La carte a un niveau, un périmètre, des lentilles, une date et des ancres ; la vue authored garde son identité. |
+| FR-052 | L’inventaire est secondaire. | Inchangé : la carte n’est pas un inventaire ; le Contrôle reste secondaire. |
+| FR-054 | Onboarding Atelier en moins de trois minutes. | Onboarding Carte : premier produit et première équipe en moins de trois minutes. |
+
+### 13. Scénarios d’acceptation
+
+```gherkin
+Scenario: Ouvrir la carte de l'entreprise
+  Given un référentiel contenant des value streams, des produits et des équipes
+  When l'utilisateur ouvre "/"
+  Then la Carte de l'entreprise s'affiche
+  And aucun tableau d'inventaire n'est le contenu principal
+  And aucun formulaire de domaine n'est demandé
+```
+
+```gherkin
+Scenario: Zoomer de l'entreprise à l'infrastructure
+  Given la carte est ouverte au niveau ENTERPRISE
+  When l'utilisateur clique sur "Commande client", puis "Paiement", puis "Payment Service", puis "Cluster paiement"
+  Then le fil d'Ariane affiche les cinq niveaux
+  And chaque niveau montre uniquement les objets de son niveau
+  And le retour au niveau précédent conserve le cadrage
+```
+
+```gherkin
+Scenario: Lire les interfaces d'un produit
+  Given le produit "Paiement" expose "Payment API v2"
+  And l'application "Checkout" consomme "Payment API v2"
+  When l'utilisateur ouvre la carte L2 du produit
+  Then "Payment API v2" apparaît comme port sur la frontière
+  And la route vers "Checkout" est visible
+  And le clic sur la route liste l'interface, sa version et son consommateur
+```
+
+```gherkin
+Scenario: Changer de lentille sans perdre la géographie
+  Given la carte L1 du value stream "Commande client"
+  When l'utilisateur passe de la lentille PRODUIT à la lentille ORGANISATION
+  Then les produits sont colorés par équipe
+  And aucun produit n'a changé de position
+```
+
+```gherkin
+Scenario: Créer un produit depuis la carte
+  Given la carte L1 d'un value stream
+  When l'utilisateur choisit "Nouveau produit"
+  And nomme le produit, choisit son équipe et son type
+  Then le produit apparaît sur la carte
+  And aucun formulaire modal n'a été ouvert
+  And la route n'a pas changé
+```
+
+```gherkin
+Scenario: Ouvrir un processus BPMN depuis une étape de value stream
+  Given l'étape "Encaisser" est réalisée par un processus BPMN
+  When l'utilisateur ouvre l'étape
+  Then le processus BPMN s'ouvre dans une vue de détail
+  And le lien REALIZES est conservé
+  And aucun objet BPMN n'est dupliqué
+```
+
+```gherkin
+Scenario: Ouvrir un composant UML depuis une application
+  Given l'application "Payment Service" a un composant applicatif "Ledger"
+  And ce composant est implémenté par un composant UML
+  When l'utilisateur ouvre le composant
+  Then le composant UML s'ouvre dans une vue de détail
+  And le lien IMPLEMENTS est conservé
+```
+
+```gherkin
+Scenario: Analyser l'impact d'une fin de version
+  Given "Payment API v1" est consommée par "Checkout"
+  And "Payment API v1" expire le 30 juin 2027
+  When l'utilisateur demande l'impact au 1er juillet 2027
+  Then "Checkout" est signalée comme impactée
+  And le produit "Paiement" et l'équipe qui opère "Checkout" sont cités
+  And chaque impact possède un lien vers l'objet source
+```
+
+```gherkin
+Scenario: Migrer un domaine legacy
+  Given un domaine "Paiements" possède des éléments dans le référentiel MVP3
+  When la migration est lancée
+  Then le domaine devient un domaine métier
+  And l'utilisateur peut le rattacher à une équipe et à un produit
+  And aucun objet ni historique n'est supprimé
+  And l'ancienne route reste résolvable
+```
+
+### 14. Trajectoire
+
+| Vague | Contenu | Critère de sortie |
+|---|---|---|
+| **V0.4.0 — Socle produit et carte** | Ontologie Product/Team/ValueStream/Capability/Application/Interface ; carte L0–L2 ; pages produit, équipe, value stream, interface ; lentille interface ; création inline ; import CSV/JSON/OpenAPI ; onboarding premier produit. | Un utilisateur ouvre `/`, voit la carte, zoome jusqu'à une interface et crée un produit sans formulaire. |
+| **V0.4.1 — Profondeur et dimensions** | L3–L4 ; page application et infrastructure ; lentilles capacité, organisation, temps, risque ; analyse d'impact ; export de carte. | Le parcours entreprise → infrastructure est complet et l'impact d'une version est démontrable. |
+| **V0.5 — Détail et récit** | BPMN depuis les étapes ; UML depuis les applications ; Stories et Revues ancrées sur la carte ; lentilles données et coût ; collaboration. | Une Story traverse carte, BPMN et UML sans dupliquer les objets. |
+| **Différé** | Découverte automatique, synchronisation CMDB, BPMN exécutable, UML complet, RBAC/ABAC, portail externe. | Décision ultérieure. |
+
+### 15. Risques et arbitrages
+
+| Risque | Mitigation |
+|---|---|
+| **La carte devient un bel inventaire.** | Projection générée, clic profond, édition inline, aucune table comme contenu principal. |
+| **Produit et application se confondent.** | `PRD-005` et `PRD-020` : le produit utilise, ne possède pas ; l'application partagée est un signal. |
+| **Le modèle devient trop lourd.** | Trois niveaux de produit, cinq niveaux de carte, profondeur de capacité arrêtée à la décision. |
+| **La géographie se dégrade.** | Ancres persistées, placement déterministe, lentilles sans re-layout, revue de carte. |
+| **La migration casse les liens.** | Migration additive, alias de routes, aucun objet supprimé. |
+| **La carte est lente.** | Agrégation, seuils de nœuds, virtualisation (ADR-020), projection mise en cache. |
+| **Les lentilles divergent.** | Un seul graphe, une seule projection, des encodages ; aucune copie de données. |
+| **La gouvernance des données produit/équipe n'est pas claire.** | Les propriétaires produit/équipe mettent à jour ; l'architecte arbitre et signale les anomalies. |
+
+**Arbitrages ouverts avant implémentation.**
+
+| Sujet | Options | Recommandation |
+|---|---|---|
+| Quartier par défaut à L0 | value stream / portefeuille / unité d'organisation | **Value stream** si l'entreprise pilote par la valeur ; sinon portefeuille ; configurable par instance. |
+| Profondeur de la hiérarchie produit | 2 / 3 / 4 niveaux | **3 maximum** ; au-delà, le produit est un portefeuille, pas un produit. |
+| Agrégation d'une route | criticité max / volume / nombre d'interfaces | **Criticité max + badge count** ; le volume est une option de la lentille Interface. |
+| Propriétaire d'une capacité | équipe / rôle / aucun | **Rôle ou équipe optionnel** ; la capacité reste stable même si l'organisation change. |
+| Placement sur la carte | automatique / manuel / hybride | **Hybride** : heuristique déterministe + ancres `pinned` pour les objets importants. |
+| Migration des domaines | big bang / guidée | **Guidée et additive** ; aucun objet ni historique supprimé. |
+
+### 16. Références
+
+- The Open Group, *ArchiMate 3.2 Specification* — `Product`, `ValueStream`, `Capability`, couches et relations : <https://publications.opengroup.org/c226>
+- Simon Brown, *C4 model* — abstractions et diagrammes hiérarchiques : <https://c4model.com/>
+- Matthew Skelton & Manuel Pais, *Team Topologies* — types d'équipes et modes d'interaction : <https://teamtopologies.com/key-concepts>
+- The Open Group, *TOGAF Business Capabilities Guide* — capability map et croisement avec les value streams.
+- Business Architecture Guild, *Business Architecture Metamodel Guide* — value stream, étapes, capabilities.
+- Thoughtworks, *How to create a product operating model* — produit, topologie produit, alignement équipe/produit : <https://www.thoughtworks.com/insights/articles/how-to-create-a-product-operating-model-to-support-product-organization-transformation>
+- Product Focus, *Product Taxonomy* — portefeuille, ligne, produit, plateforme.
+- Pratiques de catalogue d'API — fournisseur, consommateur, version, cycle de vie : <https://api7.ai/blog/api-catalog-vs-developer-portal>
+- Pratiques de « city map » et paysage applicatif — géographie stable, pan/zoom, calques : <https://aplas.com/use-cases/architecture>
+
 ## Périmètre fonctionnel du MVP1
 
-Le produit est organisé autour de sept objets métier principaux : **Domain**, **ModelElement**, **Relationship**, **Interface**, **Diagram**, **Story** et **Review**. La notion d’interface est volontairement un objet du référentiel et non une simple forme graphique.
+Le MVP1 était organisé autour de sept objets métier principaux : **Domain**, **ModelElement**, **Relationship**, **Interface**, **Diagram**, **Story** et **Review**. La notion d’interface est volontairement un objet du référentiel et non une simple forme graphique. La cible v0.4 (ADR-023) ajoute **Product**, **Team**, **ValueStream**, **Capability**, **Application**, **TechnologyNode** et **InterfaceConsumption**, et fait du domaine métier une classification.
 
-Les exigences fonctionnelles sont les suivantes. Les FR-040 à FR-054 formalisent la décision structurante de l’**Atelier de vues** ; les FR-001 à FR-039 couvrent le référentiel, les interfaces, la temporalité, la documentation, l’IA et la collaboration.
+Les exigences ci-dessous sont la **base MVP1**. Les FR-040 à FR-054 formalisent la décision structurante de l’**Atelier de vues** ; elles sont révisées par la section « Cible v0.4 » et par les FR-055 à FR-081. Les FR-001 à FR-039 couvrent le référentiel, les interfaces, la temporalité, la documentation, l’IA et la collaboration. En cas de conflit, la cible v0.4 prévaut.
 
 | ID | Exigence MVP1 |
 |---|---|
@@ -88,9 +634,11 @@ Les exigences fonctionnelles sont les suivantes. Les FR-040 à FR-054 formalisen
 | FR-053 | Offrir la parité clavier de tous les gestes de conception et des états vides qui invitent à une action productive. |
 | FR-054 | Accompagner le premier lancement par une vue guidée et des modèles de départ, afin que la première valeur soit produite en moins de trois minutes. |
 
-### L’Atelier de vues : point d’entrée et surface principale
+### L’Atelier de vues : surface d’édition
 
-**Décision structurante.** Le point d’entrée du produit n’est ni un tableau de bord, ni un inventaire, ni une liste de domaines : c’est un **Atelier de vues** (designer de vues). Archifier est un outil d’architecture avant tout, pas une CMDB. L’architecte pense, arbitre et communique en construisant des vues ; le référentiel se remplit comme **conséquence** du geste de conception, jamais comme préalable administratif.
+> **Amendement ADR-023 (18/11/2026).** Le point d’entrée du produit est désormais la **Carte de l’entreprise** (voir « Cible v0.4 — Le produit, la carte et le zoom »). L’Atelier reste la **surface d’édition des vues authored** : il n’est plus l’écran d’accueil, mais il conserve les principes de création depuis la vue, de formalisation progressive et de commandes validées. Les paragraphes ci-dessous décrivent cette surface, pas le parcours d’entrée.
+
+**Décision structurante.** L’Atelier n’est ni un tableau de bord, ni un inventaire, ni une liste de domaines : c’est une **surface de conception** (designer de vues). Archifier est un outil d’architecture avant tout, pas une CMDB. L’architecte pense, arbitre et communique en construisant des vues ; le référentiel se remplit comme **conséquence** du geste de conception, jamais comme préalable administratif.
 
 Cette décision ne contredit pas le principe « le référentiel est la source de vérité ». Elle en sépare les plans :
 
@@ -100,13 +648,15 @@ Cette décision ne contredit pas le principe « le référentiel est la source d
 | **Surface** | L’Atelier, les vues, le cadrage, le récit | C’est l’interface première : on y crée, on y édite, on y comprend, on y publie. |
 | **Contrôle** | Inventaires, anomalies, couverture, exports | Espace secondaire, consultatif, jamais passage obligé. |
 
-**Renversement du parcours.** Le parcours de référence est :
+**Renversement du parcours (révisé par ADR-023).** Le parcours de référence est :
 
-1. j’ouvre l’Atelier ;
-2. je choisis une intention de vue, ou je repars d’une vue existante ;
-3. je place des formes, je les relie, je les nomme ;
-4. le produit **formalise** ces formes en objets du référentiel (type, domaine, propriétés) au moment opportun ;
+1. j’ouvre la **Carte de l’entreprise** ;
+2. je zoome sur un value stream, un produit, une application ou une infrastructure ;
+3. depuis le niveau courant, je crée ou modifie l’objet, ou j’ouvre une vue authored dans l’Atelier ;
+4. le produit **formalise** ces formes en objets du référentiel (type, propriétaire, propriétés) au moment opportun ;
 5. je publie, je raconte, je compare, je révise.
+
+Dans l’Atelier, le parcours de création reste : je choisis une intention de vue ou je repars d’une vue existante, je place des formes, je les relie, je les nomme. L’Atelier n’est plus le premier écran ; il est la surface où l’on compose un récit ou un diagramme authored.
 
 Le parcours explicitement interdit est : « créer un objet dans un formulaire, puis chercher une vue où le poser ». Aucune création ne doit **exiger** de quitter le canevas.
 
@@ -166,11 +716,13 @@ Objet valide (publiable, référençable, exportable)
 
 La bascule conserve la vue, le cadrage et la sélection. Elle ne change aucun droit. Un lecteur qui reçoit un lien de vue arrive directement dans la posture lecture, sans passer par un menu.
 
-**Accueil, bibliothèque et contrôle.** L’accueil est l’Atelier : soit la dernière vue ouverte, soit « Nouvelle vue » avec des intentions de départ. La **Bibliothèque** (liste des vues, recherche, domaines) et le **Contrôle** (inventaires, anomalies, couverture des métamodèles, exports) sont accessibles depuis la barre latérale, mais aucun des deux n’est un passage obligé. Une fiche d’objet reste disponible et complète : elle est la conséquence d’un clic dans une vue, pas la porte d’entrée du produit.
+**Accueil, bibliothèque et contrôle (révisé par ADR-023).** L’accueil est la **Carte de l’entreprise** : le dernier cadrage de carte, sinon la vue entreprise. La **Bibliothèque** (produits, équipes, value streams, capacités, applications, vues, interfaces) et le **Contrôle** (inventaires, anomalies, couverture des métamodèles, exports) sont accessibles depuis la barre latérale, mais aucun des deux n’est un passage obligé. Une fiche d’objet reste disponible et complète : elle est la conséquence d’un clic dans la carte ou dans une vue, pas la porte d’entrée du produit.
 
-La page d’un **domaine** reste une vue de synthèse utile — interfaces exposées et consommées, dépendances, vues publiées, Stories — mais elle est atteinte depuis une zone de domaine ou la Bibliothèque, jamais imposée au lancement.
+La page d’un **domaine métier** reste une vue de synthèse utile — produits classifiés, interfaces exposées et consommées, dépendances, vues publiées, Stories — mais elle est atteinte depuis une lentille, une classification ou la Bibliothèque, jamais imposée au lancement. Un domaine métier ne possède pas d’objet : il classifie.
 
 ### Revue d’interfaces
+
+> **Amendement ADR-023.** Une revue peut porter sur un **produit**, une **équipe**, un **value stream** ou un **domaine métier**. `domainId` devient un filtre optionnel ; `scopeObjectId` désigne le périmètre principal. Les interfaces affichées sont celles du périmètre, avec fournisseur et consommateurs objets.
 
 Une Review est un objet pérenne :
 
@@ -274,8 +826,13 @@ Interface
   id
   logicalInterfaceId
   name
-  category
-  providerDomainId
+  level            // BUSINESS | APPLICATION | INFRASTRUCTURE
+  category         // BUSINESS | APPLICATION | TECHNICAL
+  kind             // API | EVENT | FILE | BATCH | UI | DATABASE | NETWORK | OTHER
+  providerObjectId // Product | Application | Component | TechnologyNode
+  providerDomainId? // classification, plus un propriétaire
+  exposure         // INTERNAL | PRODUCT | PARTNER | PUBLIC
+  criticality
   contractType
   documentation
   lifecycle
@@ -374,10 +931,22 @@ Les liens internes ne doivent pas dépendre du nom ni d’un chemin d’URL inst
 
 ```text
 arch://element/01JABC...
+arch://relationship/01JABD...
 arch://interface/01JDEF...
+arch://version/01JDEG...
 arch://diagram/01JGHI...
 arch://story/01JKLM...
+arch://product/01JNOP...
+arch://team/01JNOQ...
+arch://value-stream/01JNOR...
+arch://stage/01JNOS...
+arch://capability/01JNOT...
+arch://application/01JNOU...
+arch://node/01JNOV...
+arch://business-domain/01JNOW...
 ```
+
+Une carte n’est pas un objet : un lien de carte est une route `#/map?…` (C-10 §9), pas un `arch://`. Une Story ou une Revue peut capturer une `MapQuery` et une révision, sans créer d’objet carte.
 
 L’affichage transforme ces URIs en URLs navigables. Si un objet est archivé, le lien reste résolvable vers sa dernière révision. Si la cible a réellement disparu, le lien devient `BROKEN` et est exposé dans le diagnostic documentaire.
 
@@ -428,13 +997,14 @@ Chaque chapitre contient une séquence de blocs :
 StoryBlock =
     MarkdownBlock
   | DiagramBlock
+  | MapBlock
   | ViewBlock
   | ElementBlock
   | InterfaceBlock
   | TransitionBlock
 ```
 
-`DiagramBlock` peut définir un cadrage graphique : zoom, éléments mis en avant, éléments atténués et texte contextuel. Cela permet d’utiliser le même diagramme plusieurs fois dans une histoire avec des focales différentes.
+`MapBlock` capture une `MapQuery` (périmètre, niveau, lentilles, date, focus) et une révision ; il ne duplique ni la géométrie ni les objets. `DiagramBlock` peut définir un cadrage graphique : zoom, éléments mis en avant, éléments atténués et texte contextuel. Cela permet d’utiliser le même diagramme ou la même carte plusieurs fois dans une histoire avec des focales différentes.
 
 Scénario type : **« Comment une commande devient une facture »**.
 
@@ -568,41 +1138,44 @@ Il faut aussi noter la maturité relative : MCP Apps possède déjà une spécif
 
 ## Architecture technique, stockage, API et OpenAPI
 
-L’architecture recommandée reste volontairement compacte pour le MVP1 :
+L’architecture recommandée reste volontairement compacte :
 
 ```text
-┌─────────────────────────────────────────────┐
-│                Web Application              │
-│  Atelier de vues | Bibliothèque | Contrôle | Story | AI │
-└──────────────────┬──────────────────────────┘
-                   │ HTTPS
-┌──────────────────▼──────────────────────────┐
-│                Application API              │
-│ Repository │ Modeling │ Docs │ Review      │
-│ Temporal │ Search │ OpenAPI │ AI Gateway   │
-└──────────────┬──────────────────┬───────────┘
-               │                  │
-        ┌──────▼──────┐    ┌──────▼─────────┐
-        │ PostgreSQL  │    │ AI Orchestrator│
-        │ + FTS       │    │ + MCP façade   │
-        │ + vector    │    └────────────────┘
-        └─────────────┘
+┌──────────────────────────────────────────────────────────────────────┐
+│                           Web Application                            │
+│  Carte | Produit | Équipe | Value stream | Application | Interface   │
+│  Atelier de vues | Bibliothèque | Contrôle | Story | AI              │
+└───────────────────────────────┬──────────────────────────────────────┘
+                                │ HTTPS
+┌───────────────────────────────▼──────────────────────────────────────┐
+│                           Application API                            │
+│ Map projection │ Repository │ Modeling │ Docs │ Review               │
+│ Temporal │ Search │ OpenAPI │ AI Gateway                              │
+└───────────────┬───────────────────────────────┬──────────────────────┘
+                │                               │
+        ┌───────▼───────┐               ┌───────▼─────────┐
+        │  PostgreSQL   │               │ AI Orchestrator │
+        │  + FTS        │               │ + MCP façade    │
+        │  + vector     │               └─────────────────┘
+        └───────────────┘
 ```
 
-Un moteur de graphes dédié n’est pas nécessaire au MVP1. Les relations sont représentables en SQL avec tables d’arêtes et index adaptés. Un CTE récursif suffit pour les parcours d’impact bornés. Une base graphe spécialisée pourra être envisagée si les volumes ou requêtes multi-hop deviennent dominants.
+Un moteur de graphes dédié n’est pas nécessaire. Les relations sont représentables en SQL avec tables d’arêtes et index adaptés. Un CTE récursif suffit pour les parcours d’impact bornés ; la projection de carte est une agrégation calculée, mise en cache par révision. Une base graphe spécialisée pourra être envisagée si les volumes ou requêtes multi-hop deviennent dominants.
 
 ### Modèle physique minimal
 
+Le schéma MVP1 ci-dessous est conservé. La cible v0.4 ajoute les tables de l’ontologie produit et de la projection de carte ; aucune table existante n’est supprimée.
+
 | Table | Clés essentielles |
 |---|---|
-| `domains` | `id`, `name`, `description`, `revision` |
-| `objects` | `id`, `object_type`, `responsible_domain_id`, `current_revision_id` |
+| `domains` | `id`, `name`, `description`, `revision` — devient `business_domains` en lecture cible |
+| `objects` | `id`, `object_type`, `responsible_domain_id`, `business_domain_id`, `accountable_team_id`, `current_revision_id` |
 | `object_revisions` | `id`, `object_id`, `revision_no`, `payload`, `created_at`, `created_by` |
 | `model_elements` | `object_id`, `notation`, `metamodel_version`, `metaclass` |
 | `relationships` | `object_id`, `source_id`, `target_id`, `relation_type`, `notation` |
-| `interfaces` | `object_id`, `logical_interface_key`, `category`, `provider_domain_id` |
+| `interfaces` | `object_id`, `logical_interface_key`, `level`, `category`, `kind`, `provider_object_id`, `provider_domain_id`, `exposure` |
 | `interface_versions` | `id`, `interface_id`, `semver`, `available_from`, `available_until`, `published_at`, `contract` |
-| `interface_consumers` | `interface_version_id`, `consumer_object_id`, `consumer_domain_id` |
+| `interface_consumers` | `interface_version_id`, `consumer_object_id`, `consumer_domain_id`, `criticality` |
 | `diagrams` | `object_id`, `notation`, `layout` |
 | `diagram_nodes` | `diagram_id`, `element_id`, `geometry`, `style_override` |
 | `diagram_edges` | `diagram_id`, `relationship_id`, `geometry` |
@@ -613,7 +1186,29 @@ Un moteur de graphes dédié n’est pas nécessaire au MVP1. Les relations sont
 | `embeddings` | `object_id`, `revision_id`, `chunk_id`, `vector`, `text_hash` |
 | `audit_events` | `id`, `actor_id`, `operation`, `object_id`, `before_revision`, `after_revision` |
 
-Les IDs doivent être des identifiants opaques stables, par exemple UUIDv7 ou ULID. Le choix exact est une décision d’implémentation ; la propriété requise est l’indépendance vis-à-vis du nom, de la notation et du domaine.
+Extension cible v0.4 (détail dans C-10) :
+
+| Table | Clés essentielles |
+|---|---|
+| `products` | `id`, `name`, `kind`, `lifecycle`, `criticality`, `parent_product_id`, `accountable_team_id` |
+| `teams` | `id`, `name`, `topology`, `mission`, `org_unit_id` |
+| `value_streams` | `id`, `name`, `customer_object_id`, `owner_team_id` |
+| `value_stream_stages` | `id`, `value_stream_id`, `order`, `name`, `value_item` |
+| `capabilities` | `id`, `name`, `parent_id`, `level`, `maturity`, `criticality` |
+| `applications` | `id`, `name`, `kind`, `lifecycle`, `criticality`, `operating_team_id` |
+| `application_components` | `id`, `application_id`, `name`, `kind` |
+| `technology_nodes` | `id`, `name`, `kind`, `environment`, `parent_node_id`, `provider_team_id` |
+| `product_applications` | `product_id`, `application_id` |
+| `product_capabilities` | `product_id`, `capability_id` |
+| `product_stages` | `product_id`, `stage_id`, `value_item` |
+| `capability_stages` | `capability_id`, `stage_id` |
+| `business_domains` | `id`, `name`, `parent_id` |
+| `object_business_domains` | `object_id`, `business_domain_id` |
+| `portfolios` | `id`, `name`, `kind` |
+| `initiatives` | `id`, `name`, `kind`, `start`, `end` |
+| `map_anchors` | `object_id`, `level`, `district_id`, `x`, `y`, `pinned`, `revision` |
+
+Les IDs doivent être des identifiants opaques stables, par exemple UUIDv7 ou ULID. Le choix exact est une décision d’implémentation ; la propriété requise est l’indépendance vis-à-vis du nom, de la notation, du produit et du domaine.
 
 La concurrence MVP1 utilise un **optimistic lock** :
 
@@ -661,6 +1256,44 @@ POST   /api/changesets/{id}/apply
 POST   /api/import/openapi
 GET    /api/export/openapi/{interfaceVersionId}
 GET    /api/export/markdown/{objectId}
+```
+
+Cible v0.4 (les endpoints existants restent, avec `domains` en alias de `business-domains`) :
+
+```text
+GET    /api/map?scope=…&level=…&lens=…&date=…&focus=…
+GET    /api/products
+POST   /api/products
+GET    /api/products/{id}
+PUT    /api/products/{id}
+GET    /api/products/{id}/applications
+GET    /api/products/{id}/interfaces
+GET    /api/products/{id}/capabilities
+
+GET    /api/teams
+GET    /api/teams/{id}
+GET    /api/teams/{id}/interfaces
+GET    /api/teams/{id}/dependencies
+
+GET    /api/value-streams
+GET    /api/value-streams/{id}
+GET    /api/value-streams/{id}/stages
+GET    /api/capabilities
+GET    /api/capabilities/{id}
+
+GET    /api/applications
+GET    /api/applications/{id}
+GET    /api/applications/{id}/components
+GET    /api/applications/{id}/deployment
+GET    /api/infrastructure/{id}
+
+GET    /api/interfaces/{id}/consumers
+POST   /api/interfaces/{id}/consumptions
+GET    /api/impact?object=…&date=…
+GET    /api/business-domains
+GET    /api/business-domains/{id}
+POST   /api/import/inventory
+GET    /api/export/map?scope=…&level=…&lens=…&format=svg|md
 ```
 
 ### Import/export OpenAPI
@@ -836,6 +1469,12 @@ Les exigences suivantes mesurent la qualité de l’**Atelier de vues** (FR-040 
 | NFR-028 | L’état temporel d’une interface est lisible sans recours à la couleur seule et sans ouverture d’une fiche. |
 | NFR-029 | La distinction croquis / brouillon formalisé / objet valide est visible en permanence, sans ambiguïté sur ce qui est publié. |
 | NFR-030 | Le temps d’ouverture d’une vue existante est < 1 s pour 200 formes en mode local, et son cadrage est restauré à l’identique. |
+| NFR-031 | La carte de l’entreprise affiche un premier rendu utile en < 2,5 s en local, pour 500 nœuds visibles. |
+| NFR-032 | Une projection de carte (périmètre, niveau, lentilles, date) est calculée en p95 < 300 ms pour 1 000 produits et 5 000 applications agrégées. |
+| NFR-033 | Pan, zoom et changement de lentille restent fluides (objectif 60 fps, plancher 30 fps) sans recalcul de la géographie. |
+| NFR-034 | La géographie est stable : un objet conserve son ancre d’une session à l’autre et d’une lentille à l’autre ; changer de lentille ne déplace aucun nœud. |
+| NFR-035 | Un lien profond de carte restaure à l’identique le périmètre, le niveau, les lentilles, la date et le focus. |
+| NFR-036 | La carte offre une navigation clavier complète entre niveaux et une liste alternative des objets du niveau courant. |
 
 ### Critères d’acceptation Gherkin
 
@@ -971,11 +1610,16 @@ La démonstration de recette doit couvrir cinq chaînes complètes. La première
 
 ### Priorité MVP1 et différé
 
-| Capacité | MVP1 v0.1 | Après MVP1 |
+| Capacité | MVP1 v0.1 | Cible v0.4 (ADR-023) |
 |---|---|---|
-| **Atelier de vues (designer)** | **Oui — point d’entrée du produit** | intentions de vue enrichies, cadrages réutilisables |
+| **Carte de l’entreprise (city map)** | Non — l’accueil était l’Atelier | **Oui — point d’entrée du produit**, zoom L0→L4, lentilles |
+| **Produit, équipe, value stream, capacité** | Non — le domaine servait de pivot | **Oui — objets de premier rang**, propriété et classification séparées |
+| **Atelier de vues (designer)** | **Oui — point d’entrée du produit** | Surface d’édition des vues authored, atteinte depuis la carte |
 | Inventaire de type CMDB | Non prioritaire — espace Contrôle | reporting et tableaux de bord |
-| Référentiel multi-domaines | Oui | enrichissement |
+| Référentiel multi-domaines | Oui | enrichissement ; domaine = classification |
+| Interfaces multi-niveaux | Oui, centrées domaine | **Oui — produit, application, infrastructure**, routes agrégées dépliables |
+| Applications et composants | Oui, ArchiMate | **Oui — page application, déploiement, produits servis** |
+| Infrastructure | Oui, ArchiMate Technology | **Oui — page infrastructure, nœuds, environnements** |
 | ArchiMate | 3.2 réel, cible 4 | migration 4.x officielle |
 | BPMN | sous-ensemble | couverture étendue |
 | UML | architecture statique | autres diagrammes |
@@ -999,9 +1643,9 @@ La démonstration de recette doit couvrir cinq chaînes complètes. La première
 
 Le risque principal n’est pas la confusion entre **référentiel** et **dessin** : c’est de construire un **référentiel sans surface de conception**, c’est-à-dire une CMDB élégante que personne n’a envie d’ouvrir. Un outil d’architecture se juge à la vitesse à laquelle un architecte peut passer d’une intuition à une vue lisible et partageable. Si le canvas est traité comme un accessoire de rendu placé au-dessus d’un catalogue, les besoins de réutilisation, d’impact, d’IA et de temporalité resteront théoriques, car personne n’aura produit de vues.
 
-La bonne formulation est donc : **le dessin est la surface, le référentiel est la vérité**. L’Atelier est le point d’entrée et le lieu de la création ; chaque forme y est reliée à un objet identifié ou explicitement marquée comme croquis ; le métamodèle valide au moment du geste. Ce couplage fort — geste fluide, validation déterministe — est ce qui distingue Archifier d’un outil de dessin et d’une CMDB à la fois.
+La bonne formulation est donc : **la carte est le point d’entrée, le dessin est la surface, le référentiel est la vérité**. La Carte de l’entreprise donne la big picture et le parcours de zoom ; l’Atelier reste le lieu de création des vues authored ; chaque forme y est reliée à un objet identifié ou explicitement marquée comme croquis ; le métamodèle valide au moment du geste. Ce couplage fort — navigation fluide, création fluide, validation déterministe — est ce qui distingue Archifier d’un outil de dessin et d’une CMDB à la fois.
 
-Le risque secondaire est l’**austérité prise pour de la sobriété**. Une interface dense, sans grammaire spatiale ni hiérarchie visuelle, ne transmet aucune architecture : elle transmet un formulaire. La vue doit avoir une grammaire (bandes de couches, zones de domaine, frontières, ports, encodage temporel) dès le MVP1, sinon le produit sera perçu comme un back-office.
+Le risque secondaire est l’**austérité prise pour de la sobriété**. Une interface dense, sans grammaire spatiale ni hiérarchie visuelle, ne transmet aucune architecture : elle transmet un formulaire. La carte doit avoir une grammaire (quartiers, bâtiments, routes, ports, encodage temporel) dès la cible, sinon le produit sera perçu comme un back-office. Un troisième risque est la **carte décorative** : une belle image qui ne se déplie pas vers les objets réels. Chaque route doit être dépliable, chaque bâtiment doit ouvrir un produit, chaque port doit ouvrir une interface versionnée.
 
 Un autre risque est le coût d’une « conformité totale » simultanée à trois langages. La v0.1 doit au contraire être stricte sur un sous-ensemble annoncé. BPMN 2.0.2 et UML 2.5.1 disposent tous deux de métamodèles normatifs complets ; cela rend techniquement possible une extension ultérieure sans justifier de tout implémenter immédiatement. citeturn339674search6turn339674search7
 
@@ -1013,4 +1657,4 @@ Enfin, MCP Apps, AG-UI et A2UI répondent à des problèmes voisins mais distinc
 
 Les arbitrages qu’il reste réellement à prendre pour transformer cette v0.1 en backlog sont principalement : niveau exact de granularité des concepts ArchiMate 3.2 exposés dans la première palette ; sémantique précise des relations transverses entre notations ; politique de versionnage des objets non-interface ; distinction éventuelle entre « publié » et « visible » pour les diagrammes et Stories ; conventions de nommage des domaines et interfaces ; seuil de profondeur par défaut pour l’analyse d’impact ; et choix final du format canonique interne des contrats OpenAPI.
 
-Le point de départ recommandé pour la conception détaillée n’est donc pas un catalogue, mais un **Atelier de vues** adossé à un **référentiel sémantique versionné, temporel et multi-notation**. Autour de l’Atelier se branchent la Bibliothèque (retrouver une vue, un domaine, un objet), le Contrôle (anomalies, couverture, inventaires) et le Storytelling (raconter et diffuser les vues). L’IA intervient au-dessus de ce référentiel comme lecteur et générateur de propositions, jamais comme propriétaire de la vérité.
+Le point de départ recommandé pour la conception détaillée n’est donc ni un catalogue, ni un guide de création : c’est une **Carte de l’entreprise** adossée à un **référentiel sémantique versionné, temporel et multi-notation**, avec un **Atelier de vues** comme surface d’édition. Autour de la carte se branchent la Bibliothèque (retrouver un produit, une équipe, une application, une interface, une vue), le Contrôle (anomalies, couverture, inventaires) et le Storytelling (raconter et diffuser les vues). L’IA intervient au-dessus de ce référentiel comme lecteur et générateur de propositions, jamais comme propriétaire de la vérité.

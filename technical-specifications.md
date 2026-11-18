@@ -1709,7 +1709,7 @@ L’outil actif est visible, le curseur change, et `Échap` revient toujours à 
 
 ## 15. Frontend Leptos
 
-### 15.0 Principe directeur : l’Atelier est le point d’entrée
+### 15.0 Principe directeur (MVP3) : l’Atelier est le point d’entrée
 
 L’application s’ouvre sur l’**Atelier de vues**, pas sur un inventaire, un tableau de bord de domaines ou une liste d’objets. Trois espaces structurent la coque :
 
@@ -1722,6 +1722,8 @@ L’application s’ouvre sur l’**Atelier de vues**, pas sur un inventaire, un
 Un objet reste consultable et éditable dans une **fiche** (`/view/elements/:id`, …), mais cette fiche est atteinte depuis une vue, la Bibliothèque, la recherche ou un lien `arch://`. Elle n’est jamais le point de départ imposé.
 
 **Règle d’implémentation bloquante.** Aucun composant de création ne DOIT exiger une navigation hors de `/` ou de `/view/diagrams/:id` pour produire un objet. Les formulaires de fiche sont des vues secondaires du même contrat de commande.
+
+> **Avenant ADR-023 (18/11/2026) — la carte est le point d’entrée.** Le §15.0 ci-dessus décrit la coque du MVP3. La cible v0.4 ajoute un espace **Carte** qui devient la route `/` : projection générée du référentiel, cinq niveaux (entreprise, portefeuille, produit, application, infrastructure), lentilles et liens profonds. L’Atelier reste la surface d’édition des vues authored (`/design/:id`, `/view/diagrams/:id`). Les routes, objets, cardinalités, règles d’agrégation et paramètres de lien sont fixés par `docs/contracts/C-10-produit-carte-navigation.md`. Le moteur de projection fera l’objet d’un lot technique dédié ; il ne se confond pas avec le layout d’un `DiagramLayout` (C-02), qui reste la géométrie d’une vue authored. Aucun champ de C-01..C-09 n’est retiré.
 
 ### 15.1 Mode de rendu
 
@@ -1758,6 +1760,8 @@ Décision de routage : `leptos_router` en mode `history`, avec repli SPA côté 
 ```
 
 Compatibilité : `/model/diagrams/:id` reste un **alias** de `/design/:id`, et `/view/domains/:id` un alias de `/library/domains/:id`, pendant au moins une version. Aucun lien `arch://` existant ne doit casser.
+
+> **Avenant ADR-023.** Le plan de routes ci-dessus reste valide pour l’Atelier et les espaces secondaires. La cible v0.4 ajoute `/map`, `/products/:id`, `/teams/:id`, `/value-streams/:id`, `/capabilities/:id`, `/applications/:id`, `/infrastructure/:id`, `/business-domains/:id`, `/portfolios/:id`, et fait de `/` la carte de l’entreprise. Les paramètres `scope`, `level`, `lens`, `date`, `focus`, `filter`, `mode` sont spécifiés dans C-10 §9. Les alias de domaine restent résolvables. L’Atelier n’est plus l’accueil, mais conserve `/design/:id` et `/view/diagrams/:id`.
 
 Le passage conception ↔ lecture est un **geste de la barre d’outils**, pas un changement d’application : il conserve la vue, le cadrage, le curseur temporel et la sélection (FR-040, FR-048).
 
@@ -2258,7 +2262,8 @@ DOIVENT être respectées par tout agent travaillant sur un lot :
 | ADR-019 | Cycle de vie des interfaces | Dépréciation, remplacement, retrait, politique de rupture, notifications dérivées (W5) |
 | ADR-020 | Virtualisation du canvas | Culling par viewport, 500 nœuds, sans dépendance (W7) |
 | ADR-021 | Migration ArchiMate 3.2 → 4.x | Mapping explicite, aucune classe 4 déclarée, préservation des IDs (W2) |
-| ADR-022 | Point d’entrée et nature de l’UI | L’Atelier de vues est le point d’entrée et la surface de création ; le référentiel reste la vérité ; l’inventaire est un espace de Contrôle secondaire (MVP3) |
+| ADR-022 | Nature de l’UI et surface d’édition | L’Atelier est la surface de création ; le référentiel reste la vérité ; l’inventaire est un espace de Contrôle secondaire. **Point d’entrée remplacé par ADR-023** |
+| ADR-023 | Produit, carte et zoom | La Carte de l’entreprise est le point d’entrée ; produit/équipe/value stream/capacité sont des objets de premier rang ; cinq niveaux de zoom et lentilles ; ArchiMate socle, BPMN/UML contextuels |
 
 ---
 

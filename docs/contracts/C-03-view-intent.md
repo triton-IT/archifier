@@ -8,6 +8,8 @@
 | **Sources** | FR-046, FR-048, §14.4.1, §15.4, §15.6 ; VD-06, VD-14 ; ADR-022 §4 |
 | **Dépend de** | C-02, C-05, C-07 |
 
+> **Avenant ADR-023 (18/11/2026).** Ce contrat reste le catalogue des **vues authored** de l'Atelier. La Carte de l'entreprise n'ajoute aucune variante à `ViewIntent` : elle utilise un catalogue distinct, `MapLens` (`VALUE | CAPABILITY | PRODUCT | ORGANIZATION | APPLICATION | INTERFACE | TECHNOLOGY | DATA | TIME | RISK`), fixé par **C-10**. Les sept intentions ci-dessous deviennent des lentilles ou des actions de détail sur la carte, sans changer leur sémantique dans l'Atelier.
+
 ## 1. Catalogue fermé
 
 ```rust

@@ -2,11 +2,13 @@
 
 | | |
 |---|---|
-| Statut | **Accepté** — décision produit structurante |
+| Statut | **Accepté** — **partiellement remplacé par ADR-023** (le point d'entrée est la Carte ; l'Atelier reste la surface d'édition) |
 | Date | 18 novembre 2026 |
 | Remplace | Corrige l’interprétation du § « Modes MODÉLISER et VISUALISER » de `functional-specifications.md` et le plan de routes §15.2 de `technical-specifications.md` |
 | Portée | Expérience utilisateur, routage, surface de création, modèle de vue |
 | Décisions liées | ADR-008 (rendu SVG), ADR-017 (proxy LLM), ADR-020 (virtualisation du canvas), ADR-011 (snapshot IndexedDB) |
+
+> **Avenant ADR-023 (18/11/2026).** Cet ADR reste valide pour la **surface d'édition** : création depuis la vue, formalisation progressive, deux postures, commandes validées. Son §1 (l'Atelier est le point d'entrée) et son §4 (la vue a une intention comme préalable) sont remplacés : le point d'entrée est la **Carte de l'entreprise**, et les intentions deviennent des lentilles ou des actions de détail. Voir `ADR-023-produit-carte-entreprise.md`.
 
 ## Contexte
 

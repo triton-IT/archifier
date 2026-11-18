@@ -8,6 +8,8 @@
 | **Sources** | §15.2, §15.4 ; FR-040, FR-048, FR-051 ; VD-01, VD-13, VD-18, VD-19 ; ADR-012 |
 | **Dépend de** | C-03 (`ViewIntent`), C-02 (`ViewFraming`) |
 
+> **Avenant ADR-023 (18/11/2026).** Le chemin `/` décrit ci-dessous comme « Atelier » devient la **Carte de l'entreprise**. L'Atelier reste accessible par `/design/:id` et `/view/diagrams/:id`. Les routes de la carte (`/map`, `/products/:id`, `/teams/:id`, `/value-streams/:id`, `/capabilities/:id`, `/applications/:id`, `/infrastructure/:id`, `/business-domains/:id`, `/portfolios/:id`) et leurs paramètres sont fixés par **C-10**. Les alias de domaine restent résolvables. Aucune route existante n'est supprimée.
+
 ## 1. Décision de transport : routage par fragment (inchangé)
 
 Le produit reste en **routage par fragment** (`#/…`), conformément à ADR-012 : aucun
