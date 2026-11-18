@@ -46,10 +46,6 @@ pub use view_command::{
 pub const APP_NAME: &str = "Archifier";
 pub const APP_VERSION: &str = env!("CARGO_PKG_VERSION");
 
-/// Libellé imposé par la spécification fonctionnelle.
-pub const METAMODEL_TARGET_NOTE: &str =
-    "Cible ArchiMate 4 — règles actuellement basées sur ArchiMate 3.2";
-
 /// Profil de métamodèle par défaut pour chaque notation.
 pub fn default_profile_for(notation: Notation) -> &'static str {
     match notation {

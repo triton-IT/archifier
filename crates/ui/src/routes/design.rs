@@ -716,7 +716,7 @@ fn absolute_share_link(
 ) -> String {
     let origin = web_sys::window()
         .and_then(|w| w.location().origin().ok())
-        .unwrap_or_else(|| "http://127.0.0.1:4173".into());
+        .unwrap_or_default();
     format!(
         "{origin}/#/view/diagrams/{id}{}",
         share_link(id, layout).to_query()
@@ -779,11 +779,18 @@ fn capture_in_review(designer: &Designer) {
         designer.app.notify(t("library.empty"));
         return;
     };
+    let zoom = designer
+        .layout
+        .get_untracked()
+        .framing
+        .zoom
+        .map(|value| format!("{value:.2}×"))
+        .unwrap_or_else(|| "non défini".into());
     let markdown = format!(
-        "Vue capturée : [{}](#/design/{}) — cadrage zoom {:?}.",
+        "Vue capturée : [{}](#/design/{}) — cadrage zoom {}.",
         designer.title(),
         designer.view_id,
-        designer.layout.get_untracked().framing.zoom
+        zoom
     );
     match repo().add_comment(review.id, &markdown) {
         Ok(()) => designer.app.notify(t("design.formalize.done")),

@@ -49,6 +49,18 @@ impl ObjectType {
             Self::Review => "reviews",
         }
     }
+
+    pub fn label(self) -> &'static str {
+        match self {
+            Self::Domain => "Domaine",
+            Self::ModelElement => "Élément",
+            Self::Relationship => "Relation",
+            Self::Interface => "Interface",
+            Self::Diagram => "Vue",
+            Self::Story => "Story",
+            Self::Review => "Revue",
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -80,6 +92,15 @@ impl Notation {
             Self::Bpmn => "BPMN",
             Self::Uml => "UML",
             Self::Native => "NATIVE",
+        }
+    }
+
+    pub fn label(self) -> &'static str {
+        match self {
+            Self::Archimate => "ArchiMate 3.2",
+            Self::Bpmn => "BPMN 2.0 Core",
+            Self::Uml => "UML 2.5.1",
+            Self::Native => "Natif",
         }
     }
 }
@@ -228,6 +249,16 @@ impl Default for PublicationStatus {
     }
 }
 
+impl PublicationStatus {
+    pub fn label(self) -> &'static str {
+        match self {
+            Self::Draft => "Brouillon",
+            Self::Published => "Publié",
+            Self::Withdrawn => "Retiré",
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum TemporalStatus {
@@ -314,6 +345,17 @@ pub enum DiagramNotation {
     Bpmn,
     Uml,
     Free,
+}
+
+impl DiagramNotation {
+    pub fn label(self) -> &'static str {
+        match self {
+            Self::Archimate => "ArchiMate 3.2",
+            Self::Bpmn => "BPMN 2.0 Core",
+            Self::Uml => "UML 2.5.1",
+            Self::Free => "Multi-notation",
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

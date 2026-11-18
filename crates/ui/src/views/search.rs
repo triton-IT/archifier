@@ -29,7 +29,7 @@ pub fn Search(app: App, #[prop(optional, into)] q: Option<String>) -> impl IntoV
         <main class="page">
             <PageHeader
                 title="Recherche".into()
-                subtitle="Recherche lexicale sur les noms, la documentation et les contrats. La recherche sémantique n'est pas disponible en mode local — elle est annoncée, pas simulée.".into()
+                subtitle="Recherche dans les noms, la documentation, les contrats et les vues.".into()
             />
             <div class="search-bar">
                 <input

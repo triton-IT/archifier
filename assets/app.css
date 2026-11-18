@@ -651,25 +651,9 @@ textarea { resize: vertical; font-family: var(--mono); font-size: 12.5px; line-h
 .domain-list { display: flex; flex-direction: column; gap: 8px; }
 .domain-row { display: grid; gap: 4px; text-decoration: none; color: inherit; }
 
-/* Contr?le et galerie */
+/* Contrôle */
 .anomaly-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .anomaly { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); }
-.gallery-layers { display: grid; gap: 6px; }
-.layer-sample { padding: 10px 12px; border-radius: var(--radius-sm); font-size: var(--text-sm); }
-.layer-sample.layer-business { background: var(--layer-business-bg); color: var(--layer-business-fg); }
-.layer-sample.layer-application { background: var(--layer-application-bg); color: var(--layer-application-fg); }
-.layer-sample.layer-technology { background: var(--layer-technology-bg); color: var(--layer-technology-fg); }
-.layer-sample.layer-physical { background: var(--layer-physical-bg); color: var(--layer-physical-fg); }
-.layer-sample.layer-motivation { background: var(--layer-motivation-bg); color: var(--layer-motivation-fg); }
-.layer-sample.layer-implementation { background: var(--layer-implementation-bg); color: var(--layer-implementation-fg); }
-.gallery-canvas { width: 100%; max-width: 640px; height: auto; background: var(--surface-2); border-radius: var(--radius-sm); }
-.gallery-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-top: 8px; }
-.temporal-demo { display: flex; flex-direction: column; gap: 2px; padding: 12px; border-radius: var(--radius-sm); border: 2px solid var(--line-strong); min-width: 160px; }
-.temporal-demo.temporal-active { border-color: var(--temporal-active-stroke); }
-.temporal-demo.temporal-scheduled { border-style: dashed; border-color: var(--temporal-scheduled-stroke); background: var(--temporal-scheduled-fill); }
-.temporal-demo.temporal-expired { border-style: dotted; border-color: var(--temporal-expired-stroke); opacity: var(--temporal-expired-opacity); text-decoration: line-through; }
-.draft-demo { border: 2px dashed var(--draft-stroke); background: var(--draft-fill); padding: 14px; border-radius: var(--radius-sm); font-style: italic; }
-.valid-demo { border: 2px solid var(--status-valid-fg); padding: 14px; border-radius: var(--radius-sm); }
 
 @media (max-width: 1100px) {
   .design-body { grid-template-columns: 200px minmax(0,1fr); }

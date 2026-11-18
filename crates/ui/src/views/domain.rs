@@ -341,7 +341,7 @@ pub fn DomainView(app: App, id: ObjectId) -> impl IntoView {
                                         let status = preview.status;
                                         let name = preview.interface_name.clone();
                                         let semver = preview.semantic_version.clone();
-                                        let format = format!("{:?}", preview.format);
+                                        let format = preview.format.label();
                                         let raw_bytes = preview.raw_bytes;
                                         let warnings = preview.warnings.clone();
                                         let diff = preview.diff.clone();

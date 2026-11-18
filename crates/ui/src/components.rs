@@ -4,10 +4,10 @@
 //! consomment, ils ne les redéfinissent pas.
 
 use crate::i18n::t;
-use crate::state::{download_bundle, fmt_date, input_value, repo, storage_label, App};
+use crate::state::{download_bundle, fmt_date, input_value, repo, storage_is_temporary, App};
 use archifier_core::{
-    ContractDiff, DiffClass, FieldDifference, Lifecycle, ObjectId, Revision, TemporalStatus,
-    METAMODEL_TARGET_NOTE,
+    ContractDiff, DiffClass, FieldDifference, Lifecycle, Notation, ObjectId, Revision,
+    TemporalStatus,
 };
 use archifier_repo::{OpenApiImportStatus, RevisionDiff, RevisionMeta, TemporalWindow};
 use leptos::prelude::*;
@@ -55,7 +55,7 @@ fn UserPicker() -> impl IntoView {
                         .iter()
                         .find(|u| u.id == id)
                         .map(|u| u.display_name.clone())
-                        .unwrap_or_else(|| "Invité".into())
+                        .unwrap_or_else(|| "Utilisateur".into())
                 }}
             </span>
         }
@@ -64,7 +64,7 @@ fn UserPicker() -> impl IntoView {
     view! {
         <select
             class="user-select"
-            title="Changer d'utilisateur (identités simulées)"
+            title="Changer d'utilisateur"
             on:change=move |ev| {
                 let value = crate::state::input_value(&ev);
                 repo().set_current_user(value);
@@ -94,16 +94,15 @@ fn Banners(app: App) -> impl IntoView {
     };
     view! {
         <div class="banners">
-            <div class="banner info">
-                <strong>"Démonstrateur local"</strong>
-                <span>
-                    "Les données restent dans ce navigateur (" {move || storage_label()} "). "
-                    "Aucun serveur, aucun partage entre postes."
-                </span>
-            </div>
-            <div class="banner subtle" title="Périmètre de conformité">
-                {METAMODEL_TARGET_NOTE}
-            </div>
+            {move || storage_is_temporary().then(|| view! {
+                <div class="banner error">
+                    <strong>"Stockage indisponible"</strong>
+                    <span>
+                        "Les modifications ne seront pas conservées après la fermeture. "
+                        "Exportez régulièrement une sauvegarde depuis les réglages."
+                    </span>
+                </div>
+            })}
             {move || persist_error().map(|message| view! {
                 <div class="banner error">
                     <strong>"Persistance impossible"</strong>
@@ -302,6 +301,25 @@ pub fn Markdown(markdown: String) -> impl IntoView {
         return view! { <p class="empty">"Aucune documentation."</p> }.into_any();
     }
     view! { <div class="markdown" inner_html=html></div> }.into_any()
+}
+
+/// Libellé lisible d'une notation, avec la version du standard effectivement chargée.
+pub fn notation_label(notation: Notation) -> &'static str {
+    notation.label()
+}
+
+/// Libellé lisible d'une relation dans sa notation.
+///
+/// Le code du profil (`serving`, `realization`, …) n'est jamais affiché tel quel
+/// dans l'interface : on retombe sur ce code uniquement si le profil ne fournit
+/// pas de libellé.
+pub fn relation_label(notation: Notation, relation_type: &str) -> String {
+    repo()
+        .metamodel()
+        .profile_for(notation)
+        .and_then(|profile| profile.relation(relation_type))
+        .map(|relation| relation.label.clone())
+        .unwrap_or_else(|| relation_type.to_string())
 }
 
 /// Famille de glyphe pour l'affichage (aucun jeu d'icônes normatif reproduit).

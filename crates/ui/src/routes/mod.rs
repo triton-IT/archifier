@@ -3,9 +3,9 @@
 pub mod atelier;
 pub mod control;
 pub mod design;
-pub mod design_system;
 pub mod library;
 
+use crate::components::{notation_label, relation_label};
 use crate::i18n::t;
 use crate::router::{Route, ViewLink};
 use crate::state::{repo, App};
@@ -67,7 +67,6 @@ pub fn render(app: App, route: Route) -> AnyView {
             view! { <crate::views::graph::GraphView app=app id=id /> }.into_any()
         }
         Route::Search { q } => view! { <crate::views::search::Search app=app q=q /> }.into_any(),
-        Route::DesignSystem => view! { <design_system::DesignSystem /> }.into_any(),
         Route::Settings => view! { <crate::views::settings::Settings app=app /> }.into_any(),
         Route::NotFound(message) => not_found(message),
     }
@@ -109,17 +108,18 @@ fn relationship_fiche(id: archifier_core::ObjectId) -> AnyView {
         .as_ref()
         .map(|r| r.href.clone())
         .unwrap_or_else(|| "#/".into());
+    let display_type = relation_label(relationship.notation, &relationship.relation_type);
     view! {
         <main class="page">
             <header class="page-head">
                 <h1>{relationship.object.name.clone()}</h1>
-                <p class="muted">{relationship.relation_type.clone()}</p>
+                <p class="muted">{display_type}</p>
             </header>
             <section class="card">
                 <dl class="facts">
                     <dt>"Source"</dt><dd><a href=source_href>{source_name}</a></dd>
                     <dt>"Cible"</dt><dd><a href=target_href>{target_name}</a></dd>
-                    <dt>"Notation"</dt><dd>{format!("{:?}", relationship.notation)}</dd>
+                    <dt>"Notation"</dt><dd>{notation_label(relationship.notation)}</dd>
                     <dt>"Révision"</dt><dd>{relationship.object.revision.to_string()}</dd>
                 </dl>
             </section>

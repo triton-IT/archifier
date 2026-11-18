@@ -574,7 +574,7 @@ impl Repository {
             now_ms: Cell::new(now_ms),
             ids: RefCell::new(IdGenerator::new(seed)),
             persist_error: RefCell::new(None),
-            current_user: RefCell::new("Invité".into()),
+            current_user: RefCell::new("Utilisateur".into()),
             storage_evicted: Cell::new(false),
             profile_error: RefCell::new(profile_error),
         }

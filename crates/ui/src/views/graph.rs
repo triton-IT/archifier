@@ -97,7 +97,7 @@ pub fn GraphView(app: App, id: ObjectId) -> impl IntoView {
                         </div>
                         <h1>"Graphe de dépendances"</h1>
                         <p class="muted">
-                            {format!("Type « {} » non pris en charge.", object.object_type.as_str())}
+                            {format!("Type « {} » non pris en charge.", object.object_type.label())}
                         </p>
                     </header>
                     <Empty text="Le graphe de dépendances ne concerne que les éléments et les interfaces.".into() />
@@ -127,13 +127,13 @@ pub fn GraphView(app: App, id: ObjectId) -> impl IntoView {
                                     }
                                 >
                                     <option value="IN" selected=direction_selected == Direction::In>
-                                        "IN — entrantes"
+                                        "Entrantes"
                                     </option>
                                     <option value="OUT" selected=direction_selected == Direction::Out>
-                                        "OUT — sortantes"
+                                        "Sortantes"
                                     </option>
                                     <option value="BOTH" selected=direction_selected == Direction::Both>
-                                        "BOTH — les deux"
+                                        "Les deux"
                                     </option>
                                 </select>
                             </label>

@@ -671,7 +671,7 @@ impl ViewWorld for RepoWorld {
             .repository
             .metamodel()
             .profile_for(notation)
-            .ok_or_else(|| ("MM-PROFILE-001".to_string(), format!("{notation:?}")))?;
+            .ok_or_else(|| ("MM-PROFILE-001".to_string(), notation.label().to_string()))?;
         profile
             .validate_element(metaclass, properties)
             .map(|_| ())
@@ -1149,9 +1149,9 @@ pub fn export_markdown(designer: &Designer) -> String {
     let facts = node_facts(&layout, None);
     let mut out = format!("# {}\n\n", designer.title());
     out.push_str(&format!(
-        "- Intention : {}\n- Notation : {:?}\n- Révision : {}\n- Formes : {}\n- Croquis : {}\n\n",
+        "- Intention : {}\n- Notation : {}\n- Révision : {}\n- Formes : {}\n- Croquis : {}\n\n",
         t(designer.intent().label_key()),
-        designer.notation(),
+        designer.notation().label(),
         designer.revision.get_untracked(),
         layout.nodes.len(),
         layout.drafts.len()

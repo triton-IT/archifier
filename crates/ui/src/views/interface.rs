@@ -370,7 +370,7 @@ pub fn InterfaceView(app: App, id: ObjectId) -> impl IntoView {
                                         <tr>
                                             <td class="mono">{summary.version.semantic_version.clone()}</td>
                                             <td><TemporalBadge status=summary.status /></td>
-                                            <td>{format!("{:?}", summary.version.publication_status)}</td>
+                                            <td>{summary.version.publication_status.label()}</td>
                                             <td>{date_or_dash(summary.version.available_from)}</td>
                                             <td>{date_or_dash(summary.version.available_until)}</td>
                                             <td>{summary.consumer_count}</td>
@@ -412,9 +412,9 @@ pub fn InterfaceView(app: App, id: ObjectId) -> impl IntoView {
                                                     view! {
                                                         <option value=value selected=id == from_selected>
                                                             {format!(
-                                                                "v{} · {:?}",
+                                                                "v{} · {}",
                                                                 summary.version.semantic_version,
-                                                                summary.version.publication_status
+                                                                summary.version.publication_status.label()
                                                             )}
                                                         </option>
                                                     }
@@ -436,9 +436,9 @@ pub fn InterfaceView(app: App, id: ObjectId) -> impl IntoView {
                                                     view! {
                                                         <option value=value selected=id == to_selected>
                                                             {format!(
-                                                                "v{} · {:?}",
+                                                                "v{} · {}",
                                                                 summary.version.semantic_version,
-                                                                summary.version.publication_status
+                                                                summary.version.publication_status.label()
                                                             )}
                                                         </option>
                                                     }

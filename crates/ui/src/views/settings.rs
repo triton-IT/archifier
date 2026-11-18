@@ -65,7 +65,7 @@ pub fn Settings(app: App) -> impl IntoView {
         <main class="page">
             <PageHeader
                 title="Réglages".into()
-                subtitle="Diagnostic du profil local, sauvegarde et couverture des métamodèles.".into()
+                subtitle="Stockage, sauvegarde et couverture des métamodèles.".into()
             />
 
             <div class="grid two-cols">
@@ -80,13 +80,13 @@ pub fn Settings(app: App) -> impl IntoView {
                         <p class="banner error inline">{error}</p>
                     })}
                     <p class="muted small">
-                        "Historique conservé intégralement. IndexedDB n'est pas soumis à la limite de 5 Mo de localStorage."
+                        "L'historique des révisions est conservé intégralement."
                     </p>
                 </Card>
 
                 <Card title="Sauvegarde".into()>
                     <p class="muted small">
-                        "Le fichier produit reprend la forme du schéma cible : il sera importable tel quel dans la version serveur."
+                        "Le fichier exporté contient l'intégralité du référentiel et peut être réimporté tel quel."
                     </p>
                     <div class="actions">
                         <button class="btn primary" on:click=move |_| export()>"Exporter le référentiel"</button>
@@ -216,22 +216,13 @@ pub fn Settings(app: App) -> impl IntoView {
                     </tbody>
                 </table>
                 <p class="muted small">
-                    "Sous-ensemble annoncé : toute classe ou relation hors profil est refusée par le moteur avec un code explicite."
+                    "Toute classe ou relation hors profil est refusée par le moteur avec un code explicite."
                 </p>
-            </Card>
-
-            <Card title="Limites assumées du profil local".into()>
-                <ul class="link-list">
-                    <li>"Aucune authentification réelle : les identités sont simulées, toutes les capacités sont identiques."</li>
-                    <li>"Aucune IA générative : la clé d'API ne doit jamais vivre dans le navigateur."</li>
-                    <li>"Pas de recherche sémantique : seuls les index lexicaux et la tolérance aux fautes sont actifs."</li>
-                    <li>"Les données sont propres à ce navigateur et à cette origine."</li>
-                </ul>
             </Card>
 
             <Card title="Réinitialisation".into()>
                 <p class="muted small">
-                    "Efface définitivement le référentiel local et redémarre sur une application vierge. Exportez une sauvegarde avant si nécessaire."
+                    "Efface définitivement le référentiel et redémarre sur une application vierge. Exportez une sauvegarde avant si nécessaire."
                 </p>
                 <div class="actions">
                     <button class="btn danger" on:click=move |_| reset()>

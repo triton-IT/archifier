@@ -47,6 +47,17 @@ impl ContractFormat {
     pub fn is_openapi(self) -> bool {
         matches!(self, Self::OpenApi30 | Self::OpenApi31 | Self::OpenApi32)
     }
+
+    /// Libellé lisible de la famille de contrat.
+    pub fn label(self) -> &'static str {
+        match self {
+            Self::OpenApi30 => "OpenAPI 3.0",
+            Self::OpenApi31 => "OpenAPI 3.1",
+            Self::OpenApi32 => "OpenAPI 3.2",
+            Self::AsyncApi2 => "AsyncAPI 2",
+            Self::AsyncApi3 => "AsyncAPI 3",
+        }
+    }
 }
 
 /// Erreurs typées du parsing de contrat.

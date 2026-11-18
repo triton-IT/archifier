@@ -21,7 +21,7 @@ pub fn start() {
             web_sys::console::warn_1(&JsValue::from_str(&format!(
                 "IndexedDB indisponible ({reason}) — repli en mémoire, les données seront perdues au rechargement."
             )));
-            boot(Rc::new(MemoryStore::new()), None, "mémoire (dégradé)");
+            boot(Rc::new(MemoryStore::new()), None, "Mémoire de session");
         }
     });
 }

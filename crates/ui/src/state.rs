@@ -45,6 +45,12 @@ pub fn storage_label() -> String {
     STORAGE.with(|slot| slot.borrow().clone())
 }
 
+/// Vrai quand le stockage durable n'a pas pu être ouvert et que la session
+/// courante travaille uniquement en mémoire.
+pub fn storage_is_temporary() -> bool {
+    storage_label() == "Mémoire de session"
+}
+
 /// Demande un démarrage à vide au prochain chargement. Marqueur non métier :
 /// les données restent dans IndexedDB, ce drapeau force le démarrage sur un
 /// référentiel neuf après une réinitialisation.

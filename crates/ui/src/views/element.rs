@@ -1,21 +1,13 @@
 //! Fiche d'un élément : propriétés, relations, usages, documentation, historique.
 
 use crate::components::{
-    Card, Empty, ExportMarkdownButton, LifecycleBadge, Markdown, RevisionCompare,
+    notation_label, relation_label, Card, Empty, ExportMarkdownButton, LifecycleBadge, Markdown,
+    RevisionCompare,
 };
 use crate::state::{input_value, parse_object_id, repo, App};
-use archifier_core::{Notation, ObjectId};
+use archifier_core::ObjectId;
 use archifier_repo::ElementFilter;
 use leptos::prelude::*;
-
-fn notation_label(notation: Notation) -> &'static str {
-    match notation {
-        Notation::Archimate => "ArchiMate 3.2",
-        Notation::Bpmn => "BPMN 2.0 Core",
-        Notation::Uml => "UML 2.5.1",
-        Notation::Native => "Natif",
-    }
-}
 
 #[component]
 pub fn ElementView(app: App, id: ObjectId) -> impl IntoView {
@@ -139,7 +131,7 @@ pub fn ElementView(app: App, id: ObjectId) -> impl IntoView {
                                             <h3>"Sortantes"</h3>
                                             {view_model.outgoing.clone().into_iter().map(|rel| view! {
                                                 <div class="relation">
-                                                    <span class="rel-type">{rel.relation_type.clone()}</span>
+                                                    <span class="rel-type">{relation_label(notation, &rel.relation_type)}</span>
                                                     <a href=rel.href>{rel.other_name.clone()}</a>
                                                 </div>
                                             }).collect_view()}
@@ -147,7 +139,7 @@ pub fn ElementView(app: App, id: ObjectId) -> impl IntoView {
                                             {view_model.incoming.clone().into_iter().map(|rel| view! {
                                                 <div class="relation">
                                                     <a href=rel.href>{rel.other_name.clone()}</a>
-                                                    <span class="rel-type">{rel.relation_type.clone()}</span>
+                                                    <span class="rel-type">{relation_label(notation, &rel.relation_type)}</span>
                                                 </div>
                                             }).collect_view()}
                                         </div>

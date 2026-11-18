@@ -1,6 +1,7 @@
 //! `/control` — espace secondaire : inventaire, anomalies, couverture, exports.
 //! Aucune création d'objet depuis le Contrôle (VD-16).
 
+use crate::components::LifecycleBadge;
 use crate::i18n::t;
 use crate::router::{ControlTab, Route};
 use crate::state::{download_text, read_text_file, repo, selected_file, App};
@@ -107,9 +108,9 @@ fn Inventory() -> impl IntoView {
                                             {object.name.clone()}
                                         </a>
                                     </td>
-                                    <td>{object.object_type.as_str()}</td>
+                                    <td>{object.object_type.label()}</td>
                                     <td>{object.domain_name.clone()}</td>
-                                    <td>{format!("{:?}", object.lifecycle)}</td>
+                                    <td><LifecycleBadge lifecycle=object.lifecycle /></td>
                                 </tr>
                             }).collect_view()}
                         </tbody>

@@ -166,7 +166,6 @@ pub enum Route {
     Graph {
         id: ObjectId,
     },
-    DesignSystem,
     Settings,
     NotFound(String),
 }
@@ -277,7 +276,6 @@ pub fn parse_hash(hash: &str) -> Route {
             || Route::NotFound(hash.to_string()),
             |id| Route::Graph { id },
         ),
-        ["_design"] | ["_design", _] => Route::DesignSystem,
         ["settings"] => Route::Settings,
         _ => Route::NotFound(hash.to_string()),
     }
@@ -390,7 +388,6 @@ impl Route {
                 None => format!("#/view/at/{}", encode(at)),
             },
             Self::Graph { id } => format!("#/graph/{id}"),
-            Self::DesignSystem => "#/_design".into(),
             Self::Settings => "#/settings".into(),
             Self::NotFound(_) => "#/".into(),
         }
@@ -527,7 +524,6 @@ mod tests {
                 tab: ControlTab::Coverage
             }
         );
-        assert_eq!(parse_hash("#/_design"), Route::DesignSystem);
     }
 
     #[test]
@@ -561,7 +557,6 @@ mod tests {
             Route::Story { id: oid() },
             Route::Review { id: oid() },
             Route::Graph { id: oid() },
-            Route::DesignSystem,
             Route::Settings,
         ] {
             assert_eq!(
