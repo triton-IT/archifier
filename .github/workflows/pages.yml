@@ -1,0 +1,69 @@
+name: Démo GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+
+      - name: Installer Rust (toolchain épinglée) et la cible wasm
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          target: wasm32-unknown-unknown
+          cache: true
+
+      - name: Installer wasm-bindgen-cli 0.2.130
+        uses: taiki-e/install-action@v2
+        with:
+          tool: wasm-bindgen@0.2.130
+
+      - name: Compiler le front wasm
+        run: cargo build -p archifier-ui --target wasm32-unknown-unknown --release
+
+      - name: Générer le bundle web
+        run: >
+          wasm-bindgen --target web --no-typescript --out-dir pkg
+          target/wasm32-unknown-unknown/release/archifier_ui.wasm
+
+      - name: Assembler le site statique
+        run: |
+          mkdir -p dist
+          cp index.html dist/
+          cp -r assets pkg dist/
+          touch dist/.nojekyll
+
+      - name: Configurer Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Publier l'artefact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Déployer sur GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

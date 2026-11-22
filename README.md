@@ -14,6 +14,7 @@ les applications et les interfaces.
 | **Métamodèles** | profils TOML externes (ArchiMate 3.2, BPMN 2.0 Core, UML 2.5.1, natif) |
 | **Persistance** | IndexedDB, un enregistrement atomique par écriture |
 | **Routage** | fragment (`#/…`), ADR-012 |
+| **Démo** | <https://triton-it.github.io/archifier/> (GitHub Pages, build de `main`) |
 
 ## Le changement de cap
 
