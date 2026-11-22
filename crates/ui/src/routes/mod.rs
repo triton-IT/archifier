@@ -1,4 +1,5 @@
-//! Routes de l'Atelier, de la Bibliothèque et du Contrôle (C-06).
+//! Routes de l'accueil, de la carte, de l'Atelier, de la Bibliothèque et du Contrôle
+//! (C-06, C-10).
 
 pub mod atelier;
 pub mod control;
@@ -6,6 +7,9 @@ pub mod design;
 pub mod library;
 
 use crate::components::{notation_label, relation_label};
+use crate::focus::{
+    build_focus_context, focus_context_card, focus_layout, panel, FocusGraph, FocusLink, FocusNode,
+};
 use crate::i18n::t;
 use crate::router::{Route, ViewLink};
 use crate::state::{repo, App};
@@ -13,6 +17,72 @@ use leptos::prelude::*;
 
 pub fn render(app: App, route: Route) -> AnyView {
     match route {
+        Route::Home(query) => {
+            let query = query.clone();
+            view! {
+                {move || {
+                    let _ = app.version.get();
+                    view! { <crate::catalog::ProductCatalogPage app=app query=query.clone() /> }
+                }}
+            }
+            .into_any()
+        }
+        Route::Map(query) => view! { <crate::map::MapPage app=app query=query /> }.into_any(),
+        // Les pages d'objet relisent le dépôt à chaque écriture : une action
+        // inline (rattacher une application, publier une version) met à jour
+        // la page sans rechargement ni navigation forcée.
+        Route::Product { id } => view! {
+            {move || { let _ = app.version.get(); view! { <crate::map::ProductPage app=app id=id /> } }}
+        }
+        .into_any(),
+        Route::Team { id } => view! {
+            {move || { let _ = app.version.get(); view! { <crate::map::TeamPage app=app id=id /> } }}
+        }
+        .into_any(),
+        Route::ValueStream { id } => view! {
+            {move || { let _ = app.version.get(); view! { <crate::map::ValueStreamPage app=app id=id /> } }}
+        }
+        .into_any(),
+        Route::ValueStreamStage {
+            value_stream,
+            stage,
+        } => view! {
+            {move || {
+                let _ = app.version.get();
+                view! { <crate::map::ValueStreamStagePage app=app value_stream=value_stream stage=stage /> }
+            }}
+        }
+        .into_any(),
+        Route::Capability { id } => view! {
+            {move || { let _ = app.version.get(); view! { <crate::map::CapabilityPage app=app id=id /> } }}
+        }
+        .into_any(),
+        Route::Application { id } => view! {
+            {move || { let _ = app.version.get(); view! { <crate::map::ApplicationPage app=app id=id /> } }}
+        }
+        .into_any(),
+        Route::ApplicationComponent {
+            application,
+            component,
+        } => view! {
+            {move || {
+                let _ = app.version.get();
+                view! { <crate::map::ComponentPage app=app application=application component=component /> }
+            }}
+        }
+        .into_any(),
+        Route::Infrastructure { id } => view! {
+            {move || { let _ = app.version.get(); view! { <crate::map::InfrastructurePage app=app id=id /> } }}
+        }
+        .into_any(),
+        Route::MapInterface { id } => view! {
+            {move || { let _ = app.version.get(); view! { <crate::map::MapInterfacePage app=app id=id /> } }}
+        }
+        .into_any(),
+        Route::BusinessDomain { id } => view! {
+            {move || { let _ = app.version.get(); view! { <crate::map::BusinessDomainPage app=app id=id /> } }}
+        }
+        .into_any(),
         Route::Atelier => view! { <atelier::Atelier app=app initial_intent=None /> }.into_any(),
         Route::ViewNew { intent } => view! {
             <atelier::Atelier app=app initial_intent=intent />
@@ -109,20 +179,110 @@ fn relationship_fiche(id: archifier_core::ObjectId) -> AnyView {
         .map(|r| r.href.clone())
         .unwrap_or_else(|| "#/".into());
     let display_type = relation_label(relationship.notation, &relationship.relation_type);
+
+    let left = FocusNode {
+        id: relationship.source_id,
+        label: source_name.clone(),
+        sublabel: "Source".into(),
+        color_key: "external".into(),
+        route: source_href.clone(),
+    };
+    let right = FocusNode {
+        id: relationship.target_id,
+        label: target_name.clone(),
+        sublabel: "Cible".into(),
+        color_key: "external".into(),
+        route: target_href.clone(),
+    };
+    let context = build_focus_context(FocusGraph {
+        center_id: relationship.object.id,
+        center_label: relationship.object.name.clone(),
+        center_meta: display_type.clone(),
+        center_badge: Some("relation".into()),
+        empty_label: None,
+        inside: Vec::new(),
+        left_label: Some("SOURCE".into()),
+        left: vec![left],
+        right_label: Some("CIBLE".into()),
+        right: vec![right],
+        links: vec![
+            FocusLink {
+                from: relationship.source_id,
+                to: relationship.object.id,
+                label: display_type.clone(),
+            },
+            FocusLink {
+                from: relationship.object.id,
+                to: relationship.target_id,
+                label: display_type.clone(),
+            },
+        ],
+        center_legend: "Relation".into(),
+        inside_legend: None,
+        around_legend: Some("Objet lié".into()),
+    });
+    let context_card = focus_context_card(
+        format!(
+            "{} · révision {}",
+            display_type, relationship.object.revision
+        ),
+        context,
+        None,
+    );
+
+    let left_panels = vec![panel(
+        "Extrémités",
+        view! {
+            <dl class="facts">
+                <div class="fact">
+                    <dt>"Source"</dt>
+                    <dd><a href=source_href>{source_name}</a></dd>
+                </div>
+                <div class="fact">
+                    <dt>"Cible"</dt>
+                    <dd><a href=target_href>{target_name}</a></dd>
+                </div>
+            </dl>
+        }
+        .into_any(),
+    )];
+
+    let right_panels = vec![panel(
+        "Propriétés",
+        view! {
+            <dl class="facts">
+                <div class="fact">
+                    <dt>"Type"</dt>
+                    <dd>{display_type.clone()}</dd>
+                </div>
+                <div class="fact">
+                    <dt>"Notation"</dt>
+                    <dd>{notation_label(relationship.notation)}</dd>
+                </div>
+                <div class="fact">
+                    <dt>"Révision"</dt>
+                    <dd>{relationship.object.revision.to_string()}</dd>
+                </div>
+            </dl>
+        }
+        .into_any(),
+    )];
+
     view! {
-        <main class="page">
+        <main class="page entity-page entity-focus-page">
             <header class="page-head">
-                <h1>{relationship.object.name.clone()}</h1>
-                <p class="muted">{display_type}</p>
+                <nav class="map-breadcrumb" aria-label="Fil d'Ariane">
+                    <a href="#/map">"Entreprise"</a><span>"›"</span>
+                    <span aria-current="page">{relationship.object.name.clone()}</span>
+                </nav>
+                <div class="entity-title">
+                    <div>
+                        <h1>{relationship.object.name.clone()}</h1>
+                        <p class="muted">{display_type}</p>
+                    </div>
+                </div>
             </header>
-            <section class="card">
-                <dl class="facts">
-                    <dt>"Source"</dt><dd><a href=source_href>{source_name}</a></dd>
-                    <dt>"Cible"</dt><dd><a href=target_href>{target_name}</a></dd>
-                    <dt>"Notation"</dt><dd>{notation_label(relationship.notation)}</dd>
-                    <dt>"Révision"</dt><dd>{relationship.object.revision.to_string()}</dd>
-                </dl>
-            </section>
+            {focus_layout(left_panels, context_card, right_panels)}
         </main>
     }
     .into_any()

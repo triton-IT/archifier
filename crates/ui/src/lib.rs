@@ -3,10 +3,13 @@
 #[cfg(target_arch = "wasm32")]
 pub mod boot;
 pub mod canvas;
+pub mod catalog;
 pub mod components;
 pub mod design;
+pub mod focus;
 pub mod i18n;
 pub mod inspector;
+pub mod map;
 pub mod router;
 pub mod routes;
 pub mod state;

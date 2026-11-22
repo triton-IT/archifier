@@ -4,6 +4,7 @@
 //! consomment, ils ne les redéfinissent pas.
 
 use crate::i18n::t;
+use crate::router::Route;
 use crate::state::{download_bundle, fmt_date, input_value, repo, storage_is_temporary, App};
 use archifier_core::{
     ContractDiff, DiffClass, FieldDifference, Lifecycle, Notation, ObjectId, Revision,
@@ -26,11 +27,56 @@ pub fn Shell(app: App, children: Children) -> impl IntoView {
                 </a>
                 <span class="tagline">{t("app.tagline")}</span>
                 <nav class="topnav">
-                    <a href="#/">{t("nav.atelier")}</a>
-                    <a href="#/library">{t("nav.library")}</a>
-                    <a href="#/control">{t("nav.control")}</a>
-                    <a href="#/search">{t("nav.search")}</a>
-                    <a href="#/settings">{t("nav.settings")}</a>
+                    <a
+                        href="#/"
+                        class:active=move || app.route.get().is_products()
+                        aria-current=move || if app.route.get().is_products() { "page" } else { "false" }
+                    >{t("nav.products")}</a>
+                    <a
+                        href="#/map"
+                        class:active=move || app.route.get().is_map()
+                        aria-current=move || if app.route.get().is_map() { "page" } else { "false" }
+                    >{t("nav.map")}</a>
+                    <a
+                        href="#/atelier"
+                        class:active=move || app.route.get().is_atelier()
+                        aria-current=move || if app.route.get().is_atelier() { "page" } else { "false" }
+                    >{t("nav.atelier")}</a>
+                    <details class="nav-more">
+                        <summary
+                            aria-label="Plus d'espaces"
+                            class:active=move || matches!(
+                                app.route.get(),
+                                Route::Library { .. }
+                                    | Route::Control { .. }
+                                    | Route::Search { .. }
+                                    | Route::Settings
+                            )
+                        >"⋯"</summary>
+                        <div class="nav-more-panel">
+                            <a
+                                href="#/library"
+                                class:active=move || matches!(app.route.get(), Route::Library { .. })
+                                aria-current=move || if matches!(app.route.get(), Route::Library { .. }) { "page" } else { "false" }
+                            >{t("nav.library")}</a>
+                            <a
+                                href="#/control"
+                                class:active=move || matches!(app.route.get(), Route::Control { .. })
+                                aria-current=move || if matches!(app.route.get(), Route::Control { .. }) { "page" } else { "false" }
+                            >{t("nav.control")}</a>
+                            <a
+                                href="#/search"
+                                title="Recherche globale (Ctrl+K)"
+                                class:active=move || matches!(app.route.get(), Route::Search { .. })
+                                aria-current=move || if matches!(app.route.get(), Route::Search { .. }) { "page" } else { "false" }
+                            >{t("nav.search")}<kbd class="nav-kbd">"⌘K"</kbd></a>
+                            <a
+                                href="#/settings"
+                                class:active=move || matches!(app.route.get(), Route::Settings)
+                                aria-current=move || if matches!(app.route.get(), Route::Settings) { "page" } else { "false" }
+                            >{t("nav.settings")}</a>
+                        </div>
+                    </details>
                 </nav>
                 <UserPicker />
             </header>

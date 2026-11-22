@@ -1,7 +1,9 @@
 # E2E — chaîne de conception
 
-Ces tests dérivent de `functional-specifications.md` (FR-040..054, Gherkin) et de
-`docs/ui-spec.md`. Ils ne corrigent jamais le produit : un échec est un signalement.
+Ces tests dérivent de `functional-specifications.md` (FR-040..054, Gherkin), de
+`docs/ui-spec.md` et d'ADR-023/024/025 pour l'accueil (portefeuille de produits, carte sur
+`/map`, Atelier sur `/atelier`). Ils ne corrigent jamais le produit : un échec est un
+signalement.
 
 ## Prérequis
 
@@ -19,7 +21,7 @@ globalement, ou exécuter la chaîne manuellement (voir ci-dessous).
 
 | Scénario | Fichier | Points |
 |---|---|---|
-| `/` ouvre l'Atelier, pas un inventaire | `design-chain.spec.ts` | VD-01 |
+| `/` ouvre le portefeuille de produits, pas l'Atelier ni un inventaire | `design-chain.spec.ts` | ADR-025 |
 | Déposer, nommer, formaliser, relier, frontière, port | idem | VD-02..VD-11 |
 | Curseur temporel lisible sans fiche | idem | VD-12 |
 | Publier, partager, rouvrir le lien | idem | VD-13 |

@@ -4,7 +4,7 @@
 
 Cette spécification décrit la cible **v0.4** d’un référentiel de modélisation d’architecture d’entreprise collaboratif, adossée au MVP1/MVP3 existant. Le produit doit permettre à plusieurs équipes de construire et de posséder leurs produits, de publier les interfaces qu’ils exposent aux autres produits, de réutiliser les objets publiés sans les dupliquer, de documenter l’architecture, de la parcourir de l’entreprise jusqu’à l’infrastructure et de l’interroger en langage naturel.
 
-Le produit possède une surface principale, la **Carte de l’entreprise**, qui est son point d’entrée, et une surface d’édition, l’**Atelier de vues**, qui conserve deux postures : **CONCEPTION**, orientée création et modification, et **LECTURE**, orientée navigation, recherche, consultation historique, comparaison, storytelling et revue des interfaces. Un espace secondaire de **Contrôle** héberge inventaires, anomalies et couverture. Archifier est un outil d’architecture, pas une CMDB : on y navigue en zoomant et on y conçoit en dessinant ; le référentiel se remplit comme conséquence du geste de conception.
+Archifier possède une surface d’accueil, le **portefeuille de produits** filtrable, une surface de navigation spatiale, la **Carte de l’entreprise** (`/map`), et une surface d’édition, l’**Atelier de vues**, qui conserve deux postures : **CONCEPTION**, orientée création et modification, et **LECTURE**, orientée navigation, recherche, consultation historique, comparaison, storytelling et revue des interfaces. Un espace secondaire de **Contrôle** héberge inventaires, anomalies et couverture. Archifier est un outil d’architecture, pas une CMDB : on y navigue en zoomant et on y conçoit en dessinant ; le référentiel se remplit comme conséquence du geste de conception.
 
 Le référentiel est la source de vérité ; une carte ou une vue est une **représentation d’objets du référentiel**. La suppression d’une occurrence graphique ne supprime donc jamais implicitement l’objet qu’elle représente. Inversement, un même objet peut apparaître dans plusieurs cartes, plusieurs vues, plusieurs histoires et plusieurs contextes produits. Cette séparation est ce qui permet à la surface d’être fluide sans que la vérité devienne approximative.
 
@@ -34,13 +34,15 @@ BPMN sera basé sur **BPMN 2.0.2**, qui reste la spécification formelle publié
 
 **Hors périmètre MVP1.** Il n’existe ni RBAC, ni ABAC, ni workflow d’approbation obligatoire, ni restriction de modification par domaine. Aucun connecteur applicatif tiers n’est fourni, à l’exception de l’import/export OpenAPI. La synchronisation temps réel de type édition simultanée caractère par caractère est **reportée au MVP2** (voir « Collaboration temps réel ») ; le moteur BPMN exécutable, la simulation de processus et la conformité UML/BPMN intégrale restent différés.
 
-**Lecture des sections historiques.** Les sections MVP1 conservées ci-dessous parlent encore de « domaine responsable ». Elles se lisent désormais comme **équipe accountable** pour la propriété et **domaine métier** pour la classification. Les FR-055 à FR-081 et l’ADR-023 prévalent.
+**Lecture des sections historiques.** Les sections MVP1 conservées ci-dessous parlent encore de « domaine responsable ». Elles se lisent désormais comme **équipe accountable** pour la propriété et **domaine métier** pour la classification. Les FR-055 à FR-081, l’ADR-023 et l’ADR-024 prévalent.
 
 ## Cible v0.4 — Le produit, la carte et le zoom
 
 > **Décision structurante (ADR-023).** Le point d’entrée du produit n’est plus l’Atelier de vues ni un formulaire de domaine. C’est la **Carte de l’entreprise**, une projection navigable du référentiel qui se zoome de l’entreprise jusqu’à l’infrastructure en passant par les produits, les applications et les interfaces. Le **produit** devient l’unité de lecture et de responsabilité ; le **domaine** redevient ce qu’il aurait toujours dû être : une classification.
+>
+> **Précisions ADR-024/025.** L’accueil est le **portefeuille de produits filtrable** (`ProductQuery::home()`), pas la carte. La carte est servie par `/map` (`MapQuery::map_default()` : scope et niveau Entreprise, lentille primaire `PRODUCT`). Le produit est le **pivot** de la carte, pas la clé primaire du référentiel : capacités, applications, interfaces et données gardent une lecture autonome. La société/groupe reste une dimension distincte à modéliser (ADR-024 §5), pas un attribut du produit.
 
-Cette section définit la cible. Les sections « Périmètre fonctionnel du MVP1 » et « L’Atelier de vues » restent la base historique de l’Atelier ; elles sont désormais **subordonnées** à la carte et à l’ontologie produit. En cas de conflit, la présente section et l’ADR-023 prévalent.
+Cette section définit la cible. Les sections « Périmètre fonctionnel du MVP1 » et « L’Atelier de vues » restent la base historique de l’Atelier ; elles sont désormais **subordonnées** à la carte et à l’ontologie produit. En cas de conflit, la présente section, l’ADR-023 et l’ADR-024 prévalent.
 
 ### 1. Le problème que la cible résout
 
@@ -181,7 +183,7 @@ Elle est une **carte** au sens où elle donne des repères stables, se parcourt 
 
 | Élément de carte | Objet du référentiel | Rôle |
 |---|---|---|
-| **Quartier** | Value stream, portefeuille ou unité d’organisation | Périmètre navigable |
+| **Quartier** | Value stream, portefeuille ; unité d’organisation en cible | Périmètre navigable |
 | **Bâtiment** | Produit | Unité de valeur et de responsabilité |
 | **Bloc / pièce** | Application | Système logiciel à l’intérieur du produit |
 | **Étage / local** | Composant applicatif | Partie de l’application |
@@ -190,13 +192,13 @@ Elle est une **carte** au sens où elle donne des repères stables, se parcourt 
 | **Port** | Interface exposée | Point d’entrée sur une frontière |
 | **Panneau** | Label, état, criticité, propriétaire | Information lisible sans ouvrir de fiche |
 
-La carte ne crée pas de concept métier : un quartier n’est pas un objet, c’est le rendu d’un value stream ou d’un portefeuille. Un bâtiment est un produit ; un bloc est une application. Un bloc est dessiné dans la frontière d’un produit parce qu’il est **utilisé dans ce contexte**, pas parce qu’il appartient au produit : une application partagée apparaît dans plusieurs produits, et c’est précisément ce que la carte doit rendre visible. Cette discipline évite la « carte jolie mais fausse ».
+La carte ne crée pas de concept métier : un quartier n’est pas un objet, c’est le rendu d’un value stream ou d’un portefeuille (l’unité d’organisation reste une cible, non projetée à ce jour). Un bâtiment est un produit ; un bloc est une application. Un bloc est dessiné dans la frontière d’un produit parce qu’il est **utilisé dans ce contexte**, pas parce qu’il appartient au produit : une application partagée apparaît dans plusieurs produits, et c’est précisément ce que la carte doit rendre visible. Cette discipline évite la « carte jolie mais fausse ».
 
 #### 5.2 Les cinq niveaux
 
 | Niveau | Nom | Périmètre typique | Ce que l’on voit | Ce que l’on ne voit pas | Clic |
 |---|---|---|---|---|---|
-| **L0** | Entreprise | Toute l’entreprise | Value streams/quartiers, produits, produits plateformes, flux produit agrégés, criticité | Applications individuelles, composants, nœuds | Quartier → L1, produit → L2, route → panneau d’interfaces |
+| **L0** | Entreprise | Toute l’entreprise | Produits (seuls nœuds), quartiers value streams en contexte (portefeuille en cible), produits plateformes, flux agrégés, criticité | Applications individuelles, composants, nœuds | Quartier → L1, produit → L2, route → panneau d’interfaces |
 | **L1** | Portefeuille / quartier | Un value stream, un portefeuille, une BU | Produits du périmètre, plateformes partagées, interfaces produit à produit, capacités en chaleur | Composants, infrastructure | Produit → L2 |
 | **L2** | Produit | Un produit | Frontière, ports, applications, interfaces applicatives, produits externes, dépendances | Composants internes, nœuds individuels | Application → L3, port → interface |
 | **L3** | Application | Une application | Composants, services, interfaces, données, déploiement | Produits, value streams | Composant → détail, nœud → L4 |
@@ -207,6 +209,8 @@ Le zoom est **sémantique** : franchir un seuil change la requête et l’agrég
 À L1, la **liste des produits du périmètre** est toujours accessible (panneau latéral ou mode liste) avec nom, équipe, cycle de vie, criticité, nombre d’applications et d’interfaces. La carte reste le contenu principal ; la liste est un index de lecture, pas un tableau de bord.
 
 Lorsque le quartier est un value stream, ses étapes forment une **bande de lecture** en haut du quartier ; les produits restent dans une zone unique et sont reliés aux étapes par des arêtes de contribution. Un produit n’est jamais dupliqué dans plusieurs bandes : sa contribution multiple se lit par ses arêtes et ses badges.
+
+> **Première tranche.** Les quartiers effectivement projetés à L0 sont les value streams, les plateformes partagées et « Non rattaché ». Le quartier portefeuille et le quartier d’organisation restent des cibles (ADR-024 §5).
 
 #### 5.3 Géographie stable
 
@@ -247,6 +251,19 @@ La carte a deux postures, comme l’Atelier :
 
 Créer depuis la carte reste un geste explicite : une forme vide n’est pas un objet ; un clic sur « Nouveau produit » ouvre un panneau latéral non bloquant, avec nom, équipe, type et cycle de vie. La formalisation peut être différée, la publication non.
 
+#### 5.7 Le portefeuille de produits (`/`)
+
+L’accueil n’est pas la carte : c’est un **catalogue filtrable** du même référentiel (ADR-025).
+
+- Chaque carte produit montre nom, type, cycle de vie, criticité, équipe accountable, value stream, nombre de capacités/applications/interfaces, signaux et manques.
+- Filtres : recherche, équipe, type, cycle de vie, criticité, value stream, capacité, application, niveau d’interface, exposition, complétude. Combinaison **OU dans une facette, ET entre facettes**.
+- Un filtre value stream couvre le value stream principal et les étapes auxquelles le produit contribue.
+- Les filtres sont sérialisés dans l’URL (`#/?team=…&lifecycle=…&capability=…`) et partageables.
+- L’état vide propose de créer un produit, de charger l’exemple ou d’ouvrir la carte.
+- Les facettes domaine métier, portefeuille, étape, données, risque et initiative attendent leurs commandes d’édition ; elles ne sont pas affichées comme renseignées.
+
+La carte reste disponible sur `/map` avec les niveaux, lentilles, routes et liens profonds décrits ci-dessus.
+
 ### 6. Les lentilles : plusieurs dimensions, une géographie
 
 Une **lentille** est une projection du même graphe. Elle répond à une question et encode une dimension. Les lentilles se **superposent** : couleur par équipe, arêtes par interface, filtre par cycle de vie.
@@ -286,7 +303,7 @@ Chaque page est une **carte à son niveau**, pas un formulaire. Un panneau laté
 
 #### 7.2 Page équipe
 
-- **Bandeau** : nom, type de topologie, mission, unité d’organisation.
+- **Bandeau** : nom, type de topologie, mission, unité d'organisation (cible, non implémentée).
 - **Carte** : produits possédés, applications opérées, interfaces fournies et consommées, dépendances vers d’autres équipes.
 - **Sections** : Produits · Applications · Interfaces · Dépendances · Modes d’interaction · Charge & criticité.
 - **Signal** : une équipe qui possède trop de produits critiques ou trop d’applications partagées est un signal de charge cognitive, pas une faute.
@@ -431,11 +448,12 @@ Ces exigences complètent FR-001 à FR-054. Elles prévalent en cas de conflit a
 | FR-074 | Garantir la **traçabilité inter-notations** par des relations natives, sans duplication d’objets. |
 | FR-075 | Importer produits, applications et interfaces depuis CSV/JSON/OpenAPI et réconcilier sans doublon. |
 | FR-076 | Exporter une carte (SVG/Markdown) avec niveau, lentille, date, légende et sources. |
-| FR-077 | Accompagner le premier lancement par un parcours qui crée un **premier produit** et une **première équipe**, pas un domaine ni une intention. |
+| FR-077 | Accompagner le premier lancement par un parcours qui propose d'abord un **premier produit**, puis son **équipe responsable**, puis un value stream facultatif — pas un domaine ni une intention. |
 | FR-078 | Permettre à la recherche et à la palette de commandes de sauter à tout objet et de zoomer au bon niveau. |
 | FR-079 | Signaler les anomalies de modèle : produit sans équipe, application sans opérateur, interface sans fournisseur ou version, consommation d’une version expirée, application partagée non marquée, capacité sans réalisation, produit orphelin, domaine utilisé comme propriétaire. |
 | FR-080 | Garantir l’accessibilité de la carte : navigation clavier entre niveaux, liste alternative, lecteur d’écran, réduction de mouvement. |
 | FR-081 | Capturer une carte (périmètre, niveau, lentilles, date, focus) dans une Story ou une Revue, avec sa révision, sans dupliquer les objets. |
+| FR-082 | Présenter à l’accueil un **portefeuille de produits** filtrable par attributs et relations (équipe, type, cycle de vie, criticité, value stream, capacité, application, niveau/exposition d’interface, complétude), avec filtres sérialisés dans l’URL. |
 
 #### 12.1 Révision des exigences existantes
 
@@ -443,7 +461,7 @@ Ces exigences complètent FR-001 à FR-054. Elles prévalent en cas de conflit a
 |---|---|---|
 | FR-001 | Créer, modifier, archiver et consulter des domaines. | Créer des produits, équipes, value streams et applications ; le domaine devient une classification. |
 | FR-002 | Affecter un `responsibleDomainId`. | Affecter un `accountableTeamId` et, facultativement, un `businessDomainId`. |
-| FR-040 | L’Atelier est le point d’entrée. | La Carte est le point d’entrée ; l’Atelier est la surface d’édition des vues authored. |
+| FR-040 | L’Atelier est le point d’entrée. | Le portefeuille de produits est l’accueil ; la Carte est la surface de navigation (`/map`) ; l’Atelier est la surface d’édition des vues authored. |
 | FR-046 | Démarrer une vue depuis une intention. | La carte se lit par niveau et lentille ; une vue authored garde une intention. |
 | FR-048 | Chaque vue a une intention, un périmètre, une notation, un cadrage. | La carte a un niveau, un périmètre, des lentilles, une date et des ancres ; la vue authored garde son identité. |
 | FR-052 | L’inventaire est secondaire. | Inchangé : la carte n’est pas un inventaire ; le Contrôle reste secondaire. |
@@ -561,7 +579,7 @@ Scenario: Migrer un domaine legacy
 
 | Sujet | Options | Recommandation |
 |---|---|---|
-| Quartier par défaut à L0 | value stream / portefeuille / unité d'organisation | **Value stream** si l'entreprise pilote par la valeur ; sinon portefeuille ; configurable par instance. |
+| Quartier par défaut à L0 | value stream / portefeuille / unité d'organisation (cible) | **Value stream** si l'entreprise pilote par la valeur ; sinon portefeuille ; configurable par instance. L'unité d'organisation n'est pas encore projetée (ADR-024 §5). |
 | Profondeur de la hiérarchie produit | 2 / 3 / 4 niveaux | **3 maximum** ; au-delà, le produit est un portefeuille, pas un produit. |
 | Agrégation d'une route | criticité max / volume / nombre d'interfaces | **Criticité max + badge count** ; le volume est une option de la lentille Interface. |
 | Propriétaire d'une capacité | équipe / rôle / aucun | **Rôle ou équipe optionnel** ; la capacité reste stable même si l'organisation change. |
@@ -636,7 +654,7 @@ Les exigences ci-dessous sont la **base MVP1**. Les FR-040 à FR-054 formalisent
 
 ### L’Atelier de vues : surface d’édition
 
-> **Amendement ADR-023 (18/11/2026).** Le point d’entrée du produit est désormais la **Carte de l’entreprise** (voir « Cible v0.4 — Le produit, la carte et le zoom »). L’Atelier reste la **surface d’édition des vues authored** : il n’est plus l’écran d’accueil, mais il conserve les principes de création depuis la vue, de formalisation progressive et de commandes validées. Les paragraphes ci-dessous décrivent cette surface, pas le parcours d’entrée.
+> **Amendement ADR-023 (18/11/2026), précisé par ADR-024 (21/11/2026).** Le point d’entrée du produit est désormais la **Carte de l’entreprise** (voir « Cible v0.4 — Le produit, la carte et le zoom »). L’Atelier reste la **surface d’édition des vues authored** : il n’est plus l’écran d’accueil, mais il conserve les principes de création depuis la vue, de formalisation progressive et de commandes validées. Les paragraphes ci-dessous décrivent cette surface, pas le parcours d’entrée.
 
 **Décision structurante.** L’Atelier n’est ni un tableau de bord, ni un inventaire, ni une liste de domaines : c’est une **surface de conception** (designer de vues). Archifier est un outil d’architecture avant tout, pas une CMDB. L’architecte pense, arbitre et communique en construisant des vues ; le référentiel se remplit comme **conséquence** du geste de conception, jamais comme préalable administratif.
 
@@ -650,8 +668,8 @@ Cette décision ne contredit pas le principe « le référentiel est la source d
 
 **Renversement du parcours (révisé par ADR-023).** Le parcours de référence est :
 
-1. j’ouvre la **Carte de l’entreprise** ;
-2. je zoome sur un value stream, un produit, une application ou une infrastructure ;
+1. j’ouvre le **portefeuille de produits** et je filtre par équipe, value stream, capacité, application ou complétude ;
+2. j’ouvre un produit, ou je passe à la **Carte de l’entreprise** (`/map`) pour zoomer sur un value stream, une application ou une infrastructure ;
 3. depuis le niveau courant, je crée ou modifie l’objet, ou j’ouvre une vue authored dans l’Atelier ;
 4. le produit **formalise** ces formes en objets du référentiel (type, propriétaire, propriétés) au moment opportun ;
 5. je publie, je raconte, je compare, je révise.
@@ -716,7 +734,7 @@ Objet valide (publiable, référençable, exportable)
 
 La bascule conserve la vue, le cadrage et la sélection. Elle ne change aucun droit. Un lecteur qui reçoit un lien de vue arrive directement dans la posture lecture, sans passer par un menu.
 
-**Accueil, bibliothèque et contrôle (révisé par ADR-023).** L’accueil est la **Carte de l’entreprise** : le dernier cadrage de carte, sinon la vue entreprise. La **Bibliothèque** (produits, équipes, value streams, capacités, applications, vues, interfaces) et le **Contrôle** (inventaires, anomalies, couverture des métamodèles, exports) sont accessibles depuis la barre latérale, mais aucun des deux n’est un passage obligé. Une fiche d’objet reste disponible et complète : elle est la conséquence d’un clic dans la carte ou dans une vue, pas la porte d’entrée du produit.
+**Accueil, bibliothèque et contrôle (révisé par ADR-023/024/025).** L’accueil est le **portefeuille de produits** (`ProductQuery::home()`), filtrable par attributs et relations. La **Carte de l’entreprise** est servie par `/map` (`MapQuery::map_default()` : scope et niveau Entreprise, lentille primaire Produit, produits seuls nœuds à L0). Un lien profond explicite restaure son contexte ; l’accueil ne rouvre ni une vue authored ni un cadrage de session. La **Bibliothèque** (produits, équipes, value streams, capacités, applications, vues, interfaces) et le **Contrôle** (inventaires, anomalies, couverture des métamodèles, exports) sont accessibles depuis la barre latérale, mais aucun des deux n’est un passage obligé. Une fiche d’objet reste disponible et complète : elle est la conséquence d’un clic dans le portefeuille, la carte ou une vue, pas la porte d’entrée du produit.
 
 La page d’un **domaine métier** reste une vue de synthèse utile — produits classifiés, interfaces exposées et consommées, dépendances, vues publiées, Stories — mais elle est atteinte depuis une lentille, une classification ou la Bibliothèque, jamais imposée au lancement. Un domaine métier ne possède pas d’objet : il classifie.
 
@@ -1208,6 +1226,10 @@ Extension cible v0.4 (détail dans C-10) :
 | `initiatives` | `id`, `name`, `kind`, `start`, `end` |
 | `map_anchors` | `object_id`, `level`, `district_id`, `x`, `y`, `pinned`, `revision` |
 
+> `teams.org_unit_id` référence une unité d’organisation (`BusinessActor` ArchiMate). Ce
+> n’est ni un objet natif `OrganizationUnit` ni un quartier de carte dans la première
+> tranche : la dimension société/groupe reste une cible (ADR-024 §5).
+
 Les IDs doivent être des identifiants opaques stables, par exemple UUIDv7 ou ULID. Le choix exact est une décision d’implémentation ; la propriété requise est l’indépendance vis-à-vis du nom, de la notation, du produit et du domaine.
 
 La concurrence MVP1 utilise un **optimistic lock** :
@@ -1612,7 +1634,8 @@ La démonstration de recette doit couvrir cinq chaînes complètes. La première
 
 | Capacité | MVP1 v0.1 | Cible v0.4 (ADR-023) |
 |---|---|---|
-| **Carte de l’entreprise (city map)** | Non — l’accueil était l’Atelier | **Oui — point d’entrée du produit**, zoom L0→L4, lentilles |
+| **Portefeuille de produits (`/`)** | Non — l’accueil était l’Atelier | **Oui — accueil filtrable**, cartes produit et filtres relationnels (ADR-025) |
+| **Carte de l’entreprise (city map)** | Non — l’accueil était l’Atelier | **Oui — surface de navigation `/map`**, zoom L0→L4, lentilles |
 | **Produit, équipe, value stream, capacité** | Non — le domaine servait de pivot | **Oui — objets de premier rang**, propriété et classification séparées |
 | **Atelier de vues (designer)** | **Oui — point d’entrée du produit** | Surface d’édition des vues authored, atteinte depuis la carte |
 | Inventaire de type CMDB | Non prioritaire — espace Contrôle | reporting et tableaux de bord |

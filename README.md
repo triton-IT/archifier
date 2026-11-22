@@ -6,9 +6,9 @@ les applications et les interfaces.
 
 | | |
 |---|---|
-| **Cible produit** | v0.4 — carte de l'entreprise, ontologie produit, zoom sémantique (ADR-023) |
-| **Implémentation présente** | MVP3 — Atelier de vues (ADR-022), suite de tests MVP3 |
-| **Statut de ce dépôt** | Les spécifications de la cible v0.4 sont écrites ; **la carte produit n'est pas encore codée.** |
+| **Cible produit** | v0.4 — portefeuille de produits à l'accueil, carte de l'entreprise, ontologie produit, zoom sémantique (ADR-023/024/025) |
+| **Implémentation présente** | v0.4 première tranche : portefeuille filtrable, carte L0–L4, ontologie native, pages d'objet, création inline ; Atelier MVP3 conservé |
+| **Statut de ce dépôt** | **La carte produit est implémentée et testée** ; les lentilles avancées, l'impact et la migration guidée restent à approfondir. |
 | **Front** | Rust + Leptos 0.8 → WebAssembly |
 | **Moteur** | `archifier-core` : règles, temporalité, `arch://`, bus `ViewCommand` |
 | **Métamodèles** | profils TOML externes (ArchiMate 3.2, BPMN 2.0 Core, UML 2.5.1, natif) |
@@ -24,7 +24,7 @@ classification et regroupement.
 
 La cible v0.4 renverse le parcours (ADR-023) :
 
-1. `/` ouvre la **Carte de l'entreprise** ;
+1. `/` ouvre le **portefeuille de produits** filtrable (ADR-025) ; la carte est sur `#/map` ;
 2. on zoome sur un **value stream**, un **produit**, une **application**, puis une
    **infrastructure** ;
 3. les **interfaces** sont visibles à chaque niveau, avec fournisseur, consommateurs,
@@ -38,7 +38,7 @@ par une **équipe** qui possède des **produits** et opère des **applications**
 
 | Avant (MVP3) | Après (cible v0.4) |
 |---|---|
-| Accueil = Atelier, choix d'une intention | Accueil = Carte de l'entreprise, zoom |
+| Accueil = Atelier, choix d'une intention | Accueil = portefeuille de produits filtrable |
 | Domaine = pivot de propriété et de navigation | Produit + équipe ; domaine = classification |
 | Intention de vue = préalable | Lentille de carte ou action de détail |
 | Interface = flèche ou domaine fournisseur | Interface = objet versionné, fournisseur/consommateurs |
@@ -46,6 +46,9 @@ par une **équipe** qui possède des **produits** et opère des **applications**
 | Une vue = un diagramme | Une carte = projection ; une vue = récit authored |
 
 ## La cible v0.4 en un écran
+
+L'accueil est le **portefeuille de produits** filtré (`#/`) ; la carte ci-dessous est
+`#/map`.
 
 ```text
 L0  Entreprise        quartiers = value streams / portefeuilles
@@ -79,22 +82,63 @@ L0  Entreprise        quartiers = value streams / portefeuilles
 
 - `docs/adr/ADR-023-produit-carte-entreprise.md` — décision structurante : produit, carte,
   zoom, lentilles, place d'ArchiMate/BPMN/UML.
+- `docs/adr/ADR-024-produit-pivot-multi-centre.md` — le produit est le pivot de la carte,
+  pas le centre du référentiel.
+- `docs/adr/ADR-025-accueil-portefeuille-produits.md` — l'accueil est le portefeuille de
+  produits filtrable ; la carte reste `#/map`.
 - `functional-specifications.md` § « Cible v0.4 — Le produit, la carte et le zoom » —
-  ontologie, règles `PRD-*`, carte, lentilles, pages, interfaces, migration, FR-055..081,
-  scénarios d'acceptation, trajectoire.
-- `docs/ui-spec.md` v2.0 — grammaire de la carte, cinq niveaux, lentilles, pages
+  ontologie, règles `PRD-*`, portefeuille, carte, lentilles, pages, interfaces, migration,
+  FR-055..082, scénarios d'acceptation, trajectoire.
+- `docs/ui-spec.md` v2.2 — portefeuille de produits, carte, cinq niveaux, lentilles, pages
   produit/équipe/value stream/capacité/application/infrastructure, états, accessibilité.
-- `docs/contracts/C-10-produit-carte-navigation.md` — objets, cardinalités, projection
-  `MapQuery → MapProjection`, routes, agrégation, codes `MAP-*`/`PRD-*`, tests nommés.
-- `technical-specifications.md` §15.0/§15.2 — avenant : la carte devient `/`, l'Atelier
-  reste la surface d'édition.
+- `docs/contracts/C-10-produit-carte-navigation.md` — objets, cardinalités, portefeuille
+  (`ProductQuery`), projection `MapQuery → MapProjection`, routes, agrégation, codes
+  `MAP-*`/`PRD-*`, tests nommés.
+- `technical-specifications.md` §15.0/§15.2 — avenant : l'accueil devient le portefeuille
+  (`/`), la carte passe sur `/map`, l'Atelier reste la surface d'édition.
 - `docs/contracts/` — contrats MVP3 gelés (C-01..C-09), conservés ; C-10 est additif.
 
-## État implémenté (MVP3)
+## État implémenté (v0.4 + MVP3)
 
-Le code présent dans ce dépôt implémente le MVP3, pas encore la cible v0.4.
+L'accueil est le **portefeuille de produits** (`#/`), filtrable (`ProductQuery::home()`,
+ADR-025). La **Carte de l'entreprise** est sur `#/map` (`MapQuery::map_default()`). L'Atelier
+reste la surface d'édition des vues authored.
 
-### L'Atelier (`#/design/:id`)
+### Le portefeuille de produits (`#/`)
+
+- liste de cartes produit avec recherche et filtres : équipe, type, cycle de vie,
+  criticité, value stream, capacité, application, niveau/exposition d'interface,
+  complétude ;
+- chaque carte montre l'équipe accountable, le value stream, les compteurs de capacités,
+  applications et interfaces, les signaux et les manques ;
+- filtres sérialisés dans l'URL (`#/?team=…&lifecycle=…&capability=…`) ;
+- actions : ouvrir la fiche produit, voir le produit sur la carte, créer un produit.
+
+### La carte v0.4 (`#/map`)
+
+- `#/map` ouvre la carte L0 (scope et niveau Entreprise, lentille primaire Produit) ; à L0,
+  les seuls nœuds sont des produits, les quartiers sont le contexte ;
+- cinq niveaux : `ENTERPRISE`, `PORTFOLIO`, `PRODUCT`, `APPLICATION`,
+  `INFRASTRUCTURE` ;
+- dix lentilles : valeur, capacité, produit, organisation, applicatif, interface,
+  technologie, données, temps, risque ;
+- quartiers = value streams / plateformes / non rattaché / environnements ;
+- lignes agrégées depuis les consommations d'interface, dépliables dans le panneau ;
+- lien profond `#/map?scope=…&level=…&lens=…&date=…&focus=…` ;
+- liste accessible des objets et recherche intégrée ;
+- création inline non modale : produit, équipe, value stream, application, interface,
+  capacité, nœud ;
+- pages d'objet : produit, équipe, value stream, étape, capacité, application,
+  composant, interface, infrastructure, domaine métier ;
+- bouton « Charger un exemple » pour un référentiel de démonstration (assurance),
+  jamais chargé automatiquement et jamais destructif.
+
+Preuves : `cargo test -p archifier-core map::`,
+`cargo test -p archifier-repo --test map_acceptance`, `cargo test -p archifier-ui`.
+Décisions et écarts : `docs/v0.4/decision-log.md`,
+`docs/v0.4/implementation-report.md`.
+
+### L'Atelier (`#/atelier`, `#/design/:id`)
 
 - Bus de commandes (`ViewCommand`) validé par `archifier-core` avant projection : pose de
   croquis, objet existant, renommage, formalisation, connexion, reconnexion, déplacement,
@@ -129,7 +173,7 @@ Le code présent dans ce dépôt implémente le MVP3, pas encore la cible v0.4.
   vue, la Bibliothèque, la recherche ou `arch://`.
 - **`/_design`** : galerie des tokens, primitives et états.
 
-## Démarrage (MVP3)
+## Démarrage
 
 Prérequis : Rust ≥ 1.88 (toolchain épinglée), cible `wasm32-unknown-unknown`,
 `wasm-bindgen-cli` 0.2.130, Node ≥ 20.
@@ -139,8 +183,10 @@ Prérequis : Rust ≥ 1.88 (toolchain épinglée), cible `wasm32-unknown-unknown
 node scripts\serve.mjs 4173
 ```
 
-Puis <http://127.0.0.1:4173/>. Le premier lancement ouvre un référentiel **vide** :
-l'Atelier propose de nommer le premier domaine, puis de créer la première vue.
+Puis <http://127.0.0.1:4173/>. Le premier lancement ouvre la **carte de l'entreprise**
+sur un référentiel **vide**, en lecture **Produits** : créez un produit (son équipe
+responsable est demandée juste après), ou chargez l'exemple. Aucun formulaire de domaine
+n'est demandé.
 
 ```powershell
 cargo test --workspace                      # suite MVP3
@@ -166,16 +212,20 @@ Règles vérifiées par `crates/ui/tests/architecture.rs` :
 - la surface `Repository` reste gelée (six méthodes additives : C-09) ;
 - `IdbStore` n'est connu que de `boot.rs`.
 
-La cible v0.4 ajoutera un module de **projection de carte** (requête, agrégation, ancres)
+La carte v0.4 utilise un module de **projection de carte** (requête, agrégation, ancres)
 distinct du layout authored. Il ne réutilise pas `DiagramLayout` : la carte a sa propre
 géométrie stable (C-10 §6 et §10).
 
 ## Limites assumées
 
-- **La carte produit n'est pas implémentée** : les specs et contrats de la cible v0.4 sont
-  écrits, le code reste MVP3.
+- **Ancres manuelles** : la commande et la persistance existent, le glisser-déposer
+  n'est pas encore exposé dans la carte.
+- **Lentilles superposées** : la projection accepte plusieurs lentilles, l'UI applique
+  une lentille primaire ; l'encodage cumulé complet reste à raffiner.
+- **Groupe multi-sociétés** : aucune `OrganizationUnit` native n'est encore projetée ;
+  une société n'est pas un périmètre de carte à ce jour (ADR-024 §5).
 - **E2E Playwright non exécuté dans cet environnement** : `npm` est bloqué par la
-  politique PowerShell. La chaîne de conception a été rejouée dans le navigateur intégré.
+  politique PowerShell. Le parcours a été rejoué dans le navigateur intégré.
 - **Budgets de performance non mesurés** : les fixtures 200/500 formes existent, le
   protocole est décrit, la mesure instrumentée reste à exécuter (VD-20).
 - **i18n partielle sur les écrans historiques** : l'Atelier, la Bibliothèque, le Contrôle,

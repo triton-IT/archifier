@@ -162,15 +162,35 @@ fn repository_surface_is_frozen() {
 }
 
 #[test]
-fn atelier_has_no_home_route() {
+fn home_route_is_product_catalog() {
     let router = Path::new(env!("CARGO_MANIFEST_DIR")).join("src/router.rs");
     let text = source(&router);
     assert!(
-        !text.contains("Route::Home"),
-        "la route Home ne doit plus exister"
+        text.contains("Route::Home"),
+        "la route Home doit exister pour le portefeuille de produits"
+    );
+    assert!(
+        text.contains("ProductQuery::home"),
+        "l'accueil doit appliquer la requête du portefeuille de produits"
     );
     assert!(
         text.contains("Route::Atelier"),
         "la route Atelier doit exister"
     );
+}
+
+#[test]
+fn map_layout_writes_go_through_map_commands() {
+    let src = Path::new(env!("CARGO_MANIFEST_DIR")).join("src");
+    for file in rust_files(&src) {
+        if file.ends_with("map/commands.rs") {
+            continue;
+        }
+        let text = source(&file);
+        assert!(
+            !text.contains(".map_set_anchor(") && !text.contains(".map_clear_anchor("),
+            "{} writes a map anchor outside map/commands.rs",
+            file.display()
+        );
+    }
 }

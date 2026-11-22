@@ -12,14 +12,14 @@ const BASE = process.env.ARCHIFIER_URL ?? "http://127.0.0.1:4173";
 test.beforeEach(async ({ page }) => {
   await page.goto(BASE + "/index.html");
   await page.evaluate(() => localStorage.removeItem("archifier:last_view"));
-  await page.goto(BASE + "/#/");
+  await page.goto(BASE + "/#/atelier");
 });
 
-test("l'accueil ouvre l'Atelier, jamais une liste de domaines", async ({ page }) => {
-  await expect(page.getByRole("heading", { name: "Nouvelle vue" })).toBeVisible();
-  await expect(page.getByRole("navigation", { name: "Intentions" })).toBeVisible();
+test("l'accueil ouvre le portefeuille de produits, jamais un inventaire", async ({ page }) => {
+  await page.goto(BASE + "/#/");
+  await expect(page.getByRole("heading", { name: "Produits" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Carte" })).toBeVisible();
   await expect(page.getByText("Nouveau domaine")).toHaveCount(0);
-  await expect(page.getByRole("link", { name: "Atelier" })).toBeVisible();
 });
 
 test("chaîne de conception : déposer, nommer, relier, formaliser, publier", async ({ page }) => {

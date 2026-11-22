@@ -7,6 +7,7 @@
 pub mod diagnostics;
 pub mod export;
 pub mod hierarchy;
+pub mod map;
 pub mod openapi;
 pub mod review_compare;
 pub mod seed;

@@ -3,25 +3,30 @@
 | | |
 |---|---|
 | **Document** | Grammaire visuelle, navigation, lentilles et pages produit/équipe/value stream/application/infrastructure |
-| **Version** | 2.0 — cible v0.4, 18 novembre 2026 |
-| **Statut** | **v2.0 — cible produit ; remplace le point d'entrée d'ADR-022 par ADR-023** |
-| **Sources** | `functional-specifications.md` § « Cible v0.4 », FR-040..081, NFR-021..036 ; `docs/contracts/C-10-produit-carte-navigation.md` ; ADR-023 ; ADR-022 (Atelier) ; `docs/contracts/*` |
+| **Version** | 2.2 — 21 novembre 2026 (accueil portefeuille de produits) |
+| **Statut** | **v2.2 — cible produit ; remplace le point d'entrée d'ADR-022 par ADR-023/024/025** |
+| **Sources** | `functional-specifications.md` § « Cible v0.4 », FR-040..081, NFR-021..036 ; `docs/contracts/C-10-produit-carte-navigation.md` ; ADR-023, ADR-024, ADR-025 ; ADR-022 (Atelier) ; `docs/contracts/*` |
 | **Opposable en revue** | Oui. Une violation est un motif de NO-GO (voir §16). |
 
-Ce document décrit **deux surfaces complémentaires** : la **Carte**, point d'entrée et
-surface de navigation, et l'**Atelier**, surface d'édition des vues authored. Il fixe ce
-que l'architecte **voit**, **comprend** et **fait**. Les contrats de données sont dans
-`docs/contracts/` ; la carte et ses routes sont fixées par C-10.
+Ce document décrit **trois surfaces complémentaires** : le **portefeuille de produits**,
+point d'entrée et lecture filtrable, la **Carte**, surface de navigation spatiale, et
+l'**Atelier**, surface d'édition des vues authored. Il fixe ce que l'architecte **voit**,
+**comprend** et **fait**. Les contrats de données sont dans `docs/contracts/` ; le
+portefeuille, la carte et leurs routes sont fixés par C-10.
 
 ---
 
 ## 1. Principes
 
-1. **La Carte est le point d'entrée.** `/` ouvre la carte de l'entreprise, jamais un
-   inventaire, un tableau de bord ou une galerie d'intentions.
-2. **Le produit est l'unité de lecture et de responsabilité.** Un produit appartient à
-   une équipe ; une application est utilisée par un ou plusieurs produits ; un domaine
-   métier classifie, il ne possède pas.
+1. **L'accueil est le portefeuille de produits, la carte est une surface.** `/` ouvre le
+   catalogue produits filtrable (`ProductQuery::home()`) ; `/map` ouvre la carte de
+   l'entreprise en lecture Produits (`MapQuery::map_default()`). Jamais un inventaire, un
+   tableau de bord ou une galerie d'intentions (ADR-025).
+2. **Le produit est le pivot de lecture et de responsabilité, pas le centre du
+   référentiel.** Un produit appartient à une équipe ; une application est utilisée par un
+   ou plusieurs produits ; un domaine métier classifie, il ne possède pas. Une capacité,
+   une application, une interface ou une donnée peuvent se lire sans passer par un produit ;
+   la société/groupe reste une dimension à part, pas un attribut du produit.
 3. **Le zoom est sémantique et géographique.** Cinq niveaux : entreprise, portefeuille,
    produit, application, infrastructure. Franchir un seuil change la requête, pas
    seulement l'échelle.
@@ -68,7 +73,7 @@ par la couleur. Le type, l'état et le propriétaire sont écrits.
 
 | Niveau | Nom | Ce qui est visible | Ce qui disparaît | Clic |
 |---|---|---|---|---|
-| **L0** | **Entreprise** | quartiers (value streams/portefeuilles), bâtiments (produits), utilités (plateformes), routes agrégées, criticité | applications, composants, nœuds | quartier → L1, produit → L2, route → panneau |
+| **L0** | **Entreprise** | quartiers (value streams ; portefeuille en cible), bâtiments (produits), utilités (plateformes), routes agrégées, criticité | applications, composants, nœuds | quartier → L1, produit → L2, route → panneau |
 | **L1** | **Portefeuille / quartier** | produits du périmètre, plateformes partagées, interfaces produit à produit, capacités en chaleur | composants, infrastructure | produit → L2 |
 | **L2** | **Produit** | frontière, ports, applications, interfaces applicatives, produits externes atténués | composants internes, nœuds | application → L3, port → interface |
 | **L3** | **Application** | composants, services, interfaces, données, déploiement | produits, value streams | composant → détail, nœud → L4 |
@@ -94,7 +99,7 @@ Règles :
 
 | Élément | Objet | Règle |
 |---|---|---|
-| **Quartier** | Value stream, portefeuille ou unité d'organisation | Zone stable, nommée, teintée ; ne crée pas d'objet. |
+| **Quartier** | Value stream, portefeuille ; unité d'organisation en cible | Zone stable, nommée, teintée ; ne crée pas d'objet. |
 | **Bâtiment** | Produit | Position stable ; porte le nom, l'équipe, le cycle de vie, la criticité. |
 | **Bloc / pièce** | Application | Visible à L2+ ; positionné dans la frontière du produit. |
 | **Étage / local** | Composant applicatif | Visible à L3 ; pas de déplacement à L2. |
@@ -296,11 +301,43 @@ carte ni dans l'Atelier.
 
 ## 13. Écrans
 
-### 13.1 `/` — Carte de l'entreprise (L0)
+### 13.1 `/` — Portefeuille de produits
 
 ```text
 ┌──────────────────────────────────────────────────────────────────────────┐
-│ ◧ Archifier      Carte   Bibliothèque   Contrôle            Claire ▾   │
+│ ◧ Archifier   Produits   Carte   Atelier                    Claire ▾   │
+├──────────────────────────────────────────────────────────────────────────┤
+│ Produits                          [Carte de l'entreprise] [+ Créer]      │
+│ 12 produits · 7 affichés · 2 filtres actifs                             │
+│ ┌ Rechercher ─────┐ ┌ Équipe ─┐ ┌ Type ─┐ ┌ Cycle ─┐ ┌ Capacité ─┐ …  │
+│ ┌ Parcours Souscription ─────────┐ ┌ Hub Paiements ────────────────┐    │
+│ │ Client · Découverte · Élevée   │ │ Plateforme · Run · Haute      │    │
+│ │ Équipe Paiements · Souscrire   │ │ Équipe Paiements · Hors VS   │    │
+│ │ 3 capacités · 4 applis · 6 API │ │ 1 capacité · 2 applis · 2 API│    │
+│ └ Voir sur la carte · Ouvrir ────┘ └ Voir sur la carte · Ouvrir ───┘    │
+└──────────────────────────────────────────────────────────────────────────┘
+```
+
+- Le contenu principal est le **portefeuille de produits**, pas la carte et pas un
+  inventaire. Les compteurs restent une ligne de statut.
+- La requête d'accueil est `ProductQuery::home()` ; elle est sérialisée dans l'URL
+  (`#/?team=…&lifecycle=…&capability=…`) et reste partageable.
+- Filtres : recherche, équipe, type, cycle de vie, criticité, value stream, capacité,
+  application, niveau d'interface, exposition, complétude, tri. Combinaison **OU dans une
+  facette, ET entre facettes** (ADR-025).
+- Chaque carte produit montre : nom, type, cycle de vie, criticité, équipe accountable,
+  value stream, nombre de capacités/applications/interfaces, signaux et manques. Actions :
+  ouvrir la fiche, voir sur la carte.
+- État vide : « Votre portefeuille est vide » + créer un produit, charger l'exemple, ouvrir
+  la carte.
+- Le premier lancement propose d'abord un **premier produit**, puis l'**équipe
+  responsable** (§13.13). Aucun formulaire de domaine, aucune galerie d'intentions.
+
+### 13.2 `/map` — Carte de l'entreprise (L0)
+
+```text
+┌──────────────────────────────────────────────────────────────────────────┐
+│ ◧ Archifier   Produits   Carte   Atelier                    Claire ▾   │
 ├───────────────┬──────────────────────────────────────────────────────────┤
 │ LENTILLES     │  ENTREPRISE › Commande client › Paiement › …             │
 │ ● Produit     │  ┌ quartier Commande client ───────────────────────────┐ │
@@ -311,32 +348,23 @@ carte ni dans l'Atelier.
 │               │  ┌ quartier Parcours client ──────────────────────────┐ │
 │               │  │  ▣ Site      ▣ Mobile      ▣ Boutique             │ │
 │               │  └─────────────────────────────────────────────────────┘ │
-│               │  ┌ utilités ───────────────────────────────────────────┐ │
-│               │  │  ▤ Identité   ▤ Référentiel client   ▤ Réseau       │ │
-│               │  └─────────────────────────────────────────────────────┘ │
 ├───────────────┴──────────────────────────────────────────────────────────┤
 │ 42 produits · 7 quartiers · 128 interfaces · 3 anomalies        − 100 % │
 └──────────────────────────────────────────────────────────────────────────┘
 ```
 
-- La carte est le contenu principal ; les compteurs sont une ligne de statut, pas un
-  tableau de bord.
-- À l'ouverture, la carte restaure le dernier cadrage (`scope`, `level`, `lens`, `date`)
-  ou l'entreprise par défaut ; elle ne rouvre pas une vue authored à la place.
-- Les quartiers sont des value streams, portefeuilles ou unités d'organisation ; les
-  bâtiments sont des produits ; les utilités sont des plateformes.
-- Les routes sont agrégées et dépliables ; la lentille par défaut est **Produit**.
-- Aucune carte de domaine, aucun formulaire de domaine, aucune galerie d'intentions.
-- Le premier lancement affiche un parcours qui crée un **premier produit** et une
-  **première équipe** (§13.12).
-
-### 13.2 `/map` — Carte avec contexte explicite
-
+- `/map` applique `MapQuery::map_default()` : scope et niveau Entreprise, lentille primaire
+  **Produit** (ADR-024/025). Un lien profond explicite (`scope`, `level`, `lens`, `date`)
+  reste prioritaire.
+- Les quartiers sont des value streams ; le quartier portefeuille et le quartier d'unité
+  d'organisation sont des cibles de projection (la première tranche projette value streams,
+  plateformes partagées et « Non rattaché »). Les bâtiments sont des produits ; les
+  utilités sont des plateformes. À L0, les seuls nœuds sont des produits : les quartiers
+  sont le contexte de lecture.
+- Les routes sont agrégées et dépliables.
 - Paramètres : `scope`, `level`, `lens`, `date`, `focus`, `filter`, `mode`, `caption`
-  (C-10 §9).
-- Un lien profond restaure le niveau, le périmètre, les lentilles, la date et le focus.
-- Un scope inconnu retombe sur l'entreprise avec `MAP-001`, sans perdre le lien.
-- Un niveau incompatible est corrigé vers le niveau le plus proche avec `MAP-002`.
+  (C-10 §9). Un scope inconnu retombe sur l'entreprise avec `MAP-001`, sans perdre le lien.
+  Un niveau incompatible est corrigé vers le niveau le plus proche avec `MAP-002`.
 - Le mode `edit` exige la capacité d'édition ; le mode `read` est le défaut des liens
   partagés.
 
@@ -358,7 +386,7 @@ carte ni dans l'Atelier.
 
 ### 13.4 `/teams/:id` — Page équipe
 
-- **Bandeau** : nom, topologie, mission, unité d'organisation.
+- **Bandeau** : nom, topologie, mission, unité d'organisation (cible, non implémentée).
 - **Carte** : produits possédés, applications opérées, interfaces fournies/consommées,
   dépendances vers d'autres équipes.
 - **Sections** : Produits · Applications · Interfaces · Dépendances · Modes d'interaction ·
@@ -426,8 +454,8 @@ carte ni dans l'Atelier.
 - Barre d'état : `Enregistré · révision N`, nombre de croquis, alerte de conflit, légende
   temporelle, zoom.
 - Aucun bouton « Enregistrer » principal ; `Ctrl/Cmd+S` est un secours discret.
-- L'Atelier est atteint depuis la carte, la Bibliothèque ou un lien authored ; il n'est plus
-  le point d'entrée.
+- L'Atelier est atteint depuis le portefeuille, la carte, la Bibliothèque ou un lien
+  authored ; il n'est plus le point d'entrée.
 
 ### 13.11 `/view/diagrams/:id` — Atelier (lecture)
 
@@ -451,10 +479,13 @@ carte ni dans l'Atelier.
 
 ### 13.13 Onboarding
 
-Quatre gestes guidés, dans la carte, sans modal : **nommer l'entreprise**, **créer une
-équipe**, **créer un produit**, **le placer dans un value stream**. Objectif : première
-valeur en moins de 3 minutes. « Passer » est toujours visible et n'a pas de conséquences.
-Le premier lancement ne demande **jamais** de créer un domaine ni de choisir une intention.
+Trois gestes guidés, dans le portefeuille, sans modal : **créer un produit**, **créer son
+équipe responsable**, **le rattacher à un value stream** (facultatif). Le produit est
+proposé en premier (ADR-024/025) ; si aucune équipe n'existe, le formulaire de produit
+explique la condition `PRD-001` et propose de la créer. La carte (`/map`) reste accessible
+à tout moment. Objectif : première valeur en moins de 3 minutes. « Passer » est toujours
+visible et n'a pas de conséquences. Le premier lancement ne demande **jamais** de créer un
+domaine ni de choisir une intention.
 
 ### 13.14 `/_design` — Galerie interne
 
@@ -489,8 +520,8 @@ contrat.
 
 | Écran | Chargement | Vide | Erreur | Conflit | Partiel |
 |---|---|---|---|---|---|
-| `/` Carte | squelette de quartiers | onboarding premier produit | « Impossible de lire la carte » + réessayer | — | scope partiel → bandeau + niveau le plus proche |
-| `/map` | squelette de quartiers | invitation à créer un produit | `MAP-001` + retour entreprise | — | `MAP-002` → niveau corrigé |
+| `/` Portefeuille | squelette de cartes produit | onboarding premier produit | « Impossible de lire le portefeuille » + réessayer | — | filtres sans résultat → réinitialiser |
+| `/map` Carte | squelette de quartiers | invitation à créer un produit | `MAP-001` + retour entreprise | — | `MAP-002` → niveau corrigé |
 | `/products/:id` | frontière + blocs squelettes | « Ce produit n'a pas d'application » + ajouter | produit introuvable → carte + recherche | `REV-409` | application manquante → bloc fantôme |
 | `/teams/:id` | liste + carte squelettes | « Cette équipe ne possède pas encore de produit » | équipe introuvable → carte | — | produit retiré → bandeau |
 | `/value-streams/:id` | étapes squelettes | « Ajoutez la première étape » | value stream introuvable | — | étape sans produit → signal |
@@ -526,8 +557,8 @@ phrase et une action.
 
 Une porte est **NO-GO** si l'une de ces réponses est fausse :
 
-1. `/` montre-t-il la carte de l'entreprise, et non un inventaire, un tableau de bord ou une
-   galerie d'intentions ?
+1. `/` montre-t-il le portefeuille de produits, et `/map` la carte de l'entreprise, sans
+   inventaire, tableau de bord ou galerie d'intentions ?
 2. Peut-on zoomer de l'entreprise à l'infrastructure sans changer d'outil ni perdre le
    contexte ?
 3. Les lentilles changent-elles l'encodage sans déplacer aucun objet ?

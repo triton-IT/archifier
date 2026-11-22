@@ -1,8 +1,12 @@
-//! Fiche d'interface : versions, frise temporelle, chevauchements, consommateurs.
+//! Fiche d'interface : contexte système, versions, frise temporelle,
+//! chevauchements, consommateurs, documentation et historique.
 
 use crate::components::{
     date_or_dash, Card, DiffTable, Empty, ExportMarkdownButton, Markdown, RevisionCompare,
     TemporalBadge,
+};
+use crate::focus::{
+    build_focus_context, focus_context_card, focus_layout, FocusGraph, FocusLink, FocusNode,
 };
 use crate::state::{download_text, fmt_date, input_value, is_checked, parse_date, repo, App};
 use archifier_core::{ContractDiff, ContractType, InterfaceCategory, ObjectId, TemporalStatus};
@@ -14,6 +18,15 @@ struct Bar {
     width: f64,
     class: String,
     detail: String,
+}
+
+fn contract_label(contract: ContractType) -> &'static str {
+    match contract {
+        ContractType::None => "Sans contrat",
+        ContractType::OpenApi => "OpenAPI",
+        ContractType::Event => "Événement",
+        ContractType::Other => "Autre",
+    }
 }
 
 #[component]
@@ -114,8 +127,6 @@ pub fn InterfaceView(app: App, id: ObjectId) -> impl IntoView {
         let Some(view_model) = detail() else {
             return;
         };
-        // Version la plus récente portant un contrat normalisé ; à défaut, la
-        // dernière version (l'export renverra alors son code d'erreur).
         let latest = view_model
             .versions
             .iter()
@@ -218,7 +229,7 @@ pub fn InterfaceView(app: App, id: ObjectId) -> impl IntoView {
     };
 
     view! {
-        <main class="page">
+        <main class="page entity-page entity-focus-page">
             {move || match detail() {
                 None => view! { <Empty text="Interface introuvable.".into() /> }.into_any(),
                 Some(view_model) => {
@@ -228,95 +239,86 @@ pub fn InterfaceView(app: App, id: ObjectId) -> impl IntoView {
                     let version_count = versions.len();
                     let version_choices_from = versions.clone();
                     let version_choices_to = versions.clone();
-                    view! {
-                        <header class="page-head">
-                            <div class="crumb">
-                                <a href=format!("#/view/domains/{}", interface.provider_domain_id)>
-                                    {view_model.provider_domain_name.clone()}
-                                </a>
-                                <span>" / interface"</span>
-                            </div>
-                            <div class="title-row">
-                                <h1>{object.name.clone()}</h1>
-                                <span class="badge cat">{interface.category.label()}</span>
-                            </div>
-                            <p class="muted mono">
-                                {interface.logical_interface_key.clone()}
-                                {" · "}
-                                {object.id.to_string()}
-                            </p>
-                        </header>
 
-                        <Card title="Calendrier des versions".into()>
-                            {if bars().is_empty() {
-                                view! { <Empty text="Aucune version dotée d'une fenêtre de disponibilité.".into() /> }.into_any()
-                            } else {
-                                view! {
-                                    <div class="frise">
-                                        <div class="frise-track">
-                                            {bars().into_iter().map(|bar| view! {
-                                                <div
-                                                    class=bar.class
-                                                    style=format!("left:{:.2}%;width:{:.2}%", bar.left, bar.width)
-                                                    title=bar.detail.clone()
-                                                >
-                                                    <span>{bar.label}</span>
-                                                </div>
-                                            }).collect_view()}
-                                            <div class="frise-now" style=format!("left:{:.2}%", now_pct()) title="Maintenant"></div>
-                                        </div>
-                                    </div>
-                                    <ul class="legend">
-                                        <li><span class="swatch active"></span>"Active"</li>
-                                        <li><span class="swatch scheduled"></span>"Planifiée"</li>
-                                        <li><span class="swatch expired"></span>"Expirée"</li>
-                                    </ul>
-                                }.into_any()
-                            }}
+                    // Contexte système : le domaine fournisseur à gauche,
+                    // les consommateurs à droite, l'interface au centre.
+                    let provider = FocusNode {
+                        id: interface.provider_domain_id,
+                        label: view_model.provider_domain_name.clone(),
+                        sublabel: "Domaine fournisseur".into(),
+                        color_key: "external".into(),
+                        route: format!("#/view/domains/{}", interface.provider_domain_id),
+                    };
+                    let consumers: Vec<FocusNode> = view_model
+                        .consumers
+                        .iter()
+                        .map(|consumer| FocusNode {
+                            id: consumer.id,
+                            label: consumer.name.clone(),
+                            sublabel: consumer
+                                .object_type
+                                .label()
+                                .to_string(),
+                            color_key: "external".into(),
+                            route: consumer.href.clone(),
+                        })
+                        .collect();
+                    let mut links = vec![FocusLink {
+                        from: interface.provider_domain_id,
+                        to: object.id,
+                        label: "fournit".into(),
+                    }];
+                    links.extend(view_model.consumers.iter().map(|consumer| FocusLink {
+                        from: object.id,
+                        to: consumer.id,
+                        label: "consomme".into(),
+                    }));
+                    let context = build_focus_context(FocusGraph {
+                        center_id: object.id,
+                        center_label: object.name.clone(),
+                        center_meta: format!(
+                            "Interface {} · {}",
+                            interface.category.label(),
+                            contract_label(interface.contract_type)
+                        ),
+                        center_badge: Some(if version_count <= 1 {
+                            format!("{version_count} version")
+                        } else {
+                            format!("{version_count} versions")
+                        }),
+                        empty_label: None,
+                        inside: Vec::new(),
+                        left_label: Some("FOURNISSEUR".into()),
+                        left: vec![provider],
+                        right_label: (!consumers.is_empty()).then_some("CONSOMMATEURS".into()),
+                        right: consumers,
+                        links,
+                        center_legend: "Interface".into(),
+                        inside_legend: None,
+                        around_legend: Some("Objet lié".into()),
+                    });
+                    let consumer_count = view_model.consumers.len();
+                    let context_summary = format!(
+                        "{} · {} · {}",
+                        if version_count <= 1 {
+                            format!("{version_count} version")
+                        } else {
+                            format!("{version_count} versions")
+                        },
+                        if consumer_count <= 1 {
+                            format!("{consumer_count} consommateur")
+                        } else {
+                            format!("{consumer_count} consommateurs")
+                        },
+                        format!("{} vue(s)", view_model.diagrams.len())
+                    );
+                    let context_card = focus_context_card(
+                        context_summary,
+                        context,
+                        Some((format!("#/graph/{}", object.id), "Graphe de dépendances".into())),
+                    );
 
-                            {move || {
-                                let Some(line) = timeline() else { return ().into_any() };
-                                if line.overlaps.is_empty() {
-                                    return ().into_any();
-                                }
-                                view! {
-                                    <div class="overlaps">
-                                        <h3>"Périodes de transition"</h3>
-                                        {line.overlaps.into_iter().map(|overlap| view! {
-                                            <p>
-                                                {overlap.versions.join(" et ")}
-                                                " coexistent du "
-                                                {fmt_date(overlap.from)}
-                                                " au "
-                                                {fmt_date(overlap.until)}
-                                            </p>
-                                        }).collect_view()}
-                                    </div>
-                                }.into_any()
-                            }}
-                        </Card>
-
-                        <div class="toolbar">
-                            <button class="btn primary" on:click=move |_| set_show_form.update(|v| *v = !*v)>
-                                "Publier une version"
-                            </button>
-                            {if interface.category == InterfaceCategory::Application
-                                && interface.contract_type == ContractType::OpenApi
-                            {
-                                view! {
-                                    <button class="btn" on:click=move |_| export_openapi()>
-                                        "Exporter OpenAPI"
-                                    </button>
-                                }.into_any()
-                            } else {
-                                ().into_any()
-                            }}
-                            <ExportMarkdownButton app=app id=id domain=false />
-                            <a class="btn" href=format!("#/graph/{}", object.id)>
-                                "Graphe de dépendances"
-                            </a>
-                        </div>
-
+                    let new_version_panel = view! {
                         {move || show_form.get().then(|| view! {
                             <Card title="Nouvelle version".into()>
                                 <div class="form-grid">
@@ -351,116 +353,173 @@ pub fn InterfaceView(app: App, id: ObjectId) -> impl IntoView {
                                 </div>
                             </Card>
                         })}
+                    }
+                    .into_any();
 
-                        <Card title="Versions".into()>
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>"Version"</th>
-                                        <th>"Statut"</th>
-                                        <th>"Éditorial"</th>
-                                        <th>"Début"</th>
-                                        <th>"Fin (exclue)"</th>
-                                        <th>"Consommateurs"</th>
-                                        <th>"Rupture"</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {versions.into_iter().map(|summary| view! {
+                    let left_panels = vec![
+                        view! {
+                            <Card title="Calendrier des versions".into()>
+                                {if bars().is_empty() {
+                                    view! { <Empty text="Aucune version dotée d'une fenêtre de disponibilité.".into() /> }.into_any()
+                                } else {
+                                    view! {
+                                        <div class="frise">
+                                            <div class="frise-track">
+                                                {bars().into_iter().map(|bar| view! {
+                                                    <div
+                                                        class=bar.class
+                                                        style=format!("left:{:.2}%;width:{:.2}%", bar.left, bar.width)
+                                                        title=bar.detail.clone()
+                                                    >
+                                                        <span>{bar.label}</span>
+                                                    </div>
+                                                }).collect_view()}
+                                                <div class="frise-now" style=format!("left:{:.2}%", now_pct()) title="Maintenant"></div>
+                                            </div>
+                                        </div>
+                                        <ul class="legend">
+                                            <li><span class="swatch active"></span>"Active"</li>
+                                            <li><span class="swatch scheduled"></span>"Planifiée"</li>
+                                            <li><span class="swatch expired"></span>"Expirée"</li>
+                                        </ul>
+                                    }.into_any()
+                                }}
+                                {move || {
+                                    let Some(line) = timeline() else { return ().into_any() };
+                                    if line.overlaps.is_empty() {
+                                        return ().into_any();
+                                    }
+                                    view! {
+                                        <div class="overlaps">
+                                            <h3>"Périodes de transition"</h3>
+                                            {line.overlaps.into_iter().map(|overlap| view! {
+                                                <p>
+                                                    {overlap.versions.join(" et ")}
+                                                    " coexistent du "
+                                                    {fmt_date(overlap.from)}
+                                                    " au "
+                                                    {fmt_date(overlap.until)}
+                                                </p>
+                                            }).collect_view()}
+                                        </div>
+                                    }.into_any()
+                                }}
+                            </Card>
+                        }
+                        .into_any(),
+                        new_version_panel,
+                        view! {
+                            <Card title="Versions".into()>
+                                <table class="table">
+                                    <thead>
                                         <tr>
-                                            <td class="mono">{summary.version.semantic_version.clone()}</td>
-                                            <td><TemporalBadge status=summary.status /></td>
-                                            <td>{summary.version.publication_status.label()}</td>
-                                            <td>{date_or_dash(summary.version.available_from)}</td>
-                                            <td>{date_or_dash(summary.version.available_until)}</td>
-                                            <td>{summary.consumer_count}</td>
-                                            <td>{if summary.version.breaking_change { "oui" } else { "non" }}</td>
+                                            <th>"Version"</th>
+                                            <th>"Statut"</th>
+                                            <th>"Éditorial"</th>
+                                            <th>"Début"</th>
+                                            <th>"Fin (exclue)"</th>
+                                            <th>"Consommateurs"</th>
+                                            <th>"Rupture"</th>
                                         </tr>
-                                    }).collect_view()}
-                                </tbody>
-                            </table>
-                        </Card>
-
-                        <Card title="Comparer deux versions".into()>
-                            {if interface.contract_type != ContractType::OpenApi {
-                                view! {
-                                    <Empty text="Comparaison disponible pour les contrats OpenAPI.".into() />
-                                }.into_any()
-                            } else if version_count < 2 {
-                                view! {
-                                    <Empty text="Au moins deux versions sont nécessaires pour comparer.".into() />
-                                }.into_any()
-                            } else {
-                                // `selected` fixe le choix initial ; `prop:value`
-                                // suit ensuite les changements de signal.
-                                let from_selected = cmp_from.get();
-                                let to_selected = cmp_to.get();
-                                view! {
-                                    <div class="form-grid">
-                                        <label class="field">
-                                            <span>"Version de départ"</span>
-                                            <select
-                                                prop:value=move || cmp_from.get()
-                                                on:change=move |ev| {
-                                                    set_cmp_from.set(input_value(&ev));
-                                                    set_cmp_diff.set(None);
-                                                }
-                                            >
-                                                {version_choices_from.iter().map(|summary| {
-                                                    let id = summary.version.id.to_string();
-                                                    let value = id.clone();
-                                                    view! {
-                                                        <option value=value selected=id == from_selected>
-                                                            {format!(
-                                                                "v{} · {}",
-                                                                summary.version.semantic_version,
-                                                                summary.version.publication_status.label()
-                                                            )}
-                                                        </option>
+                                    </thead>
+                                    <tbody>
+                                        {versions.into_iter().map(|summary| view! {
+                                            <tr>
+                                                <td class="mono">{summary.version.semantic_version.clone()}</td>
+                                                <td><TemporalBadge status=summary.status /></td>
+                                                <td>{summary.version.publication_status.label()}</td>
+                                                <td>{date_or_dash(summary.version.available_from)}</td>
+                                                <td>{date_or_dash(summary.version.available_until)}</td>
+                                                <td>{summary.consumer_count}</td>
+                                                <td>{if summary.version.breaking_change { "oui" } else { "non" }}</td>
+                                            </tr>
+                                        }).collect_view()}
+                                    </tbody>
+                                </table>
+                            </Card>
+                        }
+                        .into_any(),
+                        view! {
+                            <Card title="Comparer deux versions".into()>
+                                {if interface.contract_type != ContractType::OpenApi {
+                                    view! {
+                                        <Empty text="Comparaison disponible pour les contrats OpenAPI.".into() />
+                                    }.into_any()
+                                } else if version_count < 2 {
+                                    view! {
+                                        <Empty text="Au moins deux versions sont nécessaires pour comparer.".into() />
+                                    }.into_any()
+                                } else {
+                                    let from_selected = cmp_from.get();
+                                    let to_selected = cmp_to.get();
+                                    view! {
+                                        <div class="form-grid">
+                                            <label class="field">
+                                                <span>"Version de départ"</span>
+                                                <select
+                                                    prop:value=move || cmp_from.get()
+                                                    on:change=move |ev| {
+                                                        set_cmp_from.set(input_value(&ev));
+                                                        set_cmp_diff.set(None);
                                                     }
-                                                }).collect_view()}
-                                            </select>
-                                        </label>
-                                        <label class="field">
-                                            <span>"Version d'arrivée"</span>
-                                            <select
-                                                prop:value=move || cmp_to.get()
-                                                on:change=move |ev| {
-                                                    set_cmp_to.set(input_value(&ev));
-                                                    set_cmp_diff.set(None);
-                                                }
-                                            >
-                                                {version_choices_to.iter().map(|summary| {
-                                                    let id = summary.version.id.to_string();
-                                                    let value = id.clone();
-                                                    view! {
-                                                        <option value=value selected=id == to_selected>
-                                                            {format!(
-                                                                "v{} · {}",
-                                                                summary.version.semantic_version,
-                                                                summary.version.publication_status.label()
-                                                            )}
-                                                        </option>
+                                                >
+                                                    {version_choices_from.iter().map(|summary| {
+                                                        let id = summary.version.id.to_string();
+                                                        let value = id.clone();
+                                                        view! {
+                                                            <option value=value selected=id == from_selected>
+                                                                {format!(
+                                                                    "v{} · {}",
+                                                                    summary.version.semantic_version,
+                                                                    summary.version.publication_status.label()
+                                                                )}
+                                                            </option>
+                                                        }
+                                                    }).collect_view()}
+                                                </select>
+                                            </label>
+                                            <label class="field">
+                                                <span>"Version d'arrivée"</span>
+                                                <select
+                                                    prop:value=move || cmp_to.get()
+                                                    on:change=move |ev| {
+                                                        set_cmp_to.set(input_value(&ev));
+                                                        set_cmp_diff.set(None);
                                                     }
-                                                }).collect_view()}
-                                            </select>
-                                        </label>
-                                    </div>
-                                    <div class="actions">
-                                        <button class="btn primary" on:click=move |_| compare_versions()>
-                                            "Comparer"
-                                        </button>
-                                    </div>
-                                    {move || cmp_diff.get().map(|diff| view! {
-                                        <DiffTable diff=diff />
-                                    })}
-                                }.into_any()
-                            }}
-                        </Card>
+                                                >
+                                                    {version_choices_to.iter().map(|summary| {
+                                                        let id = summary.version.id.to_string();
+                                                        let value = id.clone();
+                                                        view! {
+                                                            <option value=value selected=id == to_selected>
+                                                                {format!(
+                                                                    "v{} · {}",
+                                                                    summary.version.semantic_version,
+                                                                    summary.version.publication_status.label()
+                                                                )}
+                                                            </option>
+                                                        }
+                                                    }).collect_view()}
+                                                </select>
+                                            </label>
+                                        </div>
+                                        <div class="actions">
+                                            <button class="btn primary" on:click=move |_| compare_versions()>
+                                                "Comparer"
+                                            </button>
+                                        </div>
+                                        {move || cmp_diff.get().map(|diff| view! {
+                                            <DiffTable diff=diff />
+                                        })}
+                                    }.into_any()
+                                }}
+                            </Card>
+                        }
+                        .into_any(),
+                    ];
 
-                        <RevisionCompare app=app id=id />
-
-                        <div class="two-cols">
+                    let right_panels = vec![
+                        view! {
                             <Card title="Consommateurs".into()>
                                 {if view_model.consumers.is_empty() {
                                     view! { <Empty text="Aucune consommation déclarée.".into() /> }.into_any()
@@ -474,6 +533,9 @@ pub fn InterfaceView(app: App, id: ObjectId) -> impl IntoView {
                                     }.into_any()
                                 }}
                             </Card>
+                        }
+                        .into_any(),
+                        view! {
                             <Card title="Vues qui la représentent".into()>
                                 {if view_model.diagrams.is_empty() {
                                     view! { <Empty text="Aucune vue.".into() /> }.into_any()
@@ -487,11 +549,60 @@ pub fn InterfaceView(app: App, id: ObjectId) -> impl IntoView {
                                     }.into_any()
                                 }}
                             </Card>
-                        </div>
+                        }
+                        .into_any(),
+                        view! {
+                            <Card title="Documentation".into()>
+                                <Markdown markdown=view_model.documentation.clone() />
+                            </Card>
+                        }
+                        .into_any(),
+                        view! { <RevisionCompare app=app id=id /> }.into_any(),
+                    ];
 
-                        <Card title="Documentation".into()>
-                            <Markdown markdown=view_model.documentation.clone() />
-                        </Card>
+                    view! {
+                        <header class="page-head">
+                            <nav class="map-breadcrumb" aria-label="Fil d'Ariane">
+                                <a href=format!("#/view/domains/{}", interface.provider_domain_id)>
+                                    {view_model.provider_domain_name.clone()}
+                                </a>
+                                <span>"›"</span>
+                                <span aria-current="page">{object.name.clone()}</span>
+                            </nav>
+                            <div class="entity-title">
+                                <div>
+                                    <h1>{object.name.clone()}</h1>
+                                    <p class="muted">
+                                        {interface.category.label()}
+                                        {" · "}
+                                        {contract_label(interface.contract_type)}
+                                        {" · "}
+                                        <span class="mono">{interface.logical_interface_key.clone()}</span>
+                                    </p>
+                                </div>
+                                <div class="actions">
+                                    <button class="btn primary" on:click=move |_| set_show_form.update(|value| *value = !*value)>
+                                        "Publier une version"
+                                    </button>
+                                    {if interface.category == InterfaceCategory::Application
+                                        && interface.contract_type == ContractType::OpenApi
+                                    {
+                                        view! {
+                                            <button class="btn" on:click=move |_| export_openapi()>
+                                                "Exporter OpenAPI"
+                                            </button>
+                                        }.into_any()
+                                    } else {
+                                        ().into_any()
+                                    }}
+                                    <ExportMarkdownButton app=app id=id domain=false />
+                                </div>
+                            </div>
+                        </header>
+                        {focus_layout(left_panels, context_card, right_panels)}
+                        <p class="muted small mono">
+                            {"ID "} {object.id.to_string()}
+                        </p>
                     }.into_any()
                 }
             }}

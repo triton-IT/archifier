@@ -9,6 +9,11 @@
 | **Périmètre** | 26 comportements observables (VD-01 .. VD-26), 4 thèmes, vagues W0 → W6 |
 | **Règle d'état** | Seul l'orchestrateur modifie la colonne `État`. Un point n'est `✅` que si un test **nommé** le prouve et que la porte de vague est verte. |
 
+> **Statut historique.** Ce backlog décrit le MVP3 livré sous ADR-022. Depuis ADR-023/024/025,
+> `/` est le **portefeuille de produits**, `/map` est la Carte de l'entreprise, et l'Atelier
+> n'est plus l'accueil (`/atelier`, `/design/:id`). Les lignes VD-01 et VD-17 décrivent
+> l'état MVP3, pas la cible courante.
+
 ## Comment ce backlog est utilisé
 
 - Chaque ligne est un **comportement observable**, pas une tâche technique.
@@ -39,7 +44,7 @@
 | `cargo test --workspace` | **307 tests verts**, 0 échec (253 d'origine + 54) | socle conservé (VD-24) |
 | `cargo check -p archifier-ui --target wasm32-unknown-unknown` | vert | cible WASM saine |
 | `.\scripts\build.cmd` | bundle **3,22 Mo** de wasm | budget 3,5 Mo respecté |
-| Route `/` | **Atelier** : 7 intentions, aperçu spatial, reprise de la dernière vue | VD-01 livré |
+| Route `/` (MVP3) | **Atelier** : 7 intentions, aperçu spatial, reprise de la dernière vue | VD-01 livré |
 | Routage | **fragment** (`#/…`), ADR-012 | écart consigné (lot3 §2) |
 | `DiagramLayout` | **schéma 2** : intention, bandes, zones, croquis, cadrage, temporalité ; migration v1→v2 | VD-02 livré |
 | Enregistrement de vue | autosave par commande, `Enregistré · révision N`, `REV-409` | VD-04 livré (undo/redo manuel) |
@@ -58,7 +63,7 @@ Aucun de ces constats n'est « réparé en silence » : chacun a une ligne ci-de
 
 | ID | Comportement observable | Traçabilité | Lot | Tests attendus | État |
 |---|---|---|---|---|---|
-| **VD-01** | `/` ouvre l'Atelier : dernière vue éditée, sinon écran « Nouvelle vue » avec les 7 intentions. `/library` et `/control` sont séparés. Alias `/model/diagrams/:id` → `/design/:id`, `/view/domains/:id` → `/library/domains/:id`. Aucun lien `arch://` cassé. | FR-040, FR-048, FR-052, NFR-027 | W3 | `home_opens_atelier_not_inventory`, `home_opens_last_edited_view`, `home_without_last_view_shows_seven_intents`, `model_diagrams_alias_maps_to_design`, `view_domains_alias_maps_to_library_domain`, `relationship_route_resolves_arch_uri`, `version_route_resolves_to_interface`, `library_and_control_are_separate_from_atelier` | `✅` |
+| **VD-01 (MVP3)** | `/` ouvre l'Atelier : dernière vue éditée, sinon écran « Nouvelle vue » avec les 7 intentions. `/library` et `/control` sont séparés. Alias `/model/diagrams/:id` → `/design/:id`, `/view/domains/:id` → `/library/domains/:id`. Aucun lien `arch://` cassé. | FR-040, FR-048, FR-052, NFR-027 | W3 | `home_opens_atelier_not_inventory`, `home_opens_last_edited_view`, `home_without_last_view_shows_seven_intents`, `model_diagrams_alias_maps_to_design`, `view_domains_alias_maps_to_library_domain`, `relationship_route_resolves_arch_uri`, `version_route_resolves_to_interface`, `library_and_control_are_separate_from_atelier` | `✅` |
 | **VD-02** | Layout de vue **schéma 2** additif : `intent`, `scope`, `layers`, `zones`, `framing`, `temporal_cursor`, `drafts`. Migration sans perte depuis le schéma 1, idempotente, sans déplacement de forme. | FR-045, FR-048, FR-049, NFR-021 | W1 | `v1_layout_deserializes_without_error`, `migration_preserves_node_geometry`, `migration_is_idempotent`, `migration_defaults_intent_from_notation`, `migration_creates_no_zone_and_no_object`, `layout_roundtrip_preserves_ports_and_layers` | `✅` |
 | **VD-03** | Bus `ViewCommand` : 13 commandes, validées par `archifier-core` avant projection, idempotentes par `command_id`, un refus laisse la vue intacte. | FR-041, FR-042, FR-043, FR-044, FR-045, NFR-023 | W1 | `place_draft_creates_named_sketch_without_object`, `formalize_requires_metaclass_and_domain`, `connect_forbidden_relation_is_rejected_before_creation`, `delete_representation_keeps_object`, `same_command_id_is_applied_once`, `same_command_id_with_other_body_is_refused`, `rejection_leaves_layout_unchanged` | `✅` |
 | **VD-04** | Undo/redo ≥ 100 actions, autosave ≤ 1 s au repos, indicateur `Enregistré · révision N`, `Ctrl/Cmd+S` en secours. Un `409` conserve vue et croquis puis propose recharger / comparer / forcer. | FR-050, NFR-024 | W1 | `undo_redo_supports_hundred_actions`, `autosave_flushes_within_one_second`, `save_indicator_shows_revision`, `ctrl_s_forces_flush`, `stale_revision_returns_conflict_without_data_loss`, `conflict_offers_reload_compare_force`, `conflict_never_auto_merges` | `🟡` |
@@ -107,7 +112,7 @@ Aucun de ces constats n'est « réparé en silence » : chacun a une ligne ci-de
 | **G0** | W0 | Contrats signés (`docs/contracts/`), maquette de `/` validée (`docs/ui-spec.md`), 7 modèles, fixtures de vue, tests squelettes | `✅` |
 | **G1** | W1 | Déposer une forme, la nommer, annuler, rouvrir : tout est restauré ; aucun modal | `✅` |
 | **G2** | W2 | Démo : 3 composants, 1 frontière, 2 ports, 1 migration v1→v2 lue au curseur temporel | `✅` |
-| **G3** | W3 | `/` ouvre l'Atelier ; les 7 intentions fonctionnent ; Bibliothèque et Contrôle séparés | `✅` |
+| **G3 (MVP3)** | W3 | `/` ouvre l'Atelier ; les 7 intentions fonctionnent ; Bibliothèque et Contrôle séparés | `✅` |
 | **G4** | W4 | Lien partagé restitue le cadrage ; vue ajoutée à une Story ; export SVG/Markdown | `✅` |
 | **G5** | W5 | E2E verts, budgets tenus, a11y sans erreur critique, tests existants verts | `✅` |
 | **G6** | W6 | Chaîne de conception chronométrée < 3 min ; docs et backlog à jour | `✅` |

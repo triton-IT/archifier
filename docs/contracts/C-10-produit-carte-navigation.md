@@ -3,10 +3,10 @@
 | | |
 |---|---|
 | **Réf.** | C-10 |
-| **Version** | 1.0 — proposition, 18/11/2026 |
-| **Statut** | **PROPOSÉ** — adossé à ADR-023 ; ne modifie aucun contrat gelé |
-| **Propriétaires** | Produit (ontologie), UX (carte et lentilles), Dev Navigation (routes), Dev Core (projection) |
-| **Sources** | ADR-023 ; `functional-specifications.md` § « Cible v0.4 », FR-055..081 ; `docs/ui-spec.md` v2.0 |
+| **Version** | 1.2 — 21/11/2026 (catalogue produits, `MAP-020`) |
+| **Statut** | **ACCEPTÉ / IMPLÉMENTÉ (première tranche)** — adossé à ADR-023/024, complété par ADR-025 ; ne modifie aucun contrat gelé |
+| **Propriétaires** | Produit (ontologie), UX (catalogue et carte), Dev Navigation (routes), Dev Core (projection) |
+| **Sources** | ADR-023, ADR-024, ADR-025 ; `functional-specifications.md` § « Cible v0.4 », FR-055..081 ; `docs/ui-spec.md` v2.2 |
 | **Dépend de** | C-01 (`ViewCommand`), C-02 (layout), C-03 (`ViewIntent`, conservé), C-06 (routes), C-08 (codes), C-09 (dépôt) |
 | **Compatible** | Oui : ajouts only. Aucun champ de C-01..C-09 n'est retiré ni renommé. |
 
@@ -122,7 +122,7 @@ Team
   name
   topology: TeamTopology
   missionMarkdown?
-  orgUnitId?: ObjectId
+  orgUnitId?: ObjectId             // unité d'organisation (BusinessActor) ; non projetée
   ownedProductIds: ProductId[]
   operatedApplicationIds: ApplicationId[]
   providedInterfaceIds: InterfaceId[]
@@ -141,6 +141,11 @@ Règles :
 | `PRD-009` | Une application a exactement une équipe qui l'opère. Une application partagée reste opérée par une seule équipe. |
 | `PRD-010` | Une équipe peut contribuer à un produit sans le posséder ; la contribution est explicite. |
 | `PRD-011` | Une équipe de type `ENABLING` ne possède pas d'application en propre ; si c'est le cas, l'anomalie `ENABLING_TEAM_OWNS_APPLICATION` est levée. |
+
+> `orgUnitId` est une référence **optionnelle** à une unité d'organisation
+> (`BusinessActor` ArchiMate). Aucun objet natif `OrganizationUnit` ni quartier
+> d'organisation n'est livré dans la première tranche : la société/groupe reste une cible
+> distincte du produit (ADR-024 §5).
 
 ### 4.3 `ValueStream` et `ValueStreamStage`
 
@@ -479,16 +484,62 @@ MapEdge
 | `MAP-012` | Une projection est déterministe : même requête + même révision + mêmes ancres ⇒ même carte. |
 | `MAP-013` | Une lentille indisponible à un niveau est refusée avec `MAP-004`, sans changer le niveau. |
 | `MAP-014` | Un périmètre inconnu retombe sur `ENTERPRISE` et signale `MAP-001`, sans perdre le lien. |
+| `MAP-020` | L'accueil (`/`) est le **catalogue produits** (`ProductQuery::home()`, ADR-025). La carte est servie par `/map` avec `MapQuery::map_default()` : `scope=ENTERPRISE`, `level=ENTERPRISE`, lentille primaire `PRODUCT`. À L0, les nœuds sont des produits ; les quartiers sont le contexte de lecture. Un lien profond explicite reste prioritaire. |
 
 ### 6.4 Contenu obligatoire par niveau
 
 | Niveau | Doit montrer | Peut montrer | Ne doit pas montrer |
 |---|---|---|---|
-| **ENTERPRISE** | value streams/portefeuilles, produits, produits plateformes, flux produit agrégés | criticité, cycle de vie, propriétaire | applications individuelles, composants, nœuds |
+| **ENTERPRISE** | produits (seuls nœuds), quartiers value streams en contexte (portefeuille en cible), produits plateformes, flux agrégés | criticité, cycle de vie, propriétaire | applications individuelles, composants, nœuds |
 | **PORTFOLIO** | produits du périmètre, plateformes partagées, interfaces produit à produit | capacités, équipes, criticité | composants, nœuds |
 | **PRODUCT** | frontière du produit, ports, applications, interfaces applicatives | produits externes, dépendances, données | composants internes, nœuds individuels |
 | **APPLICATION** | composants, services, interfaces, données, déploiement | nœuds agrégés | produits, value streams |
 | **INFRASTRUCTURE** | nœuds, environnements, réseaux, applications déployées, interfaces techniques | criticité, obsolescence | composants métier |
+
+> **Première tranche.** Les quartiers effectivement projetés à L0 sont les value streams,
+> les plateformes partagées et « Non rattaché ». Le quartier **portefeuille** et le quartier
+> **unité d'organisation** restent des cibles : le premier n'est pas encore construit par
+> `project_enterprise`, le second dépend d'`OrganizationUnit` (ADR-024 §5).
+
+### 6.5 Catalogue produits (`/`, ADR-025)
+
+L'accueil n'est pas une projection de carte : c'est un **catalogue** du même référentiel.
+
+```text
+ProductQuery
+  search: string
+  teamIds: TeamId[]
+  kinds: ProductKind[]
+  lifecycles: LifecycleState[]
+  criticalities: Criticality[]
+  valueStreamIds: ValueStreamId[]
+  capabilityIds: CapabilityId[]
+  applicationIds: ApplicationId[]
+  interfaceLevels: InterfaceLevel[]
+  exposures: InterfaceExposure[]
+  gaps: NO_TEAM | NO_VALUE_STREAM | NO_CAPABILITY | NO_APPLICATION
+  sort: NAME | CRITICALITY | LIFECYCLE | TEAM
+
+ProductCard
+  id, name, kind, lifecycle, criticality, valueProposition
+  teamId?, teamName?
+  valueStreamId?, valueStreamName?
+  capabilityCount, applicationCount
+  exposedInterfaceCount, consumedInterfaceCount
+  anomalyCount, gaps
+```
+
+Règles :
+
+- Les filtres se combinent en **OU dans une facette** et **ET entre facettes**.
+- Un filtre value stream couvre le VS principal **et** les étapes auxquelles le produit
+  contribue.
+- Un filtre capacité/application porte sur les relations réelles du produit.
+- Un filtre interface porte sur les interfaces exposées ou consommées, dérivées des
+  applications du produit.
+- Les filtres sont sérialisés dans l'URL : `#/?team=…&lifecycle=…&capability=…`.
+- Le catalogue n'affiche pas les facettes domaine, portefeuille, étape, données, risque et
+  initiative tant que leurs commandes d'édition ne sont pas livrées.
 
 ## 7. Lentilles
 
@@ -676,7 +727,17 @@ Règles :
 
 | Test | Ce qu'il prouve |
 |---|---|
-| `home_opens_enterprise_map` | `/` ouvre la carte, pas l'Atelier ni une galerie d'intentions. |
+| `home_opens_product_catalog` | `/` ouvre le catalogue produits, pas la carte ni un inventaire. |
+| `map_opens_enterprise_map` | `/map` ouvre la carte entreprise, pas l'Atelier ni une galerie d'intentions. |
+| `map_default_lens_is_product` | La lentille par défaut de L0/L1 est `PRODUCT` (ADR-024). |
+| `map_products_are_the_only_nodes_at_l0` | À L0, les nœuds de carte sont des produits ; les quartiers sont le contexte. |
+| `catalog_lists_all_products` | Le catalogue liste tous les produits du référentiel. |
+| `catalog_filters_by_team` / `catalog_filters_by_value_stream` | Les filtres relationnels équipe et value stream fonctionnent. |
+| `catalog_filters_by_capability` / `catalog_filters_by_application` | Les filtres capacité et application fonctionnent. |
+| `catalog_filter_or_within_facet` / `catalog_filter_and_across_facets` | Combinaison OU/ET des facettes (ADR-025). |
+| `catalog_gap_without_value_stream` | Le filtre de complétude signale un produit sans value stream. |
+| `catalog_card_counts_relations` | La carte produit compte capacités, applications et interfaces. |
+| `home_deep_link_restores_product_filters` | `#/?team=…&lifecycle=…&sort=…` restaure les filtres. |
 | `map_zooms_enterprise_to_infrastructure` | Le parcours L0→L4 est possible et conserve le contexte. |
 | `map_keeps_geometry_across_lenses` | Changer de lentille ne déplace aucun nœud. |
 | `map_aggregate_edge_expands_to_interfaces` | Une route agrégée se déplie vers des interfaces réelles. |
@@ -703,3 +764,4 @@ Règles :
 - La conformité BPMN/UML complète.
 - Les politiques RBAC/ABAC.
 - La taxonomie produit au-delà de trois niveaux.
+- Le modèle société/groupe et la projection d'unités d'organisation (ADR-024 §5).

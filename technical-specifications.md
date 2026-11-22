@@ -1709,13 +1709,16 @@ L’outil actif est visible, le curseur change, et `Échap` revient toujours à 
 
 ## 15. Frontend Leptos
 
-### 15.0 Principe directeur (MVP3) : l’Atelier est le point d’entrée
+### 15.0 Principe directeur (MVP3, historique) : l’Atelier était le point d’entrée
+
+> Le §15.0 décrit la coque MVP3. Depuis ADR-023/024, `/` est la **Carte de l’entreprise**,
+> en lecture Produits, et l’Atelier est une surface d’édition secondaire (`/atelier`).
 
 L’application s’ouvre sur l’**Atelier de vues**, pas sur un inventaire, un tableau de bord de domaines ou une liste d’objets. Trois espaces structurent la coque :
 
 | Espace | Rôle | Route d’entrée |
 |---|---|---|
-| **Atelier** | Concevoir, lire et partager des vues ; créer et éditer tous les objets depuis le canevas | `/` (dernière vue ou nouvelle vue) |
+| **Atelier** | Concevoir, lire et partager des vues ; créer et éditer tous les objets depuis le canevas | `/atelier` (dernière vue ou nouvelle vue) |
 | **Bibliothèque** | Retrouver une vue, un domaine, un objet, une interface, une Story, une Revue | `/library` |
 | **Contrôle** | Inventaires, anomalies, couverture des métamodèles, exports, réglages | `/control` |
 
@@ -1723,7 +1726,7 @@ Un objet reste consultable et éditable dans une **fiche** (`/view/elements/:id`
 
 **Règle d’implémentation bloquante.** Aucun composant de création ne DOIT exiger une navigation hors de `/` ou de `/view/diagrams/:id` pour produire un objet. Les formulaires de fiche sont des vues secondaires du même contrat de commande.
 
-> **Avenant ADR-023 (18/11/2026) — la carte est le point d’entrée.** Le §15.0 ci-dessus décrit la coque du MVP3. La cible v0.4 ajoute un espace **Carte** qui devient la route `/` : projection générée du référentiel, cinq niveaux (entreprise, portefeuille, produit, application, infrastructure), lentilles et liens profonds. L’Atelier reste la surface d’édition des vues authored (`/design/:id`, `/view/diagrams/:id`). Les routes, objets, cardinalités, règles d’agrégation et paramètres de lien sont fixés par `docs/contracts/C-10-produit-carte-navigation.md`. Le moteur de projection fera l’objet d’un lot technique dédié ; il ne se confond pas avec le layout d’un `DiagramLayout` (C-02), qui reste la géométrie d’une vue authored. Aucun champ de C-01..C-09 n’est retiré.
+> **Avenant ADR-023/024/025 (21/11/2026) — l’accueil est le portefeuille, la carte est `/map`.** Le §15.0 ci-dessus décrit la coque du MVP3. La cible v0.4 ajoute un **portefeuille de produits** à `/` (`ProductQuery::home()`, ADR-025) : cartes produit et filtres relationnels sérialisés dans l’URL. La **Carte** reste une surface de navigation sur `/map` (`MapQuery::map_default()`) : projection générée du référentiel, cinq niveaux (entreprise, portefeuille, produit, application, infrastructure), lentilles et liens profonds ; à L0, les seuls nœuds sont des produits. L’Atelier reste la surface d’édition des vues authored (`/atelier`, `/design/:id`, `/view/diagrams/:id`). Les routes, objets, cardinalités, règles d’agrégation et paramètres de lien sont fixés par `docs/contracts/C-10-produit-carte-navigation.md`. Le moteur de projection ne se confond pas avec le layout d’un `DiagramLayout` (C-02), qui reste la géométrie d’une vue authored. Aucun champ de C-01..C-09 n’est retiré.
 
 ### 15.1 Mode de rendu
 
@@ -1736,7 +1739,10 @@ Décision de routage : `leptos_router` en mode `history`, avec repli SPA côté 
 ```text
 /login
 
-/                                   Atelier : dernière vue ouverte, sinon écran « Nouvelle vue »
+/                                   Portefeuille de produits, filtrable (ProductQuery::home)
+/products                           Alias du portefeuille de produits
+/map                                Carte de l'entreprise (MapQuery::map_default)
+/atelier                            Atelier : dernière vue ouverte, sinon écran « Nouvelle vue »
 /design/new?intent=...              création d'une vue depuis une intention
 /design/:id                         Atelier, posture conception
 /view/diagrams/:id                  Atelier, posture lecture (lien partagé, cadrage restauré)
@@ -1761,7 +1767,7 @@ Décision de routage : `leptos_router` en mode `history`, avec repli SPA côté 
 
 Compatibilité : `/model/diagrams/:id` reste un **alias** de `/design/:id`, et `/view/domains/:id` un alias de `/library/domains/:id`, pendant au moins une version. Aucun lien `arch://` existant ne doit casser.
 
-> **Avenant ADR-023.** Le plan de routes ci-dessus reste valide pour l’Atelier et les espaces secondaires. La cible v0.4 ajoute `/map`, `/products/:id`, `/teams/:id`, `/value-streams/:id`, `/capabilities/:id`, `/applications/:id`, `/infrastructure/:id`, `/business-domains/:id`, `/portfolios/:id`, et fait de `/` la carte de l’entreprise. Les paramètres `scope`, `level`, `lens`, `date`, `focus`, `filter`, `mode` sont spécifiés dans C-10 §9. Les alias de domaine restent résolvables. L’Atelier n’est plus l’accueil, mais conserve `/design/:id` et `/view/diagrams/:id`.
+> **Avenant ADR-023/024/025.** Le plan de routes ci-dessus reste valide pour l’Atelier et les espaces secondaires. La cible v0.4 ajoute `/map`, `/products`, `/products/:id`, `/teams/:id`, `/value-streams/:id`, `/capabilities/:id`, `/applications/:id`, `/infrastructure/:id`, `/business-domains/:id`, `/portfolios/:id`. `/` est le **portefeuille de produits** (`ProductQuery::home()`) ; `/map` est la carte (`MapQuery::map_default()`). Les paramètres `scope`, `level`, `lens`, `date`, `focus`, `filter`, `mode` sont spécifiés dans C-10 §9. Les alias de domaine restent résolvables. L’Atelier n’est plus l’accueil : il conserve `/atelier`, `/design/:id` et `/view/diagrams/:id`.
 
 Le passage conception ↔ lecture est un **geste de la barre d’outils**, pas un changement d’application : il conserve la vue, le cadrage, le curseur temporel et la sélection (FR-040, FR-048).
 
@@ -1802,10 +1808,20 @@ Contraintes DOIVENT :
 
 ### 15.4 Écrans clés, comportement attendu
 
-**Atelier — accueil (`/`)**
+**Portefeuille — accueil (`/`)**
+- Applique `ProductQuery::home()` : catalogue de cartes produit, sans carte ni inventaire (ADR-025).
+- Filtres : recherche, équipe, type, cycle de vie, criticité, value stream, capacité, application, niveau/exposition d’interface, complétude. OU dans une facette, ET entre facettes ; état dans l’URL (`#/?team=…&lifecycle=…`).
+- Chaque carte montre équipe accountable, value stream, compteurs de capacités/applications/interfaces, signaux et manques ; actions « Ouvrir la fiche » et « Voir sur la carte ».
+- Le premier lancement propose d’abord un **produit**, puis son **équipe responsable**, puis un value stream facultatif. Aucune intention, aucun domaine, aucun formulaire modal.
+
+**Carte (`/map`)**
+- Applique `MapQuery::map_default()` : scope et niveau Entreprise, lentille primaire `PRODUCT`. À L0, les seuls nœuds sont des produits ; les quartiers (value streams, portefeuille en cible, plateformes, non rattaché) sont le contexte (ADR-024).
+- Un lien profond `#/map?scope=…&level=…&lens=…&date=…&focus=…` restaure son contexte ; la carte ne reprend pas un cadrage de session.
+
+**Atelier — accueil (`/atelier`)**
 - Ouvre la dernière vue éditée, sinon un écran « Nouvelle vue » qui n’est pas une page blanche : sept intentions de vue (contexte, applicatif, processus, déploiement, capacité, migration, revue d’interface), chacune avec une vignette et un exemple.
 - Propose aussi « Reprendre une vue », « Importer (OpenAPI, snapshot) » et « Explorer la démonstration ». Aucune carte de domaine n’est l’action principale.
-- Le premier lancement déclenche une vue guidée : une forme déposée, une relation tirée, une formalisation, un partage. Objectif : première valeur en moins de trois minutes (FR-054).
+- Le premier lancement de l’Atelier déclenche une vue guidée : une forme déposée, une relation tirée, une formalisation, un partage. Objectif : première valeur en moins de trois minutes (FR-054).
 
 **Atelier — posture conception (`/design/:id`)**
 - Palette contextuelle à gauche, filtrée par `intent` et par métamodèle ; elle ne montre jamais une classe inutilisable dans cette intention.
@@ -1876,7 +1892,7 @@ Ces règles sont **opposables en revue** : elles distinguent un outil d’archit
 |---|---|
 | **Une vue, une intention** | La palette, les bandes et le titre découlent de `intent`. Une vue sans intention est refusée à la création. |
 | **Le spatial porte du sens** | Les couches sont des bandes, les domaines des zones, les interfaces des ports sur frontière. Aucun de ces éléments n’est relégué dans un panneau de réglages. |
-| **Pas de tableau comme écran principal** | L’accueil, la Bibliothèque et une vue n’affichent pas de table de données comme contenu dominant. Les tables appartiennent au Contrôle. |
+| **Pas de tableau comme écran principal** | La Carte, la Bibliothèque et une vue n’affichent pas de table de données comme contenu dominant. Les tables appartiennent au Contrôle. |
 | **Pas de formulaire comme point d’entrée** | Tout formulaire est contextuel, atteint après un geste de vue, et non bloquant. |
 | **Hiérarchie typographique stable** | Nom (fort), type (moyen), domaine (discret), état temporel (badge + motif). Le même vocabulaire sur tous les écrans. |
 | **Densité progressive** | À faible zoom, agrégats et étiquettes essentielles ; à zoom élevé, propriétés, ports et versions. Jamais tout au même niveau. |
@@ -2180,7 +2196,7 @@ DOIVENT être respectées par tout agent travaillant sur un lot :
 | FR-013 | `reviews` + 9 vues + anomalies | WP-10, WP-22 | tests par vue |
 | FR-014 | `comments` | WP-10 | CRUD commentaires |
 | FR-015 | Bascule persistante conception/lecture dans la même vue | WP-18, WP-19 | E2E de navigation, cadrage conservé |
-| FR-040 | Route `/` = Atelier, Bibliothèque et Contrôle séparés | WP-18, WP-26 | E2E : aucun inventaire au lancement |
+| FR-040 (remplacé par ADR-023/024/025) | Route `/` = portefeuille de produits (`ProductQuery::home()`) ; `/map` = carte (`MapQuery::map_default()`) ; Atelier (`/atelier`), Bibliothèque et Contrôle séparés | WP-18, WP-26 | E2E : aucun inventaire au lancement |
 | FR-041 | `ViewCommand` de création depuis la vue (élément, relation, interface, zone) | WP-19 | test de commande par type d’objet |
 | FR-042 | Édition sur place + inspecteur non bloquant | WP-19 | E2E : aucun changement de route |
 | FR-043 | `Connect` filtré par `is_relation_allowed` | WP-19 | `DSG-002` |
@@ -2263,7 +2279,9 @@ DOIVENT être respectées par tout agent travaillant sur un lot :
 | ADR-020 | Virtualisation du canvas | Culling par viewport, 500 nœuds, sans dépendance (W7) |
 | ADR-021 | Migration ArchiMate 3.2 → 4.x | Mapping explicite, aucune classe 4 déclarée, préservation des IDs (W2) |
 | ADR-022 | Nature de l’UI et surface d’édition | L’Atelier est la surface de création ; le référentiel reste la vérité ; l’inventaire est un espace de Contrôle secondaire. **Point d’entrée remplacé par ADR-023** |
-| ADR-023 | Produit, carte et zoom | La Carte de l’entreprise est le point d’entrée ; produit/équipe/value stream/capacité sont des objets de premier rang ; cinq niveaux de zoom et lentilles ; ArchiMate socle, BPMN/UML contextuels |
+| ADR-023 | Produit, carte et zoom | La Carte de l’entreprise est une surface de navigation (`/map`) ; depuis ADR-025, l’accueil est le portefeuille de produits. Produit/équipe/value stream/capacité sont des objets de premier rang ; cinq niveaux de zoom et lentilles ; ArchiMate socle, BPMN/UML contextuels |
+| ADR-024 | Produit pivot, pas centre | Le produit est le pivot de navigation et de responsabilité, pas la clé primaire du référentiel ; capacités, applications, interfaces et données gardent une lecture autonome ; la société/groupe reste une dimension à modéliser |
+| ADR-025 | Accueil portefeuille | L’accueil est le portefeuille de produits filtrable (`ProductQuery::home()`) ; la carte reste `/map` (`MapQuery::map_default()`) |
 
 ---
 

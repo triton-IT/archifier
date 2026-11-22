@@ -8,6 +8,7 @@
 | Conserve | ADR-022 §2 (création depuis la vue), §3 (formalisation progressive), §5 (deux postures), §6 (commandes) |
 | Portée | Modèle métier, navigation, page d'accueil, pages produit/équipe/value stream, contrats de routes et de projection |
 | Décisions liées | ADR-012 (routage par fragment), ADR-013 (pas d'IA dans le navigateur), ADR-019 (cycle de vie des interfaces), ADR-020 (virtualisation), ADR-021 (ArchiMate 3.2/4), ADR-022 (Atelier) |
+| Complété par | **ADR-024** — le produit est le pivot de la carte, pas le centre du référentiel ; **ADR-025** — l'accueil est le portefeuille de produits, la carte reste `/map` |
 
 ## Contexte
 
@@ -49,6 +50,9 @@ La responsabilité est portée par une **équipe** (`Team`) :
 ### 3. Le point d'entrée est la carte de l'entreprise
 
 La route `/` ouvre la **Carte de l'entreprise**, pas l'Atelier et pas une galerie d'intentions.
+
+> **Depuis ADR-025**, `/` ouvre le **portefeuille de produits** ; la carte est servie par
+> `/map`.
 
 La carte est une **projection générée, à géographie stable, du référentiel**. Elle n'est ni un diagramme dessiné à la main, ni un inventaire :
 
@@ -153,7 +157,7 @@ Une interface n'est pas une flèche. C'est un objet de gouvernance avec :
 
 | Invariant | Test |
 |---|---|
-| `/` ouvre la carte de l'entreprise, jamais un inventaire ni une galerie d'intentions | `home_opens_enterprise_map` |
+| `/map` ouvre la carte de l'entreprise, jamais l'Atelier ni une galerie d'intentions | `map_opens_enterprise_map` |
 | La carte se zoome de l'entreprise à l'infrastructure | `map_zooms_enterprise_to_infrastructure` |
 | Changer de lentille ne déplace aucun objet | `map_keeps_geometry_across_lenses` |
 | Une route agrégée se déplie vers des interfaces identifiées | `map_aggregate_edge_expands_to_interfaces` |
@@ -195,7 +199,7 @@ La migration est **guidée et additive** : le produit propose de rattacher un an
 ## Documents impactés
 
 - `functional-specifications.md` — nouvelle section « Cible v0.4 — Le produit, la carte et le zoom », FR-055 à FR-081.
-- `docs/ui-spec.md` — v2.0 : carte, niveaux, lentilles, pages produit/équipe/value stream/application/infrastructure.
+- `docs/ui-spec.md` — v2.2 : portefeuille de produits, carte, niveaux, lentilles, pages produit/équipe/value stream/application/infrastructure.
 - `docs/contracts/C-10-produit-carte-navigation.md` — contrat des objets, de la projection et des routes.
 - `docs/contracts/C-06-routes.md` — conservé ; les routes de la carte sont ajoutées par C-10.
 - `README.md` — positionnement et état (cible v0.4 vs implémentation MVP3).

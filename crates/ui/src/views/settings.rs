@@ -112,6 +112,25 @@ pub fn Settings(app: App) -> impl IntoView {
             <Card title="Contenu du référentiel".into()>
                 <div class="stat-strip">
                     {move || {
+                        let _ = app.version.get();
+                        let data = repo().map_data();
+                        view! {
+                            <>
+                                <span><strong>{data.products.len()}</strong>" produits"</span>
+                                <span><strong>{data.teams.len()}</strong>" équipes"</span>
+                                <span><strong>{data.value_streams.len()}</strong>" value streams"</span>
+                                <span><strong>{data.capabilities.len()}</strong>" capacités"</span>
+                                <span><strong>{data.applications.len()}</strong>" applications"</span>
+                                <span><strong>{data.interfaces.len()}</strong>" interfaces"</span>
+                                <span><strong>{data.nodes.len()}</strong>" nœuds"</span>
+                                <span><strong>{data.domains.len()}</strong>" domaines métier"</span>
+                            </>
+                        }
+                    }}
+                </div>
+                <h3>"Héritage MVP3"</h3>
+                <div class="stat-strip">
+                    {move || {
                         let s = stats();
                         view! {
                             <>

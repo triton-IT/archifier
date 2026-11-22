@@ -1,0 +1,1891 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Archifier — proposition : la carte directe</title>
+<style>
+  :root {
+    --bg: #f5f6f8;
+    --surface: #ffffff;
+    --surface-2: #fbfbfd;
+    --ink: #1b2430;
+    --ink-soft: #48566a;
+    --muted: #6b7787;
+    --line: #dde2ea;
+    --line-strong: #c6cedb;
+    --accent: #2f6feb;
+    --accent-soft: #e8f0fe;
+    --ok: #17724b;
+    --warn: #9a5b00;
+    --warn-soft: #fdf1dc;
+    --radius: 10px;
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mono: "SF Mono", "Cascadia Mono", Consolas, "Liberation Mono", monospace;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    font-family: var(--font);
+    color: var(--ink);
+    background: var(--bg);
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Bandeau hors produit : il explique la maquette, il ne fait pas partie de l'écran. */
+  .demo-bar {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 0 14px;
+    background: var(--ink);
+    color: #dfe7f2;
+    font-size: 12px;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .demo-bar .badge {
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+  .demo-bar b { color: #fff; font-weight: 600; }
+  .demo-bar .dim { color: #93a2b6; }
+
+  .app {
+    height: calc(100vh - 40px);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ------------------------------------------------------------ barre unique */
+  .topbar {
+    position: relative;
+    z-index: 20;
+    flex: 0 0 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 0 16px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .brand-mark { color: var(--accent); font-size: 17px; }
+  .crumbs {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+  .crumbs a { color: var(--ink-soft); text-decoration: none; }
+  .crumbs a:hover { color: var(--accent); }
+  .crumbs .sep { color: var(--line-strong); }
+  .crumbs .current {
+    color: var(--ink);
+    font-weight: 600;
+    max-width: 280px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .search {
+    margin-left: auto;
+    width: min(360px, 34vw);
+    height: 34px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface-2);
+    color: var(--muted);
+    font: inherit;
+    font-size: 12.5px;
+    cursor: text;
+  }
+  .search:hover { border-color: var(--line-strong); background: var(--surface); }
+  .search span { flex: 1; text-align: left; }
+  .search kbd {
+    padding: 1px 5px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: var(--surface);
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 9.5px;
+  }
+  .top-actions { display: flex; align-items: center; gap: 8px; }
+  .ghost-btn {
+    height: 32px;
+    padding: 0 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid transparent;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--ink-soft);
+    font: inherit;
+    font-size: 12.5px;
+    cursor: pointer;
+  }
+  .ghost-btn:hover { background: var(--surface-2); border-color: var(--line); }
+  .ghost-btn[aria-expanded="true"] { background: var(--accent-soft); color: #1d5bc7; }
+  .avatar {
+    width: 28px;
+    height: 28px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: #1d5bc7;
+    font-size: 10.5px;
+    font-weight: 700;
+  }
+
+  /* --------------------------------------------------------------- le canevas */
+  .stage {
+    position: relative;
+    flex: 1;
+    overflow: hidden;
+    background-color: #f7f8fa;
+    background-image: radial-gradient(circle, #d9dfe8 1px, transparent 1px);
+    background-size: 24px 24px;
+    touch-action: none;
+  }
+  .world {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1200px;
+    height: 800px;
+    transform-origin: 0 0;
+    will-change: transform;
+  }
+
+  .district {
+    position: absolute;
+    z-index: 0;
+    border: 1.5px dashed #9fb2cc;
+    border-radius: 16px;
+    background: rgba(232, 240, 254, 0.32);
+    pointer-events: none;
+  }
+  .district-label {
+    position: absolute;
+    left: 16px;
+    top: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-soft);
+  }
+  .district-label span {
+    padding: 2px 6px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--muted);
+    font-size: 9.5px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .district-count {
+    position: absolute;
+    right: 16px;
+    top: 13px;
+    font-size: 10.5px;
+    color: var(--muted);
+  }
+
+  .edges {
+    position: absolute;
+    inset: 0;
+    width: 1200px;
+    height: 800px;
+    overflow: visible;
+    z-index: 1;
+    pointer-events: none;
+  }
+  .edge-line {
+    fill: none;
+    stroke: #8aa0bd;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+  }
+  .edge.interface .edge-line { stroke: #5b86c9; }
+  .edge.ownership .edge-line { stroke: #a98a3d; stroke-dasharray: 5 4; }
+  .edge.deployment .edge-line { stroke: #8a7fa3; stroke-dasharray: 2 4; }
+  .edge.draft .edge-line { stroke: var(--accent); stroke-dasharray: 6 4; }
+  .edge-hit {
+    fill: none;
+    stroke: transparent;
+    stroke-width: 16;
+    pointer-events: stroke;
+    cursor: pointer;
+  }
+  .edge-label {
+    font-family: var(--font);
+    font-size: 10.5px;
+    fill: var(--ink-soft);
+    text-anchor: middle;
+    paint-order: stroke;
+    stroke: #f7f8fa;
+    stroke-width: 4;
+    stroke-linejoin: round;
+    opacity: 0;
+    transition: opacity 120ms;
+    pointer-events: none;
+  }
+  .edge:hover .edge-label,
+  .edge.selected .edge-label,
+  .edge.draft .edge-label,
+  .show-interfaces .edge-label { opacity: 1; }
+  .edge.selected .edge-line { stroke-width: 2.4; }
+  .show-interfaces .edge.interface .edge-line { stroke-width: 2.1; }
+  .temp-edge {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 2;
+    stroke-dasharray: 5 5;
+    pointer-events: none;
+  }
+
+  /* ------------------------------------------------------------------ cartes */
+  .card {
+    position: absolute;
+    z-index: 2;
+    width: 190px;
+    min-height: 62px;
+    padding: 9px 11px 8px;
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--type, var(--muted));
+    border-radius: 10px;
+    background: var(--surface);
+    box-shadow: 0 1px 2px rgba(20, 30, 45, 0.06), 0 4px 12px rgba(20, 30, 45, 0.04);
+    cursor: grab;
+    user-select: none;
+    transition: box-shadow 120ms, border-color 120ms;
+  }
+  .card:hover {
+    box-shadow: 0 2px 4px rgba(20, 30, 45, 0.08), 0 8px 20px rgba(20, 30, 45, 0.08);
+  }
+  .card.dragging {
+    cursor: grabbing;
+    box-shadow: 0 12px 28px rgba(20, 30, 45, 0.16);
+    z-index: 6;
+  }
+  .card.selected {
+    box-shadow: 0 0 0 2px var(--accent), 0 8px 22px rgba(20, 30, 45, 0.12);
+  }
+  .card.link-target {
+    box-shadow: 0 0 0 3px #b9d2ff, 0 8px 22px rgba(20, 30, 45, 0.12);
+  }
+  .card.link-source {
+    border-style: dashed;
+    box-shadow: 0 0 0 2px var(--accent);
+  }
+  .card[data-type="Produit"] { --type: #2f6feb; --type-bg: #e8f0fe; }
+  .card[data-type="Équipe"] { --type: #7a4fa3; --type-bg: #f3ecfa; }
+  .card[data-type="Application"] { --type: #2f7d5a; --type-bg: #e9f5ef; }
+  .card[data-type="Capacité"] { --type: #a97a12; --type-bg: #fff5e3; }
+  .card[data-type="Infrastructure"] { --type: #62748a; --type-bg: #eef1f4; }
+  .card[data-type="Objet"] { --type: #6b7787; --type-bg: #eceff3; }
+
+  .card-head { display: flex; align-items: center; gap: 7px; margin-bottom: 4px; }
+  .card-icon {
+    width: 20px;
+    height: 20px;
+    display: grid;
+    place-items: center;
+    border-radius: 5px;
+    background: var(--type-bg, #eceff3);
+    color: var(--type, var(--muted));
+    font-size: 10.5px;
+    font-weight: 700;
+  }
+  .card-type {
+    color: var(--muted);
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+  .signal-dot {
+    display: none;
+    width: 7px;
+    height: 7px;
+    margin-left: auto;
+    border-radius: 50%;
+    background: #c98a1a;
+  }
+  .card-title {
+    font-size: 13.5px;
+    font-weight: 600;
+    line-height: 1.25;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    outline: none;
+  }
+  .card-title.editing {
+    white-space: normal;
+    border-radius: 3px;
+    background: #eef4ff;
+    box-shadow: 0 0 0 3px #eef4ff;
+  }
+  .card-owner,
+  .card-status {
+    display: none;
+    margin-top: 3px;
+    overflow: hidden;
+    color: var(--muted);
+    font-size: 10.5px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .card-status { color: var(--ok); }
+  .show-org .card-owner { display: block; }
+  .show-time .card-status { display: block; }
+  .show-signals .signal-dot { display: block; }
+  .show-signals .card.has-signal { box-shadow: 0 0 0 2px rgba(201, 138, 26, 0.3), 0 4px 12px rgba(20, 30, 45, 0.04); }
+  .show-signals .card.has-signal.selected { box-shadow: 0 0 0 2px var(--accent), 0 0 0 5px rgba(201, 138, 26, 0.18), 0 8px 22px rgba(20, 30, 45, 0.12); }
+
+  .handle {
+    position: absolute;
+    right: -7px;
+    top: 50%;
+    width: 13px;
+    height: 13px;
+    padding: 0;
+    border: 2px solid var(--accent);
+    border-radius: 50%;
+    background: #fff;
+    cursor: crosshair;
+    opacity: 0;
+    transform: translateY(-50%);
+    transition: opacity 120ms;
+  }
+  .card:hover .handle,
+  .card.selected .handle { opacity: 1; }
+
+  /* --------------------------------------------------------------- inspecteur */
+  .inspector {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 15;
+    display: none;
+    width: 320px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--surface);
+    box-shadow: 0 12px 32px rgba(20, 30, 45, 0.14);
+  }
+  .inspector.open { display: block; }
+  .insp-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 13px;
+    border-bottom: 1px solid #eef0f4;
+  }
+  .type-chip {
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: #eceff3;
+    color: var(--muted);
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .insp-kicker { color: var(--muted); font-size: 10.5px; }
+  .close {
+    width: 26px;
+    height: 26px;
+    margin-left: auto;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--muted);
+    font-size: 17px;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .close:hover { border-color: var(--line); background: var(--surface-2); color: var(--ink); }
+  .insp-body {
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+    padding: 13px;
+  }
+  .insp-title {
+    width: 100%;
+    padding: 2px 0;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    font: inherit;
+    font-size: 17px;
+    font-weight: 600;
+    outline: none;
+  }
+  .insp-title:focus { border-radius: 4px; box-shadow: 0 0 0 3px #eef4ff; }
+  .insp-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    color: var(--muted);
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .field input,
+  .field select {
+    height: 30px;
+    padding: 0 7px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--ink);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  .field input:focus,
+  .field select:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px #eef4ff; }
+  .insp-summary { margin: 0; color: var(--muted); font-size: 11.5px; line-height: 1.45; }
+  .insp-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+  .btn {
+    height: 30px;
+    padding: 0 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--ink);
+    font: inherit;
+    font-size: 11.5px;
+    cursor: pointer;
+  }
+  .btn:hover { border-color: var(--line-strong); background: var(--surface-2); }
+  .btn.primary { border-color: var(--accent); background: var(--accent); color: #fff; }
+  .btn.primary:hover { background: #1d5bc7; }
+  .insp-foot {
+    margin: 0;
+    padding-top: 9px;
+    border-top: 1px solid #eef0f4;
+    color: #8a94a3;
+    font-size: 10.5px;
+    line-height: 1.4;
+  }
+  .draft-note {
+    margin: 0;
+    padding: 8px;
+    border-radius: 6px;
+    background: var(--warn-soft);
+    color: #7a4600;
+    font-size: 10.5px;
+    line-height: 1.4;
+  }
+
+  /* ----------------------------------------------------------------- calques */
+  .layers {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 30;
+    display: none;
+    width: 264px;
+    padding: 13px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--surface);
+    box-shadow: 0 12px 32px rgba(20, 30, 45, 0.18);
+  }
+  .layers.open { display: block; }
+  .layers h3 {
+    margin: 0 0 3px;
+    color: var(--muted);
+    font-size: 9.5px;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+  .layers p { margin: 0 0 10px; color: var(--muted); font-size: 11px; line-height: 1.4; }
+  .layer-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    padding: 7px 0;
+    border-top: 1px solid #f0f2f6;
+    cursor: pointer;
+  }
+  .layer-row input { margin: 2px 0 0; accent-color: var(--accent); }
+  .layer-row strong { display: block; color: var(--ink); font-size: 12px; font-weight: 600; }
+  .layer-row span { display: block; color: var(--muted); font-size: 10.5px; }
+  .layers-foot {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #f0f2f6;
+    color: #8a94a3;
+    font-size: 10px;
+    line-height: 1.4;
+  }
+
+  /* ---------------------------------------------------------------- palette */
+  .palette {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    z-index: 40;
+    display: none;
+    width: min(560px, calc(100% - 24px));
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--surface);
+    box-shadow: 0 18px 44px rgba(20, 30, 45, 0.22);
+    transform: translateX(-50%);
+  }
+  .palette.open { display: block; }
+  .palette input {
+    width: 100%;
+    height: 44px;
+    padding: 0 15px;
+    border: 0;
+    border-bottom: 1px solid #eef0f4;
+    background: transparent;
+    color: var(--ink);
+    font: inherit;
+    font-size: 13px;
+    outline: none;
+  }
+  .palette-list { max-height: 320px; padding: 6px; overflow: auto; }
+  .palette-group {
+    padding: 7px 9px 4px;
+    color: var(--muted);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .palette-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 9px;
+    border-radius: 7px;
+    cursor: pointer;
+  }
+  .palette-item:hover,
+  .palette-item.active { background: #eef4ff; }
+  .pi-icon {
+    width: 24px;
+    height: 24px;
+    flex: 0 0 24px;
+    display: grid;
+    place-items: center;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .pi-text { flex: 1; min-width: 0; }
+  .pi-text strong { display: block; color: var(--ink); font-size: 12.5px; font-weight: 600; }
+  .pi-text small { display: block; color: var(--muted); font-size: 10.5px; }
+  .pi-key { color: var(--muted); font-family: var(--mono); font-size: 10px; }
+  .palette-empty { padding: 18px 10px; color: var(--muted); font-size: 12px; text-align: center; }
+  .palette-foot {
+    display: flex;
+    gap: 14px;
+    padding: 8px 12px;
+    border-top: 1px solid #eef0f4;
+    color: #8a94a3;
+    font-size: 10px;
+  }
+
+  /* ------------------------------------------------------------------- chrome */
+  .zoom {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    z-index: 12;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 0 4px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    box-shadow: var(--shadow, 0 4px 12px rgba(20, 30, 45, 0.08));
+  }
+  .zoom button {
+    width: 26px;
+    height: 26px;
+    border: 0;
+    border-radius: 5px;
+    background: transparent;
+    color: var(--ink-soft);
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .zoom button:hover { background: var(--surface-2); }
+  .zoom .label { width: 46px; color: var(--muted); font-size: 10.5px; text-align: center; }
+  .zoom .sep { width: 1px; height: 16px; margin: 0 3px; background: var(--line); }
+  .zoom .fit { width: auto; padding: 0 7px; font-size: 11px; }
+
+  .hint {
+    position: absolute;
+    left: 50%;
+    bottom: 12px;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: calc(100% - 220px);
+    padding: 6px 10px 6px 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface);
+    box-shadow: 0 4px 12px rgba(20, 30, 45, 0.08);
+    color: var(--muted);
+    font-size: 11.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transform: translateX(-50%);
+  }
+  .hint.hidden { display: none; }
+  .hint button {
+    width: 18px;
+    height: 18px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .hint button:hover { background: var(--surface-2); color: var(--ink); }
+
+  .toast {
+    position: absolute;
+    left: 50%;
+    bottom: 56px;
+    z-index: 50;
+    max-width: min(520px, calc(100% - 24px));
+    padding: 8px 13px;
+    border-radius: 8px;
+    background: var(--ink);
+    color: #fff;
+    font-size: 11.5px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, 8px);
+    transition: opacity 160ms, transform 160ms;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  @media (max-width: 860px) {
+    .demo-bar { justify-content: flex-start; overflow-x: auto; }
+    .crumbs { display: none; }
+    .search { margin-left: auto; width: min(260px, 40vw); }
+    .inspector { left: 12px; right: 12px; width: auto; }
+    .layers { left: 12px; right: 12px; width: auto; }
+    .hint { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="demo-bar">
+  <span class="badge">Maquette</span>
+  <b>La carte directe</b>
+  <span class="dim">·</span>
+  <span>Double-cliquez sur le vide pour poser un objet</span>
+  <span class="dim">·</span>
+  <span>Glissez le point bleu pour relier</span>
+  <span class="dim">·</span>
+  <span>Ctrl/⌘ K pour créer</span>
+</div>
+
+<div class="app">
+  <header class="topbar">
+    <a class="brand" href="#" id="brand" title="Revenir à la vue d'ensemble">
+      <span class="brand-mark">◧</span>
+      <span>Archifier</span>
+    </a>
+    <nav class="crumbs" aria-label="Fil d'Ariane">
+      <a href="#" id="crumb-root">Entreprise</a>
+      <span class="sep">/</span>
+      <span class="current" id="crumb-current">Portefeuille Sinistre</span>
+    </nav>
+    <button class="search" id="search-btn" type="button" aria-label="Rechercher ou créer">
+      <span>Rechercher ou créer…</span>
+      <kbd>Ctrl/⌘ K</kbd>
+    </button>
+    <div class="top-actions">
+      <button class="ghost-btn" id="layers-btn" type="button" aria-expanded="false">▤ Calques</button>
+      <span class="avatar" title="Utilisateur courant">RS</span>
+    </div>
+  </header>
+
+  <main class="stage" id="stage" aria-label="Carte de l'entreprise">
+    <div class="world" id="world">
+      <div class="district" style="left:60px;top:95px;width:560px;height:340px;">
+        <div class="district-label">Parcours Sinistre <span>value stream</span></div>
+        <div class="district-count">2 produits · 2 applications</div>
+      </div>
+
+      <svg class="edges" id="edges" width="1200" height="800" viewBox="0 0 1200 800" aria-hidden="true">
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#8aa0bd"></path>
+          </marker>
+        </defs>
+        <g id="edge-group"></g>
+      </svg>
+    </div>
+
+    <aside class="inspector" id="inspector-card" aria-label="Sélection">
+      <div class="insp-head">
+        <span class="type-chip" id="insp-chip">Produit</span>
+        <span class="insp-kicker">Sélection</span>
+        <button class="close" id="insp-close" type="button" aria-label="Fermer">×</button>
+      </div>
+      <div class="insp-body">
+        <input class="insp-title" id="insp-title" aria-label="Nom de l'objet">
+        <div class="insp-fields">
+          <label class="field">Propriétaire<input id="insp-owner" placeholder="Équipe"></label>
+          <label class="field">État<input id="insp-status" placeholder="En run"></label>
+        </div>
+        <label class="field">Type
+          <select id="insp-type">
+            <option>Produit</option>
+            <option>Équipe</option>
+            <option>Application</option>
+            <option>Capacité</option>
+            <option>Infrastructure</option>
+            <option>Objet</option>
+          </select>
+        </label>
+        <p class="insp-summary" id="insp-summary"></p>
+        <div class="insp-actions">
+          <button class="btn" id="insp-link" type="button">Relier</button>
+          <button class="btn" id="insp-enter" type="button">Entrer</button>
+          <button class="btn primary" id="insp-open" type="button">Ouvrir la fiche</button>
+        </div>
+        <p class="insp-foot">Le détail (versions, contrats, historique) reste dans la fiche. La carte ne l'affiche que sur demande.</p>
+      </div>
+    </aside>
+
+    <aside class="inspector" id="inspector-edge" aria-label="Route sélectionnée">
+      <div class="insp-head">
+        <span class="type-chip" style="background:#e8f0fe;color:#2f6feb">Interface</span>
+        <span class="insp-kicker">Route</span>
+        <button class="close" id="edge-close" type="button" aria-label="Fermer">×</button>
+      </div>
+      <div class="insp-body">
+        <input class="insp-title" id="edge-title" aria-label="Nom de l'interface">
+        <p class="insp-summary" id="edge-route"></p>
+        <div class="insp-fields">
+          <label class="field">Version<input id="edge-version"></label>
+          <label class="field">État<input id="edge-status"></label>
+        </div>
+        <p class="draft-note" id="edge-draft">Créée par un geste. À qualifier : exposition, contrat, consommateurs.</p>
+        <div class="insp-actions">
+          <button class="btn" id="edge-qualify" type="button">Qualifier</button>
+          <button class="btn" id="edge-consumers" type="button">Consommateurs</button>
+          <button class="btn primary" id="edge-open" type="button">Ouvrir l'interface</button>
+        </div>
+        <p class="insp-foot">Une route n'est pas une flèche : c'est une interface avec un fournisseur, des consommateurs et des versions.</p>
+      </div>
+    </aside>
+
+    <div class="layers" id="layers" aria-label="Calques de lecture">
+      <h3>Calques</h3>
+      <p>Aucun n'est obligatoire. Ils ajoutent une lecture, ils ne changent pas la carte.</p>
+      <label class="layer-row"><input type="checkbox" data-layer="org"><span><strong>Organisation</strong><span>Qui possède quoi</span></span></label>
+      <label class="layer-row"><input type="checkbox" data-layer="interfaces"><span><strong>Interfaces</strong><span>Routes, versions, noms</span></span></label>
+      <label class="layer-row"><input type="checkbox" data-layer="time"><span><strong>Temps</strong><span>Cycle de vie, échéances</span></span></label>
+      <label class="layer-row"><input type="checkbox" data-layer="signals"><span><strong>Signaux</strong><span>Couplages, complétude</span></span></label>
+      <div class="layers-foot">La géographie ne bouge pas quand un calque s'active.</div>
+    </div>
+
+    <div class="palette" id="palette" role="dialog" aria-label="Créer ou rechercher">
+      <input id="palette-input" placeholder="Créer un objet ou aller à…" aria-label="Créer un objet ou aller à" autocomplete="off" spellcheck="false">
+      <div class="palette-list" id="palette-list"></div>
+      <div class="palette-foot"><span>↵ créer / ouvrir</span><span>↑↓ naviguer</span><span>esc fermer</span></div>
+    </div>
+
+    <div class="hint" id="hint">
+      <span>Cliquez une carte pour son panneau · Double-cliquez pour en poser une</span>
+      <button id="hint-close" type="button" aria-label="Masquer l'aide">×</button>
+    </div>
+
+    <div class="zoom" aria-label="Zoom">
+      <button id="zoom-out" type="button" aria-label="Dézoomer">−</button>
+      <span class="label" id="zoom-label">100 %</span>
+      <button id="zoom-in" type="button" aria-label="Zoomer">+</button>
+      <span class="sep"></span>
+      <button class="fit" id="zoom-fit" type="button">Ajuster</button>
+    </div>
+
+    <div class="toast" id="toast" role="status"></div>
+  </main>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  const NS = "http://www.w3.org/2000/svg";
+
+  const TYPES = {
+    "Produit": { icon: "P", color: "#2f6feb", bg: "#e8f0fe" },
+    "Équipe": { icon: "É", color: "#7a4fa3", bg: "#f3ecfa" },
+    "Application": { icon: "A", color: "#2f7d5a", bg: "#e9f5ef" },
+    "Capacité": { icon: "C", color: "#a97a12", bg: "#fff5e3" },
+    "Infrastructure": { icon: "N", color: "#62748a", bg: "#eef1f4" },
+    "Objet": { icon: "•", color: "#6b7787", bg: "#eceff3" }
+  };
+
+  const DEFAULT_TITLE = {
+    "Produit": "Nouveau produit",
+    "Équipe": "Nouvelle équipe",
+    "Application": "Nouvelle application",
+    "Capacité": "Nouvelle capacité",
+    "Infrastructure": "Nouveau nœud",
+    "Objet": "Nouvel objet"
+  };
+
+  const CREATE_ITEMS = [
+    { type: "Produit", label: "Produit", desc: "Une unité de valeur offerte" },
+    { type: "Équipe", label: "Équipe", desc: "Qui possède et opère" },
+    { type: "Application", label: "Application", desc: "Un système utilisé par des produits" },
+    { type: "Capacité", label: "Capacité", desc: "Ce que l'entreprise sait faire" },
+    { type: "Infrastructure", label: "Nœud", desc: "Où cela tourne" }
+  ];
+
+  const stage = document.getElementById("stage");
+  const world = document.getElementById("world");
+  const edgeGroup = document.getElementById("edge-group");
+
+  const brand = document.getElementById("brand");
+  const crumbRoot = document.getElementById("crumb-root");
+  const crumbCurrent = document.getElementById("crumb-current");
+  const searchBtn = document.getElementById("search-btn");
+  const layersBtn = document.getElementById("layers-btn");
+  const layersPanel = document.getElementById("layers");
+
+  const inspectorCard = document.getElementById("inspector-card");
+  const inspectorEdge = document.getElementById("inspector-edge");
+  const inspChip = document.getElementById("insp-chip");
+  const inspTitle = document.getElementById("insp-title");
+  const inspOwner = document.getElementById("insp-owner");
+  const inspStatus = document.getElementById("insp-status");
+  const inspType = document.getElementById("insp-type");
+  const inspSummary = document.getElementById("insp-summary");
+  const inspLink = document.getElementById("insp-link");
+  const inspEnter = document.getElementById("insp-enter");
+  const inspOpen = document.getElementById("insp-open");
+  const inspClose = document.getElementById("insp-close");
+
+  const edgeTitle = document.getElementById("edge-title");
+  const edgeRoute = document.getElementById("edge-route");
+  const edgeVersion = document.getElementById("edge-version");
+  const edgeStatus = document.getElementById("edge-status");
+  const edgeDraft = document.getElementById("edge-draft");
+  const edgeQualify = document.getElementById("edge-qualify");
+  const edgeConsumers = document.getElementById("edge-consumers");
+  const edgeOpen = document.getElementById("edge-open");
+  const edgeClose = document.getElementById("edge-close");
+
+  const palette = document.getElementById("palette");
+  const paletteInput = document.getElementById("palette-input");
+  const paletteList = document.getElementById("palette-list");
+
+  const hint = document.getElementById("hint");
+  const hintClose = document.getElementById("hint-close");
+  const toastEl = document.getElementById("toast");
+  const zoomLabel = document.getElementById("zoom-label");
+
+  let cards = [];
+  let edges = [];
+  let seq = 0;
+  let selected = null;
+  let linkFrom = null;
+  let scale = 1;
+  let panX = 40;
+  let panY = 30;
+  let paletteItems = [];
+  let paletteIndex = 0;
+  let toastTimer = 0;
+
+  // ------------------------------------------------------------------ helpers
+
+  function esc(value) {
+    return String(value == null ? "" : value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function clamp(value, min, max) {
+    return Math.min(max, Math.max(min, value));
+  }
+
+  function getCard(id) {
+    return cards.find((card) => card.id === id) || null;
+  }
+
+  function getEdge(id) {
+    return edges.find((edge) => edge.id === id) || null;
+  }
+
+  function cardEl(id) {
+    return document.querySelector('.card[data-id="' + id + '"]');
+  }
+
+  function toast(message) {
+    toastEl.textContent = message;
+    toastEl.classList.add("show");
+    window.clearTimeout(toastTimer);
+    toastTimer = window.setTimeout(() => toastEl.classList.remove("show"), 2800);
+  }
+
+  function dismissHint() {
+    hint.classList.add("hidden");
+  }
+
+  function cancelLink() {
+    if (!linkFrom) return;
+    const el = cardEl(linkFrom);
+    if (el) el.classList.remove("link-source");
+    linkFrom = null;
+  }
+
+  // --------------------------------------------------------------- rendu cartes
+
+  function applyType(el, type) {
+    const config = TYPES[type] || TYPES["Objet"];
+    el.dataset.type = type;
+    const icon = el.querySelector(".card-icon");
+    const label = el.querySelector(".card-type");
+    if (icon) icon.textContent = config.icon;
+    if (label) label.textContent = type;
+  }
+
+  function updateCardAria(card, el) {
+    if (!el) return;
+    el.setAttribute("aria-label", card.title + " — " + card.type);
+  }
+
+  function renderCard(card) {
+    const el = document.createElement("div");
+    el.className = "card";
+    el.dataset.id = card.id;
+    el.setAttribute("role", "button");
+    el.setAttribute("tabindex", "0");
+    el.style.left = card.x + "px";
+    el.style.top = card.y + "px";
+    el.style.width = (card.w || 190) + "px";
+    if (card.signal) el.classList.add("has-signal");
+
+    el.innerHTML =
+      '<div class="card-head">' +
+        '<span class="card-icon"></span>' +
+        '<span class="card-type"></span>' +
+        '<span class="signal-dot" title="Signal"></span>' +
+      '</div>' +
+      '<div class="card-title"></div>' +
+      '<div class="card-owner"></div>' +
+      '<div class="card-status"></div>' +
+      '<button class="handle" type="button" tabindex="-1" aria-hidden="true"></button>';
+
+    el.querySelector(".card-title").textContent = card.title;
+    el.querySelector(".card-owner").textContent = card.owner || "Sans propriétaire";
+    el.querySelector(".card-status").textContent = card.status || "";
+    applyType(el, card.type);
+    updateCardAria(card, el);
+
+    el.addEventListener("pointerdown", (event) => onCardPointerDown(event, card, el));
+    el.addEventListener("dblclick", (event) => {
+      if (event.target.closest(".handle")) return;
+      if (event.target.isContentEditable) return;
+      event.stopPropagation();
+      focusCard(card.id);
+    });
+    el.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        if (selected && selected.kind === "card" && selected.id === card.id) {
+          focusCard(card.id);
+        } else {
+          selectCard(card.id);
+        }
+      }
+      if (event.key === " ") {
+        event.preventDefault();
+        selectCard(card.id);
+      }
+    });
+
+    const handle = el.querySelector(".handle");
+    handle.addEventListener("pointerdown", (event) => {
+      event.stopPropagation();
+      event.preventDefault();
+      beginLink(card, event);
+    });
+
+    world.appendChild(el);
+    return el;
+  }
+
+  function syncCardSizes() {
+    cards.forEach((card) => {
+      const el = cardEl(card.id);
+      if (!el) return;
+      card.w = el.offsetWidth;
+      card.h = el.offsetHeight;
+    });
+    renderEdges();
+  }
+
+  // ---------------------------------------------------------------- rendu edges
+
+  function edgePath(from, to) {
+    const fcx = from.x + from.w / 2;
+    const fcy = from.y + from.h / 2;
+    const tcx = to.x + to.w / 2;
+    const tcy = to.y + to.h / 2;
+    const dx = tcx - fcx;
+    const dy = tcy - fcy;
+    const horizontal = Math.abs(dx) >= Math.abs(dy);
+
+    if (horizontal) {
+      const s = { x: dx >= 0 ? from.x + from.w : from.x, y: fcy };
+      const t = { x: dx >= 0 ? to.x : to.x + to.w, y: tcy };
+      const c = Math.max(40, Math.abs(t.x - s.x) * 0.45);
+      const c1 = { x: s.x + (dx >= 0 ? c : -c), y: s.y };
+      const c2 = { x: t.x + (dx >= 0 ? -c : c), y: t.y };
+      return {
+        d: "M " + s.x + " " + s.y + " C " + c1.x + " " + c1.y + ", " + c2.x + " " + c2.y + ", " + t.x + " " + t.y,
+        mid: { x: (s.x + t.x) / 2, y: (s.y + t.y) / 2 }
+      };
+    }
+
+    const s = { x: fcx, y: dy >= 0 ? from.y + from.h : from.y };
+    const t = { x: tcx, y: dy >= 0 ? to.y : to.y + to.h };
+    const c = Math.max(34, Math.abs(t.y - s.y) * 0.45);
+    const c1 = { x: s.x, y: s.y + (dy >= 0 ? c : -c) };
+    const c2 = { x: t.x, y: t.y + (dy >= 0 ? -c : c) };
+    return {
+      d: "M " + s.x + " " + s.y + " C " + c1.x + " " + c1.y + ", " + c2.x + " " + c2.y + ", " + t.x + " " + t.y,
+      mid: { x: (s.x + t.x) / 2, y: (s.y + t.y) / 2 }
+    };
+  }
+
+  function renderEdges() {
+    while (edgeGroup.firstChild) edgeGroup.removeChild(edgeGroup.firstChild);
+
+    edges.forEach((edge) => {
+      const from = getCard(edge.from);
+      const to = getCard(edge.to);
+      if (!from || !to) return;
+
+      const path = edgePath(from, to);
+      const g = document.createElementNS(NS, "g");
+      const classes = ["edge", edge.kind || "interface"];
+      if (edge.draft) classes.push("draft");
+      if (selected && selected.kind === "edge" && selected.id === edge.id) classes.push("selected");
+      g.setAttribute("class", classes.join(" "));
+      g.dataset.id = edge.id;
+
+      const hit = document.createElementNS(NS, "path");
+      hit.setAttribute("d", path.d);
+      hit.setAttribute("class", "edge-hit");
+
+      const line = document.createElementNS(NS, "path");
+      line.setAttribute("d", path.d);
+      line.setAttribute("class", "edge-line");
+      line.setAttribute("marker-end", "url(#arrow)");
+
+      const label = document.createElementNS(NS, "text");
+      label.setAttribute("x", String(path.mid.x));
+      label.setAttribute("y", String(path.mid.y - 6));
+      label.setAttribute("class", "edge-label");
+      label.textContent = edge.label || "Interface";
+
+      g.appendChild(hit);
+      g.appendChild(line);
+      g.appendChild(label);
+      g.addEventListener("click", (event) => {
+        event.stopPropagation();
+        selectEdge(edge.id);
+      });
+
+      edgeGroup.appendChild(g);
+    });
+  }
+
+  // --------------------------------------------------------------- sélection
+
+  function showCardInspector(id) {
+    const card = getCard(id);
+    if (!card) return;
+    const config = TYPES[card.type] || TYPES["Objet"];
+
+    inspectorEdge.classList.remove("open");
+    inspectorCard.classList.add("open");
+    inspChip.textContent = card.type;
+    inspChip.style.background = config.bg;
+    inspChip.style.color = config.color;
+    inspTitle.value = card.title;
+    inspType.value = card.type;
+    inspOwner.value = card.owner || "";
+    inspStatus.value = card.status || "";
+
+    const relationCount = edges.filter((edge) => edge.from === id || edge.to === id).length;
+    inspSummary.textContent = relationCount === 0
+      ? "Aucune route sur la carte. Glissez le point bleu vers une autre carte."
+      : relationCount + " route" + (relationCount > 1 ? "s" : "") + " sur la carte. Cliquez une route pour ouvrir son interface.";
+  }
+
+  function showEdgeInspector(id) {
+    const edge = getEdge(id);
+    if (!edge) return;
+    const from = getCard(edge.from);
+    const to = getCard(edge.to);
+
+    inspectorCard.classList.remove("open");
+    inspectorEdge.classList.add("open");
+    edgeTitle.value = edge.label || "Nouvelle interface";
+    edgeRoute.textContent = (from ? from.title : "?") + "  →  " + (to ? to.title : "?");
+    edgeVersion.value = edge.draft ? "0.0.1-brouillon" : (edge.version || "—");
+    edgeStatus.value = edge.draft ? "Brouillon" : (edge.status || "Active");
+    edgeDraft.style.display = edge.draft ? "block" : "none";
+    edgeQualify.style.display = edge.draft ? "inline-flex" : "none";
+  }
+
+  function selectCard(id) {
+    cancelLink();
+    selected = { kind: "card", id };
+    document.querySelectorAll(".card.selected").forEach((el) => el.classList.remove("selected"));
+    const el = cardEl(id);
+    if (el) el.classList.add("selected");
+    showCardInspector(id);
+    renderEdges();
+    closeLayers();
+  }
+
+  function selectEdge(id) {
+    selected = { kind: "edge", id };
+    document.querySelectorAll(".card.selected").forEach((el) => el.classList.remove("selected"));
+    showEdgeInspector(id);
+    renderEdges();
+    closeLayers();
+  }
+
+  function clearSelection() {
+    cancelLink();
+    selected = null;
+    document.querySelectorAll(".card.selected").forEach((el) => el.classList.remove("selected"));
+    inspectorCard.classList.remove("open");
+    inspectorEdge.classList.remove("open");
+    renderEdges();
+  }
+
+  // ---------------------------------------------------------------- mutations
+
+  function addCard(data, editTitle) {
+    const card = {
+      id: "c" + (++seq),
+      type: data.type || "Produit",
+      title: data.title || DEFAULT_TITLE[data.type] || "Nouvel objet",
+      x: data.x,
+      y: data.y,
+      w: 190,
+      h: 0,
+      owner: data.owner || "",
+      status: data.status || "En run",
+      signal: Boolean(data.signal)
+    };
+    cards.push(card);
+    const el = renderCard(card);
+    syncCardSizes();
+    renderEdges();
+    selectCard(card.id);
+    if (editTitle) beginTitleEdit(card, el);
+    dismissHint();
+    toast("Objet posé — à qualifier");
+    return card;
+  }
+
+  function addEdge(fromId, toId) {
+    if (fromId === toId) return;
+    const exists = edges.some((edge) =>
+      (edge.from === fromId && edge.to === toId) ||
+      (edge.from === toId && edge.to === fromId)
+    );
+    if (exists) {
+      toast("Cette relation existe déjà sur la carte.");
+      return;
+    }
+    const edge = {
+      id: "e" + (++seq),
+      from: fromId,
+      to: toId,
+      kind: "interface",
+      label: "Nouvelle interface",
+      draft: true
+    };
+    edges.push(edge);
+    renderEdges();
+    selectEdge(edge.id);
+    dismissHint();
+    toast("Interface créée — à qualifier dans le panneau.");
+  }
+
+  function beginTitleEdit(card, el) {
+    const titleEl = el.querySelector(".card-title");
+    titleEl.contentEditable = "true";
+    titleEl.classList.add("editing");
+    titleEl.focus();
+
+    const range = document.createRange();
+    range.selectNodeContents(titleEl);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+
+    const finish = () => {
+      titleEl.contentEditable = "false";
+      titleEl.classList.remove("editing");
+      const text = (titleEl.textContent || "").trim() || "Sans nom";
+      card.title = text;
+      titleEl.textContent = text;
+      updateCardAria(card, el);
+      if (selected && selected.kind === "card" && selected.id === card.id) {
+        inspTitle.value = text;
+      }
+      syncCardSizes();
+    };
+
+    titleEl.addEventListener("blur", finish, { once: true });
+    titleEl.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        event.stopPropagation();
+        titleEl.blur();
+      }
+      if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+        titleEl.textContent = card.title;
+        titleEl.blur();
+      }
+    });
+  }
+
+  // -------------------------------------------------------------- interactions
+
+  function onCardPointerDown(event, card, el) {
+    if (event.target.closest(".handle")) return;
+    if (event.target.isContentEditable) return;
+    if (event.button !== 0) return;
+
+    if (linkFrom && linkFrom !== card.id) {
+      const from = linkFrom;
+      linkFrom = null;
+      const sourceEl = cardEl(from);
+      if (sourceEl) sourceEl.classList.remove("link-source");
+      event.preventDefault();
+      event.stopPropagation();
+      addEdge(from, card.id);
+      return;
+    }
+
+    if (linkFrom === card.id) {
+      linkFrom = null;
+      el.classList.remove("link-source");
+    }
+
+    selectCard(card.id);
+
+    const startX = event.clientX;
+    const startY = event.clientY;
+    const originX = card.x;
+    const originY = card.y;
+    let moved = false;
+
+    const onMove = (moveEvent) => {
+      const dx = (moveEvent.clientX - startX) / scale;
+      const dy = (moveEvent.clientY - startY) / scale;
+      if (Math.abs(dx) + Math.abs(dy) > 2) moved = true;
+      card.x = originX + dx;
+      card.y = originY + dy;
+      el.style.left = card.x + "px";
+      el.style.top = card.y + "px";
+      renderEdges();
+      moveEvent.preventDefault();
+    };
+
+    const onUp = () => {
+      document.removeEventListener("pointermove", onMove);
+      document.removeEventListener("pointerup", onUp);
+      el.classList.remove("dragging");
+      if (moved) {
+        card.x = Math.round(card.x);
+        card.y = Math.round(card.y);
+        el.style.left = card.x + "px";
+        el.style.top = card.y + "px";
+        renderEdges();
+      }
+    };
+
+    el.classList.add("dragging");
+    document.addEventListener("pointermove", onMove);
+    document.addEventListener("pointerup", onUp, { once: true });
+  }
+
+  function beginLink(from, event) {
+    const temp = document.createElementNS(NS, "path");
+    temp.setAttribute("class", "temp-edge");
+    edgeGroup.appendChild(temp);
+
+    let targetEl = null;
+
+    const onMove = (moveEvent) => {
+      const point = toWorld(moveEvent);
+      const start = borderPoint(from, point);
+      temp.setAttribute("d", "M " + start.x + " " + start.y + " L " + point.x + " " + point.y);
+
+      const under = document.elementFromPoint(moveEvent.clientX, moveEvent.clientY);
+      const cardUnder = under && under.closest ? under.closest(".card") : null;
+      const nextTarget = cardUnder && cardUnder.dataset.id !== from.id ? cardUnder : null;
+
+      if (targetEl && targetEl !== nextTarget) targetEl.classList.remove("link-target");
+      targetEl = nextTarget;
+      if (targetEl) targetEl.classList.add("link-target");
+    };
+
+    const onUp = (upEvent) => {
+      document.removeEventListener("pointermove", onMove);
+      temp.remove();
+      if (targetEl) targetEl.classList.remove("link-target");
+
+      const under = document.elementFromPoint(upEvent.clientX, upEvent.clientY);
+      const cardUnder = under && under.closest ? under.closest(".card") : null;
+      if (cardUnder && cardUnder.dataset.id !== from.id) {
+        addEdge(from.id, cardUnder.dataset.id);
+      }
+    };
+
+    onMove(event);
+    document.addEventListener("pointermove", onMove);
+    document.addEventListener("pointerup", onUp, { once: true });
+  }
+
+  function borderPoint(card, point) {
+    const cx = card.x + card.w / 2;
+    const cy = card.y + card.h / 2;
+    const dx = point.x - cx;
+    const dy = point.y - cy;
+    if (Math.abs(dx) >= Math.abs(dy)) {
+      return { x: dx >= 0 ? card.x + card.w : card.x, y: cy };
+    }
+    return { x: cx, y: dy >= 0 ? card.y + card.h : card.y };
+  }
+
+  function toWorld(event) {
+    const rect = stage.getBoundingClientRect();
+    return {
+      x: (event.clientX - rect.left - panX) / scale,
+      y: (event.clientY - rect.top - panY) / scale
+    };
+  }
+
+  // ------------------------------------------------------------------- zoom
+
+  function applyTransform(animate) {
+    world.style.transition = animate ? "transform 240ms cubic-bezier(.2,.6,.2,1)" : "none";
+    world.style.transform = "translate(" + panX + "px, " + panY + "px) scale(" + scale + ")";
+  }
+
+  function updateZoomLabel() {
+    zoomLabel.textContent = Math.round(scale * 100) + " %";
+  }
+
+  function inspectorOpen() {
+    return inspectorCard.classList.contains("open") || inspectorEdge.classList.contains("open");
+  }
+
+  function fitView() {
+    const rect = stage.getBoundingClientRect();
+    const inset = inspectorOpen() ? 360 : 80;
+    const availW = Math.max(360, rect.width - inset);
+    const bounds = { x: 60, y: 95, w: 820, h: 350 };
+    scale = clamp(
+      Math.min(1.15, (availW - 40) / bounds.w, (rect.height - 80) / bounds.h),
+      0.45,
+      1.15
+    );
+    panX = availW / 2 - (bounds.x + bounds.w / 2) * scale;
+    panY = rect.height / 2 - (bounds.y + bounds.h / 2) * scale;
+    applyTransform(true);
+    updateZoomLabel();
+  }
+
+  function zoomAt(clientX, clientY, factor) {
+    const rect = stage.getBoundingClientRect();
+    const cx = clientX - rect.left;
+    const cy = clientY - rect.top;
+    const worldX = (cx - panX) / scale;
+    const worldY = (cy - panY) / scale;
+    scale = clamp(scale * factor, 0.4, 2.4);
+    panX = cx - worldX * scale;
+    panY = cy - worldY * scale;
+    applyTransform(false);
+    updateZoomLabel();
+  }
+
+  function zoomBy(factor) {
+    const rect = stage.getBoundingClientRect();
+    const inset = inspectorOpen() ? 360 : 80;
+    const cx = (rect.width - inset) / 2;
+    const cy = rect.height / 2;
+    zoomAt(rect.left + cx, rect.top + cy, factor);
+  }
+
+  function focusCard(id) {
+    const card = getCard(id);
+    if (!card) return;
+    const rect = stage.getBoundingClientRect();
+    const availW = Math.max(360, rect.width - 360);
+    scale = clamp(Math.max(scale, 1.08), 0.45, 1.6);
+    panX = availW / 2 - (card.x + card.w / 2) * scale;
+    panY = rect.height / 2 - (card.y + card.h / 2) * scale;
+    applyTransform(true);
+    updateZoomLabel();
+    crumbCurrent.textContent = card.title;
+    toast("Entrer dans « " + card.title + " » — le niveau change, la carte reste.");
+  }
+
+  function resetView() {
+    crumbCurrent.textContent = "Portefeuille Sinistre";
+    fitView();
+  }
+
+  // ---------------------------------------------------------------- palette
+
+  function createFromPalette(type) {
+    const rect = stage.getBoundingClientRect();
+    const availW = Math.max(360, rect.width - 360);
+    const cx = availW / 2;
+    const cy = rect.height / 2;
+    const point = {
+      x: (cx - panX) / scale - 95,
+      y: (cy - panY) / scale - 44
+    };
+    closePalette();
+    addCard({ x: point.x, y: point.y, type: type }, true);
+  }
+
+  function paletteItemCreateHtml(item) {
+    const config = TYPES[item.type] || TYPES["Objet"];
+    return '<div class="palette-item" data-action="create" data-type="' + esc(item.type) + '">' +
+      '<span class="pi-icon" style="background:' + config.bg + ';color:' + config.color + '">' + esc(config.icon) + '</span>' +
+      '<span class="pi-text"><strong>' + esc(item.label) + '</strong><small>' + esc(item.desc) + '</small></span>' +
+      '<span class="pi-key">↵</span>' +
+    '</div>';
+  }
+
+  function paletteItemGotoHtml(card) {
+    const config = TYPES[card.type] || TYPES["Objet"];
+    return '<div class="palette-item" data-action="goto" data-id="' + esc(card.id) + '">' +
+      '<span class="pi-icon" style="background:' + config.bg + ';color:' + config.color + '">' + esc(config.icon) + '</span>' +
+      '<span class="pi-text"><strong>' + esc(card.title) + '</strong><small>' + esc(card.type) + ' · aller à l’objet</small></span>' +
+      '<span class="pi-key">→</span>' +
+    '</div>';
+  }
+
+  function renderPalette(query) {
+    const q = (query || "").trim().toLowerCase();
+    const creates = CREATE_ITEMS.filter((item) =>
+      (item.label + " " + item.desc).toLowerCase().includes(q)
+    );
+    const existing = cards.filter((card) =>
+      (card.title + " " + card.type).toLowerCase().includes(q)
+    );
+
+    let html = "";
+    if (creates.length) {
+      html += '<div class="palette-group">Créer</div>';
+      html += creates.map(paletteItemCreateHtml).join("");
+    }
+    if (existing.length) {
+      html += '<div class="palette-group">Aller à</div>';
+      html += existing.map(paletteItemGotoHtml).join("");
+    }
+    if (!html) html = '<div class="palette-empty">Aucun résultat.</div>';
+
+    paletteList.innerHTML = html;
+    paletteItems = Array.from(paletteList.querySelectorAll(".palette-item"));
+    paletteIndex = 0;
+    setPaletteActive(0);
+  }
+
+  function setPaletteActive(index) {
+    if (!paletteItems.length) return;
+    paletteItems.forEach((item) => item.classList.remove("active"));
+    paletteIndex = ((index % paletteItems.length) + paletteItems.length) % paletteItems.length;
+    const active = paletteItems[paletteIndex];
+    active.classList.add("active");
+    active.scrollIntoView({ block: "nearest" });
+  }
+
+  function openPalette() {
+    cancelLink();
+    closeLayers();
+    palette.classList.add("open");
+    paletteInput.value = "";
+    renderPalette("");
+    window.requestAnimationFrame(() => paletteInput.focus());
+  }
+
+  function closePalette() {
+    palette.classList.remove("open");
+  }
+
+  function openLayers() {
+    layersPanel.classList.add("open");
+    layersBtn.setAttribute("aria-expanded", "true");
+  }
+
+  function closeLayers() {
+    layersPanel.classList.remove("open");
+    layersBtn.setAttribute("aria-expanded", "false");
+  }
+
+  // ------------------------------------------------------------------ initial
+
+  const INITIAL_CARDS = [
+    { id: "c1", type: "Produit", title: "Sinistre", x: 110, y: 150, w: 190, owner: "Indemnisation", status: "En run", signal: true },
+    { id: "c2", type: "Produit", title: "Souscription", x: 110, y: 280, w: 190, owner: "Underwriting", status: "En run", signal: false },
+    { id: "c3", type: "Application", title: "Sinistre API", x: 390, y: 150, w: 190, owner: "Plateforme", status: "En run", signal: false },
+    { id: "c4", type: "Application", title: "Paiement", x: 390, y: 280, w: 190, owner: "Paiements", status: "En run", signal: true },
+    { id: "c5", type: "Équipe", title: "Indemnisation", x: 680, y: 110, w: 170, owner: "—", status: "—", signal: false },
+    { id: "c6", type: "Capacité", title: "Gestion du sinistre", x: 680, y: 235, w: 200, owner: "Indemnisation", status: "Maturité 3", signal: false },
+    { id: "c7", type: "Infrastructure", title: "Cluster Azure", x: 680, y: 360, w: 190, owner: "Plateforme", status: "Production", signal: false }
+  ];
+
+  const INITIAL_EDGES = [
+    { id: "e1", from: "c1", to: "c3", kind: "interface", label: "Sinistre API v2", version: "2.1.0", status: "Active" },
+    { id: "e2", from: "c2", to: "c3", kind: "interface", label: "Sinistre API v2", version: "2.1.0", status: "Active" },
+    { id: "e3", from: "c3", to: "c4", kind: "interface", label: "Paiement v1", version: "1.4.0", status: "Active" },
+    { id: "e4", from: "c4", to: "c7", kind: "deployment", label: "déployé sur", version: "—", status: "Production" }
+  ];
+
+  function init() {
+    INITIAL_CARDS.forEach((card) => {
+      const copy = Object.assign({}, card);
+      cards.push(copy);
+      renderCard(copy);
+    });
+    seq = cards.reduce((max, card) => Math.max(max, Number(String(card.id).replace(/^c/, "")) || 0), 0);
+    edges = INITIAL_EDGES.map((edge) => Object.assign({}, edge));
+    syncCardSizes();
+    renderEdges();
+    fitView();
+
+    // Une sélection initiale serait déjà du texte. On laisse la carte respirer.
+    clearSelection();
+  }
+
+  // ------------------------------------------------------------------ events
+
+  inspTitle.addEventListener("input", () => {
+    if (!selected || selected.kind !== "card") return;
+    const card = getCard(selected.id);
+    if (!card) return;
+    card.title = inspTitle.value.trim() || "Sans nom";
+    const el = cardEl(card.id);
+    if (el) el.querySelector(".card-title").textContent = card.title;
+    updateCardAria(card, el);
+    renderEdges();
+  });
+
+  inspTitle.addEventListener("blur", () => {
+    if (!selected || selected.kind !== "card") return;
+    if (!inspTitle.value.trim()) {
+      inspTitle.value = "Sans nom";
+      const card = getCard(selected.id);
+      if (card) {
+        card.title = "Sans nom";
+        const el = cardEl(card.id);
+        if (el) el.querySelector(".card-title").textContent = "Sans nom";
+        updateCardAria(card, el);
+        renderEdges();
+      }
+    }
+  });
+
+  inspType.addEventListener("change", () => {
+    if (!selected || selected.kind !== "card") return;
+    const card = getCard(selected.id);
+    if (!card) return;
+    card.type = inspType.value;
+    const el = cardEl(card.id);
+    if (el) applyType(el, card.type);
+    updateCardAria(card, el);
+    showCardInspector(card.id);
+    syncCardSizes();
+  });
+
+  inspOwner.addEventListener("input", () => {
+    if (!selected || selected.kind !== "card") return;
+    const card = getCard(selected.id);
+    if (!card) return;
+    card.owner = inspOwner.value;
+    const el = cardEl(card.id);
+    if (el) el.querySelector(".card-owner").textContent = card.owner || "Sans propriétaire";
+    syncCardSizes();
+  });
+
+  inspStatus.addEventListener("input", () => {
+    if (!selected || selected.kind !== "card") return;
+    const card = getCard(selected.id);
+    if (!card) return;
+    card.status = inspStatus.value;
+    const el = cardEl(card.id);
+    if (el) el.querySelector(".card-status").textContent = card.status;
+    syncCardSizes();
+  });
+
+  inspLink.addEventListener("click", () => {
+    if (!selected || selected.kind !== "card") return;
+    const card = getCard(selected.id);
+    if (!card) return;
+    linkFrom = card.id;
+    const el = cardEl(card.id);
+    if (el) el.classList.add("link-source");
+    toast("Choisissez une seconde carte pour créer l'interface.");
+  });
+
+  inspEnter.addEventListener("click", () => {
+    if (selected && selected.kind === "card") focusCard(selected.id);
+  });
+
+  inspOpen.addEventListener("click", () => {
+    if (!selected || selected.kind !== "card") return;
+    const card = getCard(selected.id);
+    toast("La fiche de « " + (card ? card.title : "l'objet") + " » s'ouvrirait ici — le canevas reste derrière.");
+  });
+
+  inspClose.addEventListener("click", clearSelection);
+
+  edgeTitle.addEventListener("input", () => {
+    if (!selected || selected.kind !== "edge") return;
+    const edge = getEdge(selected.id);
+    if (!edge) return;
+    edge.label = edgeTitle.value.trim() || "Nouvelle interface";
+    renderEdges();
+  });
+
+  edgeQualify.addEventListener("click", () => {
+    if (!selected || selected.kind !== "edge") return;
+    const edge = getEdge(selected.id);
+    if (!edge) return;
+    edge.draft = false;
+    edge.label = edgeTitle.value.trim() || "Interface";
+    edge.version = "0.1.0";
+    edge.status = "Active";
+    showEdgeInspector(edge.id);
+    renderEdges();
+    toast("Interface qualifiée. Le reste vit dans la fiche.");
+  });
+
+  edgeConsumers.addEventListener("click", () => {
+    toast("Les consommateurs s'ouvriraient dans le panneau de la route.");
+  });
+
+  edgeOpen.addEventListener("click", () => {
+    toast("La fiche de l'interface s'ouvrirait ici — la carte reste derrière.");
+  });
+
+  edgeClose.addEventListener("click", clearSelection);
+
+  searchBtn.addEventListener("click", openPalette);
+
+  layersBtn.addEventListener("click", (event) => {
+    event.stopPropagation();
+    if (layersPanel.classList.contains("open")) closeLayers();
+    else openLayers();
+  });
+
+  layersPanel.addEventListener("change", (event) => {
+    const input = event.target.closest("input[data-layer]");
+    if (!input) return;
+    stage.classList.toggle("show-" + input.dataset.layer, input.checked);
+    syncCardSizes();
+  });
+
+  brand.addEventListener("click", (event) => {
+    event.preventDefault();
+    resetView();
+  });
+
+  crumbRoot.addEventListener("click", (event) => {
+    event.preventDefault();
+    resetView();
+  });
+
+  hintClose.addEventListener("click", dismissHint);
+
+  document.getElementById("zoom-out").addEventListener("click", () => zoomBy(0.85));
+  document.getElementById("zoom-in").addEventListener("click", () => zoomBy(1.18));
+  document.getElementById("zoom-fit").addEventListener("click", resetView);
+
+  stage.addEventListener("wheel", (event) => {
+    if (event.target.closest(".inspector") || event.target.closest(".palette") || event.target.closest(".layers")) return;
+    event.preventDefault();
+    zoomAt(event.clientX, event.clientY, Math.exp(-event.deltaY * 0.0015));
+  }, { passive: false });
+
+  stage.addEventListener("pointerdown", (event) => {
+    if (event.target.closest(".card") ||
+        event.target.closest(".edge") ||
+        event.target.closest(".inspector") ||
+        event.target.closest(".palette") ||
+        event.target.closest(".layers") ||
+        event.target.closest(".zoom") ||
+        event.target.closest(".hint")) {
+      return;
+    }
+    clearSelection();
+    closeLayers();
+    closePalette();
+  });
+
+  stage.addEventListener("dblclick", (event) => {
+    if (event.target.closest(".card") ||
+        event.target.closest(".edge") ||
+        event.target.closest(".inspector") ||
+        event.target.closest(".palette") ||
+        event.target.closest(".layers") ||
+        event.target.closest(".zoom") ||
+        event.target.closest(".hint")) {
+      return;
+    }
+    event.preventDefault();
+    const point = toWorld(event);
+    addCard({ x: point.x - 95, y: point.y - 44, type: "Produit" }, true);
+  });
+
+  paletteInput.addEventListener("input", () => renderPalette(paletteInput.value));
+
+  paletteInput.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      event.stopPropagation();
+      closePalette();
+      return;
+    }
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setPaletteActive(paletteIndex + 1);
+      return;
+    }
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+      setPaletteActive(paletteIndex - 1);
+      return;
+    }
+    if (event.key === "Enter") {
+      event.preventDefault();
+      const active = paletteItems[paletteIndex];
+      if (active) active.click();
+    }
+  });
+
+  paletteList.addEventListener("click", (event) => {
+    const item = event.target.closest(".palette-item");
+    if (!item) return;
+    if (item.dataset.action === "create") {
+      createFromPalette(item.dataset.type);
+      return;
+    }
+    if (item.dataset.action === "goto") {
+      const id = item.dataset.id;
+      closePalette();
+      selectCard(id);
+      focusCard(id);
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    const inField = event.target && (event.target.tagName === "INPUT" || event.target.tagName === "SELECT" || event.target.isContentEditable);
+
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+      event.preventDefault();
+      openPalette();
+      return;
+    }
+    if (event.key === "Escape") {
+      closePalette();
+      closeLayers();
+      clearSelection();
+      return;
+    }
+    if (event.key === "F2" && !inField && selected && selected.kind === "card") {
+      event.preventDefault();
+      inspTitle.focus();
+      inspTitle.select();
+    }
+  });
+
+  init();
+})();
+</script>
+</body>
+</html>

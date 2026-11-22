@@ -2,13 +2,13 @@
 
 | | |
 |---|---|
-| Statut | **Accepté** — **partiellement remplacé par ADR-023** (le point d'entrée est la Carte ; l'Atelier reste la surface d'édition) |
+| Statut | **Accepté** — **partiellement remplacé par ADR-023/024/025** (l'accueil est le portefeuille de produits ; l'Atelier reste la surface d'édition) |
 | Date | 18 novembre 2026 |
 | Remplace | Corrige l’interprétation du § « Modes MODÉLISER et VISUALISER » de `functional-specifications.md` et le plan de routes §15.2 de `technical-specifications.md` |
 | Portée | Expérience utilisateur, routage, surface de création, modèle de vue |
 | Décisions liées | ADR-008 (rendu SVG), ADR-017 (proxy LLM), ADR-020 (virtualisation du canvas), ADR-011 (snapshot IndexedDB) |
 
-> **Avenant ADR-023 (18/11/2026).** Cet ADR reste valide pour la **surface d'édition** : création depuis la vue, formalisation progressive, deux postures, commandes validées. Son §1 (l'Atelier est le point d'entrée) et son §4 (la vue a une intention comme préalable) sont remplacés : le point d'entrée est la **Carte de l'entreprise**, et les intentions deviennent des lentilles ou des actions de détail. Voir `ADR-023-produit-carte-entreprise.md`.
+> **Avenant ADR-023 (18/11/2026).** Cet ADR reste valide pour la **surface d'édition** : création depuis la vue, formalisation progressive, deux postures, commandes validées. Son §1 (l’Atelier est le point d’entrée) et son §4 (la vue a une intention comme préalable) sont remplacés : l’accueil est le **portefeuille de produits**, la **Carte de l’entreprise** est sur `/map`, et les intentions deviennent des lentilles ou des actions de détail. Voir `ADR-023-produit-carte-entreprise.md` et `ADR-025-accueil-portefeuille-produits.md`.
 
 ## Contexte
 
@@ -79,6 +79,10 @@ Toute mutation passe par un `ViewCommand` validé par `archifier-core`. L’inte
 | Le cadrage est restauré depuis un lien partagé | `shared_link_restores_framing` |
 | Le curseur temporel ne modifie pas la géométrie | `temporal_cursor_does_not_mutate_layout` |
 | L’inventaire est absent du parcours de création | `inventory_is_not_in_creation_path` |
+
+> **Depuis ADR-023/024/025**, l'invariant d'accueil est porté par
+> `home_opens_product_catalog` et `map_opens_enterprise_map` : `/` est le portefeuille de
+> produits, `/map` est la carte. `home_opens_atelier_not_inventory` ne s'applique plus.
 
 ## Ce que cet ADR ne couvre pas
 

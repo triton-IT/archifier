@@ -1,4 +1,4 @@
-//! `/` — Atelier : dernière vue éditée, sinon écran « Nouvelle vue » (VD-01).
+//! `/atelier` — Atelier : dernière vue éditée, sinon écran « Nouvelle vue » (VD-01).
 
 use crate::design::commands;
 use crate::i18n::t;

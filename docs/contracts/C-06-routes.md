@@ -8,7 +8,7 @@
 | **Sources** | §15.2, §15.4 ; FR-040, FR-048, FR-051 ; VD-01, VD-13, VD-18, VD-19 ; ADR-012 |
 | **Dépend de** | C-03 (`ViewIntent`), C-02 (`ViewFraming`) |
 
-> **Avenant ADR-023 (18/11/2026).** Le chemin `/` décrit ci-dessous comme « Atelier » devient la **Carte de l'entreprise**. L'Atelier reste accessible par `/design/:id` et `/view/diagrams/:id`. Les routes de la carte (`/map`, `/products/:id`, `/teams/:id`, `/value-streams/:id`, `/capabilities/:id`, `/applications/:id`, `/infrastructure/:id`, `/business-domains/:id`, `/portfolios/:id`) et leurs paramètres sont fixés par **C-10**. Les alias de domaine restent résolvables. Aucune route existante n'est supprimée.
+> **Avenant ADR-023 (18/11/2026), ADR-024 et ADR-025 (21/11/2026).** Le chemin `/` décrit ci-dessous comme « Atelier » devient le **portefeuille de produits** (`ProductQuery::home()`, ADR-025). La carte est servie par `/map` avec `MapQuery::map_default()` (scope et niveau Entreprise, lentille primaire `PRODUCT`). L'Atelier reste accessible par `/atelier`, `/design/:id` et `/view/diagrams/:id`. Les routes de la carte (`/map`, `/products/:id`, `/teams/:id`, `/value-streams/:id`, `/capabilities/:id`, `/applications/:id`, `/infrastructure/:id`, `/business-domains/:id`, `/portfolios/:id`) et leurs paramètres sont fixés par **C-10**. Les alias de domaine restent résolvables. Aucune route existante n'est supprimée.
 
 ## 1. Décision de transport : routage par fragment (inchangé)
 
@@ -32,7 +32,10 @@ Conséquences :
 
 | Chemin logique | Fragment | Écran | Posture | Source de vérité |
 |---|---|---|---|---|
-| `/` | `#/` | **Atelier** : dernière vue éditée, sinon « Nouvelle vue » | conception | `localStorage: archifier:last_view` |
+| `/` | `#/` | **Portefeuille de produits**, filtrable (`ProductQuery::home()`) | lecture | C-10, ADR-025 |
+| `/products` | `#/products` | Alias du portefeuille de produits | lecture | C-10, ADR-025 |
+| `/map` | `#/map` | **Carte de l'entreprise** (`MapQuery::map_default()`) | lecture | C-10, ADR-023/024 |
+| `/atelier` | `#/atelier` | Atelier : dernière vue éditée, sinon « Nouvelle vue » | conception | `localStorage: archifier:last_view` |
 | `/design/new?intent=` | `#/design/new?intent=APPLICATION_LANDSCAPE` | Création depuis une intention (ou les 7 si absente) | conception | C-03, C-05 |
 | `/design/:id` | `#/design/:id` | Atelier, édition | **conception** | C-01, C-02 |
 | `/view/diagrams/:id` | `#/view/diagrams/:id` | Atelier, lecture partagée | **lecture** | C-01, C-02 |
@@ -58,7 +61,9 @@ Conséquences :
 | `/_design` | `#/_design` | Galerie du design system (interne) | — | VD-23 |
 | `/_design/...` | `#/_design/<section>` | États, primitives, tokens | — | VD-23 |
 
-Routes **supprimées** : aucune. `#/` change de contenu (Atelier), pas de nom.
+Routes **supprimées** : aucune. `#/` devient le **portefeuille de produits** ; la carte se
+déplace sur `#/map`. L'Atelier se déplace sur `#/atelier` et conserve `#/design/:id` /
+`#/view/diagrams/:id`.
 
 ## 3. Type de route (contrat)
 
@@ -145,15 +150,17 @@ n'est **pas** une erreur 404. Seul un identifiant inexistant produit `LINK-001`.
 
 ## 6. Règles de rendu de la coque
 
-- `/` ne rend **jamais** une liste de domaines, un tableau de bord ni un inventaire.
-  Test bloquant : `home_opens_atelier_not_inventory`.
+- `/` ne rend **jamais** une liste de domaines, un tableau de bord ni un inventaire : c'est
+  le portefeuille de produits. Tests bloquants : `home_opens_product_catalog`,
+  `home_deep_link_restores_product_filters`.
 - La Bibliothèque et le Contrôle sont accessibles par la barre latérale, jamais imposés.
 - La coque ne contient plus « Domaines » comme entrée de navigation principale ; les
-  entrées sont **Atelier · Bibliothèque · Contrôle · Recherche · Réglages**.
+  entrées principales sont **Produits · Carte · Atelier**, puis **Bibliothèque · Contrôle ·
+  Recherche · Réglages**.
 - La bascule conception ↔ lecture est un **geste de barre d'outils** qui navigue de
   `#/design/:id` à `#/view/diagrams/:id` (et retour) en **sérialisant le cadrage courant**
   dans le lien. La sélection est conservée en mémoire de session par `view_id`.
-- L'écran introuvable propose « Retour à l'Atelier » et « Rechercher », jamais « Retour
+- L'écran introuvable propose « Retour à l'accueil » et « Rechercher », jamais « Retour
   aux domaines ».
 - `NotFound` conserve la chaîne demandée dans `detail` pour le diagnostic, jamais dans le
   titre affiché.
@@ -175,9 +182,9 @@ déterministes (test `share_link_is_reproducible`).
 
 | Test | Prouve |
 |---|---|
-| `home_opens_atelier_not_inventory` | VD-01, ADR-022 |
-| `home_opens_last_edited_view` | VD-01 |
-| `home_without_last_view_shows_seven_intents` | VD-01, VD-14 |
+| `home_opens_product_catalog` | ADR-025 : `/` ouvre le portefeuille de produits, pas l'Atelier ni un inventaire |
+| `home_deep_link_restores_product_filters` | ADR-025 : `#/?team=…&lifecycle=…&sort=…` restaure les filtres |
+| `map_opens_enterprise_map` | ADR-023/025 : `/map` ouvre la carte en lecture Produits |
 | `design_route_parses` / `design_new_route_parses` | VD-01 |
 | `model_diagrams_alias_maps_to_design` | VD-01 |
 | `view_domains_alias_maps_to_library_domain` | VD-01 |
@@ -189,4 +196,4 @@ déterministes (test `share_link_is_reproducible`).
 | `unknown_focus_node_is_ignored_not_fatal` | LINK-003 |
 | `posture_switch_preserves_framing_and_selection` | FR-048 |
 | `library_and_control_are_separate_from_atelier` | VD-01, VD-15, VD-16 |
-| `not_found_offers_atelier` | §15.4 |
+| `not_found_offers_home` | §15.4 |

@@ -1,13 +1,18 @@
-//! Fiche d'un élément : propriétés, relations, usages, documentation, historique.
+//! Fiche d'un élément : contexte système, propriétés, relations, hiérarchie,
+//! documentation et historique.
 
 use crate::components::{
-    notation_label, relation_label, Card, Empty, ExportMarkdownButton, LifecycleBadge, Markdown,
+    notation_label, relation_label, Empty, ExportMarkdownButton, LifecycleBadge, Markdown,
     RevisionCompare,
+};
+use crate::focus::{
+    build_focus_context, focus_context_card, focus_layout, panel, FocusGraph, FocusLink, FocusNode,
 };
 use crate::state::{input_value, parse_object_id, repo, App};
 use archifier_core::ObjectId;
 use archifier_repo::ElementFilter;
 use leptos::prelude::*;
+use std::collections::BTreeMap;
 
 #[component]
 pub fn ElementView(app: App, id: ObjectId) -> impl IntoView {
@@ -50,7 +55,7 @@ pub fn ElementView(app: App, id: ObjectId) -> impl IntoView {
                 app.refresh();
             }
             Err(error) => {
-                set_hierarchy_error.set(Some(format!("{} — {}", error.message, error.code)));
+                set_hierarchy_error.set(Some(format!("{} - {}", error.message, error.code)));
                 app.fail(&error);
             }
         }
@@ -64,95 +69,168 @@ pub fn ElementView(app: App, id: ObjectId) -> impl IntoView {
             app.refresh();
         }
         Err(error) => {
-            set_hierarchy_error.set(Some(format!("{} — {}", error.message, error.code)));
+            set_hierarchy_error.set(Some(format!("{} - {}", error.message, error.code)));
             app.fail(&error);
         }
     };
 
     view! {
-        <main class="page">
+        <main class="page entity-page entity-focus-page">
             {move || match detail() {
                 None => view! { <Empty text="Élément introuvable.".into() /> }.into_any(),
                 Some(view_model) => {
                     let element = view_model.element.clone();
                     let object = element.object.clone();
                     let notation = element.notation;
-                    view! {
-                        <header class="page-head">
-                            <div class="crumb">
-                                <a href=format!("#/view/domains/{}", object.responsible_domain_id)>
-                                    {view_model.domain_name.clone()}
-                                </a>
-                                <span>" / élément"</span>
-                            </div>
-                            <div class="title-row">
-                                <h1>{object.name.clone()}</h1>
-                                <LifecycleBadge lifecycle=object.lifecycle />
-                            </div>
-                            <p class="muted">
-                                {element.metaclass.clone()}
-                                {" · "}
-                                {notation_label(element.notation)}
-                                {" · révision "}
-                                {object.revision}
-                            </p>
-                        </header>
+                    let hierarchy = repo().hierarchy(id);
 
-                        <div class="toolbar">
-                            <ExportMarkdownButton app=app id=id domain=false />
-                            <a class="btn" href=format!("#/graph/{}", object.id)>
-                                "Graphe de dépendances"
-                            </a>
-                        </div>
+                    // Contexte système : l'élément au centre, ses relations
+                    // entrantes et sortantes, son parent et ses enfants.
+                    let mut left_nodes: BTreeMap<ObjectId, FocusNode> = BTreeMap::new();
+                    let mut right_nodes: BTreeMap<ObjectId, FocusNode> = BTreeMap::new();
+                    let mut links: Vec<FocusLink> = Vec::new();
+                    for relation in &view_model.incoming {
+                        let label = relation_label(notation, &relation.relation_type);
+                        left_nodes.entry(relation.other_id).or_insert(FocusNode {
+                            id: relation.other_id,
+                            label: relation.other_name.clone(),
+                            sublabel: format!("{} · {label}", relation.other_type.label()),
+                            color_key: "external".into(),
+                            route: relation.href.clone(),
+                        });
+                        links.push(FocusLink {
+                            from: relation.other_id,
+                            to: object.id,
+                            label,
+                        });
+                    }
+                    for relation in &view_model.outgoing {
+                        let label = relation_label(notation, &relation.relation_type);
+                        if !left_nodes.contains_key(&relation.other_id) {
+                            right_nodes.entry(relation.other_id).or_insert(FocusNode {
+                                id: relation.other_id,
+                                label: relation.other_name.clone(),
+                                sublabel: format!("{} · {label}", relation.other_type.label()),
+                                color_key: "external".into(),
+                                route: relation.href.clone(),
+                            });
+                        }
+                        links.push(FocusLink {
+                            from: object.id,
+                            to: relation.other_id,
+                            label,
+                        });
+                    }
+                    if let Ok(hierarchy) = &hierarchy {
+                        if let Some(parent) = &hierarchy.parent {
+                            left_nodes.entry(parent.id).or_insert(FocusNode {
+                                id: parent.id,
+                                label: parent.name.clone(),
+                                sublabel: "Élément parent".into(),
+                                color_key: "external".into(),
+                                route: parent.href.clone(),
+                            });
+                            links.push(FocusLink {
+                                from: parent.id,
+                                to: object.id,
+                                label: "parent".into(),
+                            });
+                        }
+                        for child in &hierarchy.children {
+                            if !left_nodes.contains_key(&child.object.id) {
+                                right_nodes.entry(child.object.id).or_insert(FocusNode {
+                                    id: child.object.id,
+                                    label: child.object.name.clone(),
+                                    sublabel: "Élément enfant".into(),
+                                    color_key: "external".into(),
+                                    route: child.object.href.clone(),
+                                });
+                            }
+                            links.push(FocusLink {
+                                from: object.id,
+                                to: child.object.id,
+                                label: "enfant".into(),
+                            });
+                        }
+                    }
+                    let left: Vec<FocusNode> = left_nodes.into_values().collect();
+                    let right: Vec<FocusNode> = right_nodes.into_values().collect();
+                    let relation_count = view_model.incoming.len() + view_model.outgoing.len();
+                    let usage_count = view_model.usages.diagrams.len()
+                        + view_model.usages.stories.len()
+                        + view_model.usages.interfaces.len();
+                    let context = build_focus_context(FocusGraph {
+                        center_id: object.id,
+                        center_label: object.name.clone(),
+                        center_meta: format!(
+                            "{} · {} · révision {}",
+                            element.metaclass,
+                            notation_label(notation),
+                            object.revision
+                        ),
+                        center_badge: Some(if relation_count <= 1 {
+                            format!("{relation_count} relation")
+                        } else {
+                            format!("{relation_count} relations")
+                        }),
+                        empty_label: None,
+                        inside: Vec::new(),
+                        left_label: (!left.is_empty()).then_some("AMONT".into()),
+                        left,
+                        right_label: (!right.is_empty()).then_some("AVAL".into()),
+                        right,
+                        links,
+                        center_legend: "Élément".into(),
+                        inside_legend: None,
+                        around_legend: Some("Objet lié".into()),
+                    });
+                    let context_summary = format!(
+                        "{} · {} · {}",
+                        if relation_count <= 1 {
+                            format!("{relation_count} relation")
+                        } else {
+                            format!("{relation_count} relations")
+                        },
+                        if usage_count <= 1 {
+                            format!("{usage_count} usage")
+                        } else {
+                            format!("{usage_count} usages")
+                        },
+                        format!(
+                            "{} élément(s) lié(s)",
+                            context.around_count()
+                        )
+                    );
+                    let context_card = focus_context_card(
+                        context_summary,
+                        context,
+                        Some((format!("#/graph/{}", object.id), "Graphe de dépendances".into())),
+                    );
 
-                        <div class="two-cols">
-                            <Card title="Propriétés".into()>
-                                {if element.semantic_properties.is_empty() {
-                                    view! { <Empty text="Aucune propriété déclarée.".into() /> }.into_any()
-                                } else {
-                                    view! {
-                                        <dl class="props">
-                                            {element.semantic_properties.clone().into_iter().map(|(key, value)| view! {
-                                                <div>
-                                                    <dt>{key}</dt>
-                                                    <dd>{value.as_str().unwrap_or(&value.to_string()).to_string()}</dd>
-                                                </div>
-                                            }).collect_view()}
-                                        </dl>
-                                    }.into_any()
-                                }}
-                            </Card>
-                            <Card title="Relations".into()>
-                                {if view_model.outgoing.is_empty() && view_model.incoming.is_empty() {
-                                    view! { <Empty text="Aucune relation.".into() /> }.into_any()
-                                } else {
-                                    view! {
-                                        <div class="relations">
-                                            <h3>"Sortantes"</h3>
-                                            {view_model.outgoing.clone().into_iter().map(|rel| view! {
-                                                <div class="relation">
-                                                    <span class="rel-type">{relation_label(notation, &rel.relation_type)}</span>
-                                                    <a href=rel.href>{rel.other_name.clone()}</a>
-                                                </div>
-                                            }).collect_view()}
-                                            <h3>"Entrantes"</h3>
-                                            {view_model.incoming.clone().into_iter().map(|rel| view! {
-                                                <div class="relation">
-                                                    <a href=rel.href>{rel.other_name.clone()}</a>
-                                                    <span class="rel-type">{relation_label(notation, &rel.relation_type)}</span>
-                                                </div>
-                                            }).collect_view()}
-                                        </div>
-                                    }.into_any()
-                                }}
-                            </Card>
-                        </div>
-
-                        <Card title="Hiérarchie".into()>
-                            {match repo().hierarchy(id) {
+                    let left_panels = vec![
+                        panel(
+                            "Propriétés",
+                            if element.semantic_properties.is_empty() {
+                                view! { <Empty text="Aucune propriété déclarée.".into() /> }.into_any()
+                            } else {
+                                view! {
+                                    <dl class="props">
+                                        {element.semantic_properties.clone().into_iter().map(|(key, value)| view! {
+                                            <div>
+                                                <dt>{key}</dt>
+                                                <dd>{value.as_str().unwrap_or(&value.to_string()).to_string()}</dd>
+                                            </div>
+                                        }).collect_view()}
+                                    </dl>
+                                }.into_any()
+                            },
+                        ),
+                        panel(
+                            "Hiérarchie",
+                            {match hierarchy {
                                 Err(error) => view! {
                                     <p class="banner error inline">
-                                        {format!("{} — {}", error.message, error.code)}
+                                        {format!("{} - {}", error.message, error.code)}
                                     </p>
                                 }.into_any(),
                                 Ok(hierarchy) => {
@@ -230,7 +308,7 @@ pub fn ElementView(app: App, id: ObjectId) -> impl IntoView {
                                                     set_hierarchy_error.set(None);
                                                 }
                                             >
-                                                <option value="">"— Aucun parent —"</option>
+                                                <option value="">"- Aucun parent -"</option>
                                                 {candidates.into_iter()
                                                     .filter(|candidate| candidate.id != id)
                                                     .map(|candidate| {
@@ -261,69 +339,138 @@ pub fn ElementView(app: App, id: ObjectId) -> impl IntoView {
                                     }.into_any()
                                 }
                             }}
-                        </Card>
+                            .into_any(),
+                        ),
+                    ];
 
-                        <Card title="Documentation".into()>
-                            <div class="actions">
-                                <button class="btn" on:click=move |_| set_editing.update(|v| *v = !*v)>
-                                    {move || if editing.get() { "Aperçu" } else { "Modifier" }}
-                                </button>
-                            </div>
-                            {move || if editing.get() {
+                    let right_panels = vec![
+                        panel(
+                            "Relations",
+                            if view_model.outgoing.is_empty() && view_model.incoming.is_empty() {
+                                view! { <Empty text="Aucune relation.".into() /> }.into_any()
+                            } else {
                                 view! {
-                                    <div class="editor">
-                                        <textarea
-                                            rows="10"
-                                            prop:value=move || draft.get()
-                                            on:input=move |ev| set_draft.set(input_value(&ev))
-                                            placeholder="Markdown — liens internes : arch://element/01J…"
-                                        ></textarea>
-                                        <div class="actions">
-                                            <button class="btn primary" on:click=move |_| save()>"Enregistrer"</button>
-                                            <button class="btn ghost" on:click=move |_| set_editing.set(false)>"Annuler"</button>
-                                        </div>
+                                    <div class="relations">
+                                        <h3>"Sortantes"</h3>
+                                        {view_model.outgoing.clone().into_iter().map(|rel| view! {
+                                            <div class="relation">
+                                                <span class="rel-type">{relation_label(notation, &rel.relation_type)}</span>
+                                                <a href=rel.href>{rel.other_name.clone()}</a>
+                                            </div>
+                                        }).collect_view()}
+                                        <h3>"Entrantes"</h3>
+                                        {view_model.incoming.clone().into_iter().map(|rel| view! {
+                                            <div class="relation">
+                                                <a href=rel.href>{rel.other_name.clone()}</a>
+                                                <span class="rel-type">{relation_label(notation, &rel.relation_type)}</span>
+                                            </div>
+                                        }).collect_view()}
                                     </div>
                                 }.into_any()
-                            } else {
-                                view! { <Markdown markdown=draft.get() /> }.into_any()
-                            }}
-                        </Card>
-
-                        <div class="two-cols">
-                            <Card title="Utilisé par".into()>
+                            },
+                        ),
+                        panel(
+                            "Utilisé par",
+                            view! {
                                 <ul class="link-list">
-                                    <li><strong>"Vues : "</strong>
+                                    <li>
+                                        <strong>"Vues : "</strong>
                                         {if view_model.usages.diagrams.is_empty() {
                                             view! { <span class="muted">"aucune"</span> }.into_any()
                                         } else {
-                                            view_model.usages.diagrams.clone().into_iter().map(|d| view! {
-                                                <a href=d.href>{d.name.clone()}</a>
+                                            view_model.usages.diagrams.clone().into_iter().map(|diagram| view! {
+                                                <a href=diagram.href>{diagram.name.clone()}</a>
                                             }).collect_view().into_any()
                                         }}
                                     </li>
-                                    <li><strong>"Stories : "</strong>
+                                    <li>
+                                        <strong>"Stories : "</strong>
                                         {if view_model.usages.stories.is_empty() {
                                             view! { <span class="muted">"aucune"</span> }.into_any()
                                         } else {
-                                            view_model.usages.stories.clone().into_iter().map(|s| view! {
-                                                <a href=s.href>{s.name.clone()}</a>
+                                            view_model.usages.stories.clone().into_iter().map(|story| view! {
+                                                <a href=story.href>{story.name.clone()}</a>
                                             }).collect_view().into_any()
                                         }}
                                     </li>
-                                    <li><strong>"Interfaces : "</strong>
+                                    <li>
+                                        <strong>"Interfaces : "</strong>
                                         {if view_model.usages.interfaces.is_empty() {
                                             view! { <span class="muted">"aucune"</span> }.into_any()
                                         } else {
-                                            view_model.usages.interfaces.clone().into_iter().map(|i| view! {
-                                                <a href=i.href>{i.name.clone()}</a>
+                                            view_model.usages.interfaces.clone().into_iter().map(|interface| view! {
+                                                <a href=interface.href>{interface.name.clone()}</a>
                                             }).collect_view().into_any()
                                         }}
                                     </li>
                                 </ul>
-                            </Card>
-                            <RevisionCompare app=app id=id />
-                        </div>
+                            }
+                            .into_any(),
+                        ),
+                        panel(
+                            "Documentation",
+                            view! {
+                                <div class="actions">
+                                    <button class="btn" on:click=move |_| set_editing.update(|value| *value = !*value)>
+                                        {move || if editing.get() { "Aperçu" } else { "Modifier" }}
+                                    </button>
+                                </div>
+                                {move || if editing.get() {
+                                    view! {
+                                        <div class="editor">
+                                            <textarea
+                                                rows="10"
+                                                prop:value=move || draft.get()
+                                                on:input=move |ev| set_draft.set(input_value(&ev))
+                                                placeholder="Markdown - liens internes : arch://element/01J."
+                                            ></textarea>
+                                            <div class="actions">
+                                                <button class="btn primary" on:click=move |_| save()>"Enregistrer"</button>
+                                                <button class="btn ghost" on:click=move |_| set_editing.set(false)>"Annuler"</button>
+                                            </div>
+                                        </div>
+                                    }.into_any()
+                                } else {
+                                    view! { <Markdown markdown=draft.get() /> }.into_any()
+                                }}
+                            }
+                            .into_any(),
+                        ),
+                        view! { <RevisionCompare app=app id=id /> }.into_any(),
+                    ];
 
+                    view! {
+                        <header class="page-head">
+                            <nav class="map-breadcrumb" aria-label="Fil d'Ariane">
+                                <a href=format!("#/view/domains/{}", object.responsible_domain_id)>
+                                    {view_model.domain_name.clone()}
+                                </a>
+                                <span>"›"</span>
+                                <span aria-current="page">{object.name.clone()}</span>
+                            </nav>
+                            <div class="entity-title">
+                                <div>
+                                    <h1>{object.name.clone()}</h1>
+                                    <p class="muted">
+                                        {element.metaclass.clone()}
+                                        {" · "}
+                                        {notation_label(element.notation)}
+                                        {" · révision "}
+                                        {object.revision}
+                                    </p>
+                                </div>
+                                <div class="actions">
+                                    <ExportMarkdownButton app=app id=id domain=false />
+                                    <a class="btn" href=format!("#/graph/{}", object.id)>
+                                        "Graphe de dépendances"
+                                    </a>
+                                </div>
+                            </div>
+                            <p class="muted small">
+                                <LifecycleBadge lifecycle=object.lifecycle />
+                            </p>
+                        </header>
+                        {focus_layout(left_panels, context_card, right_panels)}
                         <p class="muted small mono">
                             {"ID "} {object.id.to_string()}
                             {" · arch://element/"} {object.id.to_string()}

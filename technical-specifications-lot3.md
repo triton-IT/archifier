@@ -9,6 +9,11 @@
 | **Entrées** | `functional-specifications.md`, `technical-specifications.md` §14.4/§15, ADR-022, `docs/contracts/*`, `docs/ui-spec.md`, `backlog-mvp1.md`, `docs/backlog-mvp2.md` |
 | **Complète** | `technical-specifications.md` sans le réécrire : les écarts sont consignés au §2 |
 
+> **Statut historique.** Ce plan décrit le MVP3 livré sous ADR-022, où `/` ouvrait
+> l'Atelier. Depuis ADR-023/024/025, `/` ouvre le **portefeuille de produits**, `/map` ouvre
+> la Carte de l'entreprise ; l'Atelier est accessible par `/atelier`, `/design/:id` et
+> `/view/diagrams/:id`.
+
 ---
 
 ## 1. Objet
@@ -172,7 +177,7 @@ temporel, géométrie inchangée.
 | Dev Inspecteur | `crates/ui/src/inspector/**`, `design/formalize.rs` | fiche objet complète, liens `arch://`, historique, publication assistée |
 | Analyste | `i18n/fr.json`, `docs/acceptance/*.md`, `fixtures/views/*.json` | libellés définitifs, scénarios, données de démo |
 
-**Preuve G3** : `/` ouvre l'Atelier ; les 7 intentions créent une vue ; Bibliothèque et
+**Preuve G3 (MVP3)** : `/` ouvre l'Atelier ; les 7 intentions créent une vue ; Bibliothèque et
 Contrôle séparés ; aucun inventaire au lancement.
 
 ### W4 — Partage (3 agents) → G4
@@ -228,7 +233,7 @@ node tests\e2e\run.mjs            # Playwright sur le build statique
 | G0 | contrats, maquette, 7 modèles, fixtures, squelettes | `docs/contracts/`, `docs/ui-spec.md`, `assets/view-templates/`, `fixtures/views/` |
 | G1 | pose/nom/annulation/restauration, zéro modal | tests `design::*` + E2E `e2e_first_shape` |
 | G2 | 3 composants, 1 frontière, 2 ports, migration temporelle | E2E `e2e_design_grammar` + capture |
-| G3 | `/` Atelier, 7 intentions, espaces séparés | E2E `e2e_home_is_atelier` |
+| G3 (MVP3) | `/` Atelier, 7 intentions, espaces séparés | E2E `e2e_home_is_atelier` |
 | G4 | lien + cadrage, Story, export | E2E `e2e_shared_link`, fichiers exportés |
 | G5 | budgets, a11y, non-régression | rapport testeur |
 | G6 | chaîne < 3 min, docs à jour | rapport recette + `README.md` |

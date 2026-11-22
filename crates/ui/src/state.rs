@@ -73,6 +73,8 @@ pub struct App {
     pub version: RwSignal<u64>,
     pub route: RwSignal<Route>,
     pub toast: RwSignal<Option<Toast>>,
+    /// Palette de création / recherche de la carte (Ctrl/⌘ K).
+    pub map_palette: RwSignal<bool>,
     /// Avis d'écriture reçu d'un autre onglet (dialogue global).
     pub external_write: RwSignal<Option<ExternalWrite>>,
     /// Diff local → distant calculé sur demande (« Comparer »).
@@ -93,6 +95,7 @@ impl App {
             version: RwSignal::new(0),
             route: RwSignal::new(parse_hash(&current_hash())),
             toast: RwSignal::new(None),
+            map_palette: RwSignal::new(false),
             external_write: RwSignal::new(None),
             external_diff: RwSignal::new(None),
             external_note: RwSignal::new(None),
@@ -107,6 +110,28 @@ impl App {
             let _ = window
                 .add_event_listener_with_callback("hashchange", callback.as_ref().unchecked_ref());
             callback.forget();
+
+            // Recherche globale : ⌘K / Ctrl+K ouvre la palette de la carte
+            // lorsque la carte est active ; ailleurs, il ouvre la recherche.
+            let palette = app.map_palette;
+            let shortcut_route = app.route;
+            let shortcut = wasm_bindgen::closure::Closure::<dyn FnMut(web_sys::KeyboardEvent)>::new(
+                move |event: web_sys::KeyboardEvent| {
+                    if (event.meta_key() || event.ctrl_key())
+                        && event.key().eq_ignore_ascii_case("k")
+                    {
+                        event.prevent_default();
+                        if shortcut_route.get().is_map() {
+                            palette.update(|open| *open = !*open);
+                        } else if let Some(window) = web_sys::window() {
+                            let _ = window.location().set_hash("#/search");
+                        }
+                    }
+                },
+            );
+            let _ = window
+                .add_event_listener_with_callback("keydown", shortcut.as_ref().unchecked_ref());
+            shortcut.forget();
         }
         // Avis inter-onglets : un seul abonnement par session de page.
         tabs::bind(app.external_write, app.external_diff, app.external_note);

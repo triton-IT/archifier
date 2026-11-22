@@ -212,7 +212,7 @@ pub fn Design(app: App, id: archifier_core::ObjectId, reading: bool, link: ViewL
     view! {
         <main class="design" tabindex="0" node_ref=main_ref on:keydown=on_key>
             <header class="design-bar">
-                <a class="btn ghost small" href="#/" aria-label=t("nav.atelier")>"←"</a>
+                <a class="btn ghost small" href="#/" aria-label="Retour à l'accueil">"←"</a>
                 <div class="design-title">
                     <h1>{title}</h1>
                     <span class="badge">{t(intent_signal.label_key())}</span>

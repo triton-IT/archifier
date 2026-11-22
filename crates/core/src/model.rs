@@ -4,6 +4,7 @@
 //! la reçoit en paramètre. C'est ce qui rend le moteur testable au déterminisme près.
 
 use crate::ids::ObjectId;
+use crate::map::MapDataset;
 use crate::openapi::ContractFormat;
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
@@ -1051,4 +1052,8 @@ pub struct Dataset {
     /// Instantané JSON par (object_id, revision).
     #[serde(default)]
     pub revisions: BTreeMap<String, BTreeMap<String, Value>>,
+    /// Cible v0.4 : couche native produit/équipe/value stream et ancres de
+    /// carte. Additif : un snapshot MVP3 se charge avec une carte vide.
+    #[serde(default)]
+    pub map: MapDataset,
 }

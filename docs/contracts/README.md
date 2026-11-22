@@ -3,10 +3,10 @@
 | | |
 |---|---|
 | **Document** | Registre des contrats gelés à la porte G0, complété par la cible v0.4 |
-| **Version** | 1.1 — 18 novembre 2026 |
-| **Statut** | **FIGÉ — G0** pour C-01..C-09 ; **C-10 proposé** (ADR-023) |
-| **Entrées** | ADR-022, ADR-023, `functional-specifications.md` (FR-040..081, NFR-021..036), `technical-specifications.md` (§14.4, §15.0..15.6) |
-| **Sortie** | 9 contrats gelés + 1 contrat proposé (C-10), référencés par les vagues |
+| **Version** | 1.3 — 21 novembre 2026 |
+| **Statut** | **FIGÉ — G0** pour C-01..C-09 ; **C-10 accepté / implémenté (première tranche)** (ADR-023/024/025) |
+| **Entrées** | ADR-022, ADR-023, ADR-024, ADR-025, `functional-specifications.md` (FR-040..082, NFR-021..036), `technical-specifications.md` (§14.4, §15.0..15.6) |
+| **Sortie** | 9 contrats gelés + 1 contrat accepté (C-10), référencés par les vagues |
 
 ## Règle de gel
 
@@ -30,16 +30,18 @@ seules les évolutions **additives** sont autorisées, avec valeur par défaut.
 | **C-07** | Tokens : bandes, zones, frontières, ports, temporalité, statuts | [`C-07-tokens.md`](C-07-tokens.md) | UX |
 | **C-08** | Codes `DSG-001..005`, `REV-409`, codes réutilisés | [`C-08-codes.md`](C-08-codes.md) | Orchestrateur |
 | **C-09** | Surface `Repository` : gel + évolutions additives approuvées | [`C-09-repository-surface.md`](C-09-repository-surface.md) | Orchestrateur |
-| **C-10** | Produit, carte et navigation par zoom : objets, cardinalités, projection, routes | [`C-10-produit-carte-navigation.md`](C-10-produit-carte-navigation.md) | Produit + UX + Navigation + Core (proposé, ADR-023) |
+| **C-10** | Produit, portefeuille, carte et navigation par zoom : objets, cardinalités, projection, routes | [`C-10-produit-carte-navigation.md`](C-10-produit-carte-navigation.md) | Produit + UX + Navigation + Core (accepté / implémenté, ADR-023/024/025) |
 
-> **C-10 est proposé, pas gelé.** Il est additif et ne modifie aucun champ de C-01..C-09.
-> Il devient opposable après revue de la cible v0.4 et ouverture de la vague correspondante.
+> **C-10 est accepté et implémenté dans sa première tranche.** Il est additif et ne modifie
+> aucun champ de C-01..C-09. Ses ajouts restent soumis à la règle de gel : évolution
+> additive, test nommé et journal de révision (ADR-024, `MAP-020`).
 
 ## Ce que ces contrats ne couvrent pas
 
 - L'algorithme de disposition automatique, le routage avancé des arêtes (hors MVP3).
-- La projection de carte, les lentilles et les pages produit/équipe/value stream : **C-10**
-  (proposé, ADR-023), qui ne modifie aucun champ de C-01..C-09.
+- Le portefeuille de produits, la projection de carte, les lentilles et les pages
+  produit/équipe/value stream : **C-10** (accepté / implémenté, ADR-023/024/025), qui ne
+  modifie aucun champ de C-01..C-09.
 - La collaboration temps réel sur le layout (ADR-014) : C-01 prépare l'idempotence,
   elle ne l'active pas.
 - La charte de marque, les polices, les icônes : C-07 fixe les **noms** de tokens,
@@ -65,3 +67,5 @@ par vague. Un test squelette ne prouve rien : il réserve le nom.
 |---|---|---|
 | 18/11/2026 | 1.0 | Création des neuf contrats, alignés sur ADR-022 et §14.4/§15 |
 | 18/11/2026 | 1.1 | Ajout de C-10 (produit, carte, zoom) sous ADR-023 ; C-01..C-09 inchangés |
+| 21/11/2026 | 1.2 | C-10 accepté / implémenté ; ajout de `MAP-020` (accueil lecture Produits) sous ADR-024 ; C-01..C-09 inchangés |
+| 21/11/2026 | 1.3 | ADR-025 : l'accueil devient le portefeuille de produits ; la carte passe sur `/map` ; C-01..C-09 inchangés |
